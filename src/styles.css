@@ -1,4 +1,25 @@
-.App {
-  font-family: sans-serif;
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-primary {
+  @apply rounded uppercase transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg disabled:bg-inherit;
+}
+.widget-red {
+  @apply border-red-500 bg-red-500 shadow-red-500 dark:border-red-700 dark:bg-red-700 dark:shadow-red-800;
+}
+.widget-green {
+  @apply border-green-500 bg-green-500 shadow-green-500 dark:border-green-700 dark:bg-green-700 dark:shadow-green-800;
+}
+.widget-amber {
+  @apply border-amber-500 bg-amber-500 shadow-amber-500 dark:border-amber-700 dark:bg-amber-700 dark:shadow-amber-800;
+}
+.widget-indigo {
+  @apply border-indigo-500 bg-indigo-500 shadow-indigo-500 dark:border-indigo-800 dark:bg-indigo-800 dark:shadow-indigo-800;
+}
+.widget-gray {
+  @apply border-gray-400 bg-gray-400 shadow-gray-400 dark:border-gray-600 dark:bg-gray-600 dark:shadow-gray-700;
+}
+.widget-fuchsia {
+  @apply border-fuchsia-500 bg-fuchsia-500 shadow-fuchsia-500 dark:border-fuchsia-800 dark:bg-fuchsia-800 dark:shadow-fuchsia-800;
 }
