@@ -5,7 +5,8 @@ import {
   faGear,
   faXmarkCircle,
   faCaretUp,
-  faCaretDown
+  faCaretDown,
+  faUpDownLeftRight
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
@@ -37,6 +38,14 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         }}
       >
         <FontAwesomeIcon icon={faArrowsRotate} size="xs" />
+      </button>
+      <button
+        className="btn-primary px-1"
+        onClick={() => {
+          handleCommand("startMoving");
+        }}
+      >
+        <FontAwesomeIcon icon={faUpDownLeftRight} size="xs" />
       </button>
       <button
         className="btn-primary px-1"
