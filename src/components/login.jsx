@@ -49,15 +49,16 @@ export default function LoginPage({ handleLogin }) {
                 className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
                 placeholder="Username"
                 name="user"
+                autoComplete="username"
               />
             </div>
             <div className="mb-6">
               <input
-                autoComplete="current-password"
                 type="password"
                 className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
                 placeholder="Password"
                 name="password"
+                autoComplete="current-password"
               />
             </div>
             <div className="mb-6">
