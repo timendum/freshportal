@@ -41,7 +41,7 @@ export default function LoginPage({ handleLogin }) {
     <div className="min-h-screen p-6 dark:bg-black">
       <div className="mx-auto w-1/2">
         <form onSubmit={handleSubmit}>
-          <div className="rounded-lg bg-white block p-4 p-4 shadow-lg shadow-lg dark:bg-gray-600 dark:shadow-slate-700">
+          <div className="block rounded-lg bg-white p-4 p-4 shadow-lg shadow-lg dark:bg-gray-600 dark:shadow-slate-700">
             <h2 className="mb-5 ml-1 text-lg dark:text-gray-200">Login</h2>
             <div className="mb-6">
               <input

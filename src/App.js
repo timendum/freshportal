@@ -24,12 +24,6 @@ export default function App() {
       document.body.classList.add("dark");
     }
   }, []);
-  React.useEffect(() => {
-  const link = document.querySelector('link[type="image/x-icon"]');
-    if (link.dataset.originalUrl) {
-        link.href = link.dataset.originalUrl;
-    }
-  }, [isLoggedIn]);
   if (isLoggedIn === false) {
     return <LoginPage handleLogin={setLoggedIn} />;
   } else if (isLoggedIn === true) {

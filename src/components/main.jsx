@@ -86,6 +86,10 @@ export default function Main({ handleLogin }) {
     if (feeds && widgets.length > 0) {
       refreshUnread(feeds, widgets);
     }
+    return () => {
+      // on "unmount" set uncount = 0
+      refreshUnread([], []);
+    };
   }, [widgets, feeds]);
   React.useEffect(() => {
     if (darkPreference()) {
@@ -201,7 +205,6 @@ export default function Main({ handleLogin }) {
   return (
     <div className="min-h-screen dark:bg-black">
       <Topbar handleLogin={handleLogin} setAddWiget={setAddWiget} toggleDark={changeTheme} />
-
       {feeds === false && (
         <div className="py-5">
           <Loading />
