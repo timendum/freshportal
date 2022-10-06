@@ -1,10 +1,12 @@
 {
-  "name": "react",
+  "name": "ttportal",
   "version": "1.0.0",
-  "description": "React example starter project",
+  "description": "A react frontend for Tiny Tiny RSS",
+   "homepage": ".",
   "keywords": [
     "react",
-    "starter"
+    "ttrss",
+    "portal"
   ],
   "main": "src/index.js",
   "dependencies": {
@@ -30,8 +32,9 @@
     "eject": "react-scripts eject"
   },
   "browserslist": [
-    ">0.2%",
-    "not dead",
+    ">1%",
+    "Firefox ESR",
+    "last 2 and_ff version",
     "not ie <= 11",
     "not op_mini all"
   ]
