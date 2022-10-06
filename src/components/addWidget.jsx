@@ -23,7 +23,7 @@ export default function AddWidget({ feeds, open, addWidget, skip }) {
     >
       <div
         ref={ref}
-        className="mx-auto mt-20 w-1/2 justify-center rounded-xl border border-gray-800 bg-white p-4 shadow-lg dark:shadow-slate-700"
+        className="mx-auto mt-20 w-1/2 justify-center rounded-xl border border-gray-800 bg-white p-4 shadow-lg dark:bg-gray-600 dark:shadow-slate-700"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <h4 className="text-lg dark:text-gray-200">Feed to be added:</h4>
