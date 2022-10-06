@@ -6,9 +6,6 @@ module.exports = {
     extend: {
       fontSize: {
         xs: "0.8rem"
-      },
-      textUnderlineOffset: {
-        auto: "1px"
       }
     }
   },

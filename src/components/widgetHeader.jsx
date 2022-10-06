@@ -8,7 +8,7 @@ import {
   faCaretDown
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function WidgetHeader({ isCollapsed, feed, handleCommand }) {
+export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
     <div className="flex gap-1 px-1 dark:text-zinc-300">
       <button
@@ -19,7 +19,16 @@ export default function WidgetHeader({ isCollapsed, feed, handleCommand }) {
       >
         <FontAwesomeIcon icon={isCollapsed ? faCaretUp : faCaretDown} />
       </button>
-      <button className="btn-primary text-[1.1rem]] px-1">{feed.unread}</button>
+      <button
+        disabled={unread < 1}
+        onClick={() => {
+          handleCommand("readAll");
+        }}
+        className="btn-primary text-[1.1rem]] px-1"
+        title="Mark all as read"
+      >
+        {unread}
+      </button>
       <h4 className="grow text-lg">{feed.title}</h4>
       <button
         className="btn-primary px-1"

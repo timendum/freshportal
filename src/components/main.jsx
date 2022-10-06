@@ -1,5 +1,6 @@
 import React from "react";
 
+import { colors, darkPreference } from "./utils";
 import Loading from "./loading";
 import Topbar from "./topbar";
 import Widget from "./widget";
@@ -18,6 +19,63 @@ function setWidgetsFromStorage(setWidgets) {
   }
 }
 
+const refreshUnread = function (feeds, widgets) {
+  const ids = widgets.map((w) => parseInt(w.id, 10));
+  let c = feeds
+    .filter((e) => ids.indexOf(e.id) > -1)
+    .map((e) => e.unread)
+    .reduce((a, b) => a + b, 0);
+  const link = document.querySelector('link[type="image/x-icon"]');
+  if (!link.dataset.originalUrl) {
+    link.dataset.originalUrl = link.href;
+  }
+  if (!link.dataset.blankicon) {
+    // cache blank img
+    let canvas = document.getElementById("faviconc");
+    canvas.width = 32;
+    canvas.height = 32;
+    let ctx = canvas.getContext("2d");
+    let img = new Image();
+    img.src = "./faviconblank.png";
+    img.onload = function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      link.dataset.blankicon = link.href = canvas.toDataURL("image/x-icon");
+      refreshUnread(feeds, widgets);
+    };
+    return;
+  }
+  if (c < 1) {
+    link.href = link.dataset.originalUrl;
+    document.title = "Tiny Tiny Portal";
+    return;
+  }
+  document.title = "Tiny Tiny Portal (" + c + ")";
+  if (c > 99) {
+    c = "\u221E";
+  }
+  let canvas = document.getElementById("faviconc");
+  canvas.width = 32;
+  canvas.height = 32;
+  let ctx = canvas.getContext("2d");
+  let img = new Image();
+  img.src = link.dataset.blankicon;
+  img.onload = function () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+    ctx.fillStyle = "#FFF";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.strokeStyle = "#8B0000";
+    ctx.font = "bold 21px sans-serif";
+    ctx.lineWidth = 4;
+    ctx.strokeText(c, 16, 18);
+    ctx.fillText(c, 16, 18);
+
+    link.href = canvas.toDataURL("image/x-icon");
+  };
+};
+
 export default function Main({ handleLogin }) {
   const [isAddWidget, setAddWiget] = React.useState(false);
   const [widgets, setWidgets] = React.useState([]);
@@ -25,10 +83,12 @@ export default function Main({ handleLogin }) {
   const [darkMode, setDarkMode] = React.useState(false);
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
-    if (
-      localStorage.TTRssTheme === "dark" ||
-      (!("TTRssTheme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
+    if (feeds && widgets.length > 0) {
+      refreshUnread(feeds, widgets);
+    }
+  }, [widgets, feeds]);
+  React.useEffect(() => {
+    if (darkPreference()) {
       if (!darkMode) {
         changeTheme();
       }
@@ -39,7 +99,10 @@ export default function Main({ handleLogin }) {
   const makeWidget = (col) => {
     return widgets
       .filter((_, i) => i % 3 === col)
-      .map((widget) => {
+      .map((widget, i) => {
+        if (!Object.prototype.hasOwnProperty.call(widget, "id")) {
+          return <div key={"index-" + i} />;
+        }
         let widgetFeed = null;
         for (let feed of feeds) {
           if (parseInt(feed.id, 10) === parseInt(widget.id, 10)) {
@@ -55,7 +118,13 @@ export default function Main({ handleLogin }) {
           );
         }
         return (
-          <Widget key={widget.id} feed={widgetFeed} config={widget} updateConfig={updateConfig} />
+          <Widget
+            key={widget.id}
+            feed={widgetFeed}
+            config={widget}
+            updateConfig={updateConfig}
+            updateFeed={updateFeed}
+          />
         );
       });
   };
@@ -73,9 +142,16 @@ export default function Main({ handleLogin }) {
   const addWidget = (id) => {
     setAddWiget(false);
     if (id) {
-      const newArray = [...widgets];
-      setWidgets(newArray.concat([{ id: id }]));
-      localStorage.setItem("TTRssWidgets", JSON.stringify(widgets.concat([{ id: id }])));
+      const currentColors = widgets.map((w) => w.color);
+      let missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
+      let newColor = colors[widgets.length % colors.length];
+      if (missingColors.length > 0) {
+        newColor = missingColors[0];
+      }
+      let newArray = [...widgets];
+      newArray = newArray.concat([{ id: id, color: newColor }]);
+      setWidgets(newArray);
+      localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
     }
   };
   /* Update and persist widgets config on change */
@@ -93,6 +169,16 @@ export default function Main({ handleLogin }) {
     }
     localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
     setWidgets(newArray);
+  };
+  const updateFeed = (feed) => {
+    const newFeeds = [...feeds];
+    const idx = newFeeds.findIndex((e) => e.id === feed.id);
+    if (idx < 0) {
+      console.log("updateFeed: feed not found", feed);
+      return;
+    }
+    newFeeds[idx] == feed;
+    setFeeds(newFeeds);
   };
   /* Init feeds */
   React.useEffect(() => {
@@ -132,7 +218,7 @@ export default function Main({ handleLogin }) {
         feeds={feeds}
         open={isAddWidget}
         addWidget={addWidget}
-        skip={widgets.map((w) => w.id)}
+        skip={widgets.map((w) => parseInt(w.id, 10))}
       />
     </div>
   );

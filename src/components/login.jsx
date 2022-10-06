@@ -4,6 +4,18 @@ import { ttRss } from "../ttrss.js";
 export default function LoginPage({ handleLogin }) {
   const [loginError, setloginError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  let defaultHost = localStorage.getItem("TTRssHost");
+  if (defaultHost) {
+    defaultHost = defaultHost.replace(/api\/$/, "");
+  } else {
+    defaultHost =
+      document.location.protocol +
+      "//" +
+      document.location.hostname +
+      ":" +
+      document.location.port +
+      "/";
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
     setLoading(true);
@@ -26,59 +38,54 @@ export default function LoginPage({ handleLogin }) {
       .catch(console.log);
   };
   return (
-    <div className="mx-auto h-screen w-1/2">
-      <form onSubmit={handleSubmit}>
-        <div className="mt-3 block rounded-lg bg-white p-6 shadow-lg ">
-          <h2 className="my-2 mr-4 text-xl">Login</h2>
-          <div className="mb-6">
-            <input
-              type="text"
-              className="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-              placeholder="Username"
-              name="user"
-            />
-          </div>
-          <div className="mb-6">
-            <input
-              autoComplete="current-password"
-              type="password"
-              className="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-              placeholder="Password"
-              name="password"
-            />
-          </div>
-          <div className="mb-6">
-            <input
-              className="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-              placeholder="Username"
-              name="location"
-              label="TT-RSS Base URL"
-              defaultValue={
-                document.location.protocol +
-                "//" +
-                document.location.hostname +
-                ":" +
-                document.location.port +
-                "/"
-              }
-            />
-          </div>{" "}
-          {loginError && (
-            <div role="alert">
-              <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">
-                {loginError}
-              </div>
+    <div className="min-h-screen p-6 dark:bg-black">
+      <div className="mx-auto w-1/2">
+        <form onSubmit={handleSubmit}>
+          <div className="rounded-lg bg-white block p-4 p-4 shadow-lg shadow-lg dark:bg-gray-600 dark:shadow-slate-700">
+            <h2 className="mb-5 ml-1 text-lg dark:text-gray-200">Login</h2>
+            <div className="mb-6">
+              <input
+                type="text"
+                className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
+                placeholder="Username"
+                name="user"
+              />
             </div>
-          )}
-          <button
-            type="submit"
-            className="inline-block w-full rounded bg-blue-600 px-7 py-3 text-sm font-medium uppercase leading-snug text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
-            disabled={loading}
-          >
-            Sign In
-          </button>
-        </div>
-      </form>
+            <div className="mb-6">
+              <input
+                autoComplete="current-password"
+                type="password"
+                className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
+                placeholder="Password"
+                name="password"
+              />
+            </div>
+            <div className="mb-6">
+              <input
+                className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
+                placeholder="Username"
+                name="location"
+                label="TT-RSS Base URL"
+                defaultValue={defaultHost}
+              />
+            </div>{" "}
+            {loginError && (
+              <div role="alert">
+                <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">
+                  {loginError}
+                </div>
+              </div>
+            )}
+            <button
+              type="submit"
+              className="btn-primary w-full bg-blue-800 px-7 py-3 text-sm font-medium leading-snug text-slate-200"
+              disabled={loading}
+            >
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

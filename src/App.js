@@ -4,7 +4,8 @@ import Loading from "./components/loading";
 import LoginPage from "./components/login";
 import Main from "./components/main";
 
-import { ttRss } from "./ttrss.js";
+import { ttRss } from "./ttrss";
+import { darkPreference } from "./components/utils";
 import "./styles.css";
 
 export default function App() {
@@ -17,7 +18,18 @@ export default function App() {
       // pass
     }
     ttRss.isLoggedIn().then(setLoggedIn).catch(console.log);
-  });
+  }, []);
+  React.useEffect(() => {
+    if (darkPreference) {
+      document.body.classList.add("dark");
+    }
+  }, []);
+  React.useEffect(() => {
+  const link = document.querySelector('link[type="image/x-icon"]');
+    if (link.dataset.originalUrl) {
+        link.href = link.dataset.originalUrl;
+    }
+  }, [isLoggedIn]);
   if (isLoggedIn === false) {
     return <LoginPage handleLogin={setLoggedIn} />;
   } else if (isLoggedIn === true) {
@@ -27,7 +39,7 @@ export default function App() {
   }
   // loading screen
   return (
-    <div className="mx-auto">
+    <div className="mx-auto dark:bg-black">
       <Loading />
     </div>
   );

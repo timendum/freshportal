@@ -87,9 +87,9 @@ ttRss.getContent = function (id, limit, skip, onlyUnread) {
     order_by: "feed_dates" // date_reverse, feed_dates, (nothing)
   });
 };
-ttRss.markReadItem = function (id) {
+ttRss.markReadItems = function (ids) {
   return request("updateArticle", {
-    article_ids: id,
+    article_ids: ids.join(","),
     mode: 0, // 0 - set to false, 1 - set to true, 2 - toggle
     field: 2 // 0 - starred, 1 - published, 2 - unread, 3 - article note since api level 1)
   })

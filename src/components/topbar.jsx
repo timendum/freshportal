@@ -13,7 +13,7 @@ function Button({ onClick, icon, text }) {
   return (
     <button
       onClick={onClick}
-      className="btn-primary inline-block px-5 py-2.5 text-xs font-medium leading-tight"
+      className="btn-primary inline-block px-2 lg:px-5 py-1 lg:py-2.5 text-xs font-medium leading-tight"
     >
       <FontAwesomeIcon icon={icon} /> {text}
     </button>
@@ -22,11 +22,11 @@ function Button({ onClick, icon, text }) {
 
 export default function Topbar({ handleLogin, setAddWiget, toggleDark }) {
   return (
-    <div className="flex bg-slate-700 px-4 py-1 text-white shadow-sm dark:text-gray-200">
-      <h1 className="grow align-text-bottom text-xl">Tiny Tiny RSS</h1>
+    <div className="flex bg-slate-700 px-2 lg:px-4 lg:py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700">
+      <h1 className="grow align-text-bottom text-xl lg:mt-1">Tiny Tiny RSS</h1>
       <button
         onClick={toggleDark}
-        className="btn-primary inline-block px-5 py-2.5 text-xs leading-tight"
+        className="btn-primary inline-block px-2 lg:px-5 py-1 lg:py-2.5 text-xs leading-tight"
       >
         <FontAwesomeIcon icon={faMoon} className="dark:hidden" />
         <FontAwesomeIcon icon={faSun} className="hidden dark:inline-block" />
