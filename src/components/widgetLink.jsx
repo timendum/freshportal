@@ -30,7 +30,7 @@ export default function WidgetLink({ row, wType, updateLink }) {
       </a>
       {wType === "excerpt" ? (
         <div className="pl-1 text-sm" title={excerpt}>
-          {excerpt || (<>&nbsp;</>)}
+          {excerpt || <>&nbsp;</>}
         </div>
       ) : undefined}
     </li>

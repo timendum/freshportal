@@ -16,7 +16,7 @@ function setWidgetsFromStorage(setWidgets) {
       setWidgets(sWidgets);
     }
   } catch (e) {
-    localStorage.removeItem("TTRssWidgets")
+    localStorage.removeItem("TTRssWidgets");
   }
 }
 
@@ -162,9 +162,9 @@ export default function Main({ handleLogin }) {
   };
   const handleExpImp = (refresh) => {
     if (refresh) {
-        window.location.replace(window.location);
+      window.location.replace(window.location);
     } else {
-        setExpImp(false);
+      setExpImp(false);
     }
   };
   /* Update and persist widgets config on change */
