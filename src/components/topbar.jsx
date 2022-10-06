@@ -20,7 +20,7 @@ function Button({ onClick, icon, text }) {
   );
 }
 
-export default function Topbar({ handleLogin, setAddWiget, toggleDark }) {
+export default function Topbar({ handleLogin, setAddWiget, setExpImp, toggleDark }) {
   return (
     <div className="flex bg-slate-700 px-2 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-1">
       <h1 className="grow align-text-bottom text-xl lg:mt-1">Tiny Tiny RSS</h1>
@@ -32,7 +32,7 @@ export default function Topbar({ handleLogin, setAddWiget, toggleDark }) {
         <FontAwesomeIcon icon={faSun} className="hidden dark:inline-block" />
       </button>
       <Button onClick={() => setAddWiget(true)} icon={faSquarePlus} text="Add Widget" />
-      <Button icon={faFileExport} text="Export" />
+      <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" />
       <Button
         onClick={() => {
           ttRss.logout().then((resp) => {

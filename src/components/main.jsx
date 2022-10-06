@@ -5,6 +5,7 @@ import Loading from "./loading";
 import Topbar from "./topbar";
 import Widget from "./widget";
 import AddWidget from "./addWidget";
+import ExpImp from "./expimp";
 import { ttRss } from "../ttrss.js";
 
 function setWidgetsFromStorage(setWidgets) {
@@ -15,7 +16,7 @@ function setWidgetsFromStorage(setWidgets) {
       setWidgets(sWidgets);
     }
   } catch (e) {
-    // pass
+    localStorage.removeItem("TTRssWidgets")
   }
 }
 
@@ -78,6 +79,7 @@ const refreshUnread = function (feeds, widgets) {
 
 export default function Main({ handleLogin }) {
   const [isAddWidget, setAddWiget] = React.useState(false);
+  const [isExpImp, setExpImp] = React.useState(false);
   const [widgets, setWidgets] = React.useState([]);
   const [feeds, setFeeds] = React.useState(false);
   const [darkMode, setDarkMode] = React.useState(false);
@@ -158,6 +160,13 @@ export default function Main({ handleLogin }) {
       localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
     }
   };
+  const handleExpImp = (refresh) => {
+    if (refresh) {
+        window.location.replace(window.location);
+    } else {
+        setExpImp(false);
+    }
+  };
   /* Update and persist widgets config on change */
   const updateConfig = (widget) => {
     const idx = widgets.findIndex((e) => parseInt(e.id) === parseInt(widget.id));
@@ -204,7 +213,12 @@ export default function Main({ handleLogin }) {
   }, []);
   return (
     <div className="min-h-screen dark:bg-black">
-      <Topbar handleLogin={handleLogin} setAddWiget={setAddWiget} toggleDark={changeTheme} />
+      <Topbar
+        handleLogin={handleLogin}
+        setAddWiget={setAddWiget}
+        setExpImp={setExpImp}
+        toggleDark={changeTheme}
+      />
       {feeds === false && (
         <div className="py-5">
           <Loading />
@@ -223,6 +237,7 @@ export default function Main({ handleLogin }) {
         addWidget={addWidget}
         skip={widgets.map((w) => parseInt(w.id, 10))}
       />
+      <ExpImp open={isExpImp} doReset={handleExpImp} />
     </div>
   );
 }
