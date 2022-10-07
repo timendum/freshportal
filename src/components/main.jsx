@@ -155,10 +155,17 @@ export default function Main({ handleLogin }) {
       if (missingColors.length > 0) {
         newColor = missingColors[0];
       }
+      const newW = [{ id: id, color: newColor }];
+      const idx = widgets.findIndex((e) => Object.prototype.hasOwnProperty.call(e, "id"));
       let newArray = [...widgets];
-      newArray = newArray.concat([{ id: id, color: newColor }]);
-      setWidgets(newArray);
+      if (idx > -1) {
+        // empty widget, fill first
+        newArray[idx] = newW;
+      } else {
+        newArray = newArray.concat(newW);
+      }
       localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
+      setWidgets(newArray);
     }
   };
   const moveWidget = (id, direction) => {
@@ -199,6 +206,7 @@ export default function Main({ handleLogin }) {
         newWidgets.push({});
       }
       [newWidgets[idx], newWidgets[newIdx]] = [newWidgets[newIdx], newWidgets[idx]];
+      localStorage.setItem("TTRssWidgets", JSON.stringify(newWidgets));
       setWidgets(newWidgets);
     }
   };
@@ -216,14 +224,14 @@ export default function Main({ handleLogin }) {
       console.log("updateConfig: widget not found", widget);
       return;
     }
-    const newArray = [...widgets];
+    const newWidgets = [...widgets];
     if (widget.remove === true) {
-      newArray.splice(idx, 1);
+      newWidgets.splice(idx, 1);
     } else {
-      newArray[idx] = widget;
+      newWidgets[idx] = widget;
     }
-    localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
-    setWidgets(newArray);
+    localStorage.setItem("TTRssWidgets", JSON.stringify(newWidgets));
+    setWidgets(newWidgets);
   };
   const updateFeed = (feed) => {
     const newFeeds = [...feeds];

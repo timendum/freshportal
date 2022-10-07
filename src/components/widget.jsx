@@ -43,6 +43,7 @@ function Widget({ feed, config, updateConfig, updateFeed, move }) {
       setWType(config.wType || "excerpt");
       setSizeLimit(config.sizeLimit || 10);
       setColor(config.color || "gray");
+      setMoving(false);
     } else if (name === "refresh") {
       ttRss
         .getUpdatedContent(feed.id)
@@ -55,13 +56,6 @@ function Widget({ feed, config, updateConfig, updateFeed, move }) {
           }
           updateFeed(feeds[idx]);
         });
-      // .then(() => {
-      //   return ttRss.getContent(feed.id, sizeLimit, skip, false);
-      // })
-      // .then((rows) => {
-      //   //TODO setUnread(feed.unread);
-      //   setRows(rows);
-      // });
     } else if (name === "size") {
       setSizeLimit(parseInt(data, 10));
     } else if (name === "wType") {
@@ -82,6 +76,7 @@ function Widget({ feed, config, updateConfig, updateFeed, move }) {
     } else if (name === "move") {
       move(feed.id, data);
     } else if (name === "startMoving") {
+      setConfiguring(false);
       setMoving(!isMoving);
     } else if (name === "readAll") {
       const countNumber = rows.filter((e) => e.unread).length;
