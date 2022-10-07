@@ -5,6 +5,7 @@ import Loading from "./loading";
 import Topbar from "./topbar";
 import Widget from "./widget";
 import AddWidget from "./addWidget";
+import ExpImp from "./expimp";
 import { ttRss } from "../ttrss.js";
 
 function setWidgetsFromStorage(setWidgets) {
@@ -15,7 +16,7 @@ function setWidgetsFromStorage(setWidgets) {
       setWidgets(sWidgets);
     }
   } catch (e) {
-    // pass
+    localStorage.removeItem("TTRssWidgets");
   }
 }
 
@@ -78,6 +79,7 @@ const refreshUnread = function (feeds, widgets) {
 
 export default function Main({ handleLogin }) {
   const [isAddWidget, setAddWiget] = React.useState(false);
+  const [isExpImp, setExpImp] = React.useState(false);
   const [widgets, setWidgets] = React.useState([]);
   const [feeds, setFeeds] = React.useState(false);
   const [darkMode, setDarkMode] = React.useState(false);
@@ -86,6 +88,10 @@ export default function Main({ handleLogin }) {
     if (feeds && widgets.length > 0) {
       refreshUnread(feeds, widgets);
     }
+    return () => {
+      // on "unmount" set uncount = 0
+      refreshUnread([], []);
+    };
   }, [widgets, feeds]);
   React.useEffect(() => {
     if (darkPreference()) {
@@ -124,6 +130,7 @@ export default function Main({ handleLogin }) {
             config={widget}
             updateConfig={updateConfig}
             updateFeed={updateFeed}
+            move={moveWidget}
           />
         );
       });
@@ -152,6 +159,55 @@ export default function Main({ handleLogin }) {
       newArray = newArray.concat([{ id: id, color: newColor }]);
       setWidgets(newArray);
       localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
+    }
+  };
+  const moveWidget = (id, direction) => {
+    if (!id) {
+      return;
+    }
+    const idx = widgets.findIndex((e) => parseInt(e.id) === parseInt(id));
+    if (idx < 0) {
+      console.log("moveWidget: widget not found", id);
+      return;
+    }
+    let newIdx = undefined;
+    switch (direction) {
+      case "up":
+        if (idx >= 3) {
+          newIdx = idx - 3;
+        }
+        break;
+      case "down":
+        if (idx + 3 < widgets.length) {
+          newIdx = idx + 3;
+        }
+        break;
+      case "left":
+        if (idx >= 1) {
+          newIdx = idx - 1;
+        }
+        break;
+      case "right":
+        if (idx % 3 != 2) {
+          newIdx = idx + 1;
+        }
+        break;
+    }
+    console.log(idx, newIdx);
+    if (newIdx !== undefined) {
+      let newWidgets = [...widgets];
+      if (newIdx >= newWidgets.length) {
+        newWidgets.push({});
+      }
+      [newWidgets[idx], newWidgets[newIdx]] = [newWidgets[newIdx], newWidgets[idx]];
+      setWidgets(newWidgets);
+    }
+  };
+  const handleExpImp = (refresh) => {
+    if (refresh) {
+      window.location.replace(window.location);
+    } else {
+      setExpImp(false);
     }
   };
   /* Update and persist widgets config on change */
@@ -200,8 +256,12 @@ export default function Main({ handleLogin }) {
   }, []);
   return (
     <div className="min-h-screen dark:bg-black">
-      <Topbar handleLogin={handleLogin} setAddWiget={setAddWiget} toggleDark={changeTheme} />
-
+      <Topbar
+        handleLogin={handleLogin}
+        setAddWiget={setAddWiget}
+        setExpImp={setExpImp}
+        toggleDark={changeTheme}
+      />
       {feeds === false && (
         <div className="py-5">
           <Loading />
@@ -220,6 +280,7 @@ export default function Main({ handleLogin }) {
         addWidget={addWidget}
         skip={widgets.map((w) => parseInt(w.id, 10))}
       />
+      <ExpImp open={isExpImp} doReset={handleExpImp} />
     </div>
   );
 }

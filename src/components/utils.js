@@ -1,4 +1,4 @@
-const colors = ["red", "amber", "green", "indigo", "gray", "fuchsia"];
+const colors = ["red", "amber", "green", "indigo", "fuchsia", "gray"];
 
 const darkPreference = () => {
   if (

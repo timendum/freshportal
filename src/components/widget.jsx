@@ -4,11 +4,13 @@ import { ttRss } from "../ttrss.js";
 import Loading from "./loading";
 import WidgetHeader from "./widgetHeader";
 import WidgetConfig from "./widgetConfig";
+import WidgetMove from "./widgetMove";
 import WidgetLink from "./widgetLink";
 import WidgetPagination from "./widgetPagination";
 
-export default function Widget({ feed, config, updateConfig, updateFeed }) {
+export default function Widget({ feed, config, updateConfig, updateFeed, move }) {
   const [isCollapsed, setCollapsed] = useState(false);
+  const [isMoving, setMoving] = useState(false);
   const [isConfiguring, setConfiguring] = useState(false);
   const [sizeLimit, setSizeLimit] = useState(config.sizeLimit || 10);
   const [wType, setWType] = useState(config.wType || "excerpt");
@@ -77,6 +79,10 @@ export default function Widget({ feed, config, updateConfig, updateFeed }) {
     } else if (name === "remove") {
       updateConfig({ id: feed.id, remove: true });
       setConfiguring(false);
+    } else if (name === "move") {
+      move(feed.id, data);
+    } else if (name === "startMoving") {
+      setMoving(!isMoving);
     } else if (name === "readAll") {
       const countNumber = rows.filter((e) => e.unread).length;
       let markAction = () => {
@@ -125,6 +131,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed }) {
       {isConfiguring && (
         <WidgetConfig size={sizeLimit} wType={wType} color={color} handleCommand={handleCommand} />
       )}
+      {isMoving && <WidgetMove handleCommand={handleCommand} />}
       <div className="bg-zinc-100 dark:bg-zinc-800">
         <div className={isCollapsed ? "hidden" : "box"}>
           {rows.length < 1 && <Loading />}

@@ -5,14 +5,15 @@ import {
   faGear,
   faXmarkCircle,
   faCaretUp,
-  faCaretDown
+  faCaretDown,
+  faUpDownLeftRight
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
-    <div className="flex gap-1 px-1 dark:text-zinc-300">
+    <div className="flex gap-px	md:gap-1 md:px-1 dark:text-zinc-300">
       <button
-        className="btn-primary px-1"
+        className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("toggleCollapse");
         }}
@@ -24,14 +25,14 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         onClick={() => {
           handleCommand("readAll");
         }}
-        className="btn-primary text-[1.1rem]] px-1"
+        className="btn-primary text-[1.1rem] md:px-1"
         title="Mark all as read"
       >
         {unread}
       </button>
       <h4 className="grow text-lg">{feed.title}</h4>
       <button
-        className="btn-primary px-1"
+        className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("refresh");
         }}
@@ -39,7 +40,15 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         <FontAwesomeIcon icon={faArrowsRotate} size="xs" />
       </button>
       <button
-        className="btn-primary px-1"
+        className="btn-primary md:px-1"
+        onClick={() => {
+          handleCommand("startMoving");
+        }}
+      >
+        <FontAwesomeIcon icon={faUpDownLeftRight} size="xs" />
+      </button>
+      <button
+        className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("toggleConfiguring");
         }}
@@ -47,7 +56,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         <FontAwesomeIcon icon={faGear} size="xs" />
       </button>
       <button
-        className="btn-primary px-1"
+        className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("remove");
         }}
