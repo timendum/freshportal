@@ -193,7 +193,6 @@ export default function Main({ handleLogin }) {
         }
         break;
     }
-    console.log(idx, newIdx);
     if (newIdx !== undefined) {
       let newWidgets = [...widgets];
       if (newIdx >= newWidgets.length) {
