@@ -11,7 +11,7 @@ import {
 
 export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
-    <div className="flex gap-px	md:gap-1 md:px-1 dark:text-zinc-300">
+    <div className="flex items-center	gap-px dark:text-zinc-300 md:gap-1 md:px-1">
       <button
         className="btn-primary md:px-1"
         onClick={() => {

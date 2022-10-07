@@ -25,9 +25,9 @@ jobs:
       run: |
         npm install
         npm run-script build
-        tar -cvzf Release.tar.gz build/*
+        tar -cvzf release.tar.gz -C build .
     - name: GH Release
       uses: softprops/action-gh-release@v0.1.14
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: Release.tar.gz
+        files: release.tar.gz
