@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { ttRss } from "../ttrss.js";
 
 import Loading from "./loading";
@@ -8,7 +8,7 @@ import WidgetMove from "./widgetMove";
 import WidgetLink from "./widgetLink";
 import WidgetPagination from "./widgetPagination";
 
-export default function Widget({ feed, config, updateConfig, updateFeed, move }) {
+function Widget({ feed, config, updateConfig, updateFeed, move }) {
   const [isCollapsed, setCollapsed] = useState(false);
   const [isMoving, setMoving] = useState(false);
   const [isConfiguring, setConfiguring] = useState(false);
@@ -24,7 +24,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
         setRows(rows);
       });
     }
-  }, [skip]);
+  }, [skip, feed]);
   React.useEffect(() => {
     if (!isCollapsed) {
       if (rows.length < sizeLimit) {
@@ -150,3 +150,25 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     </div>
   );
 }
+
+function isEqual(prevProps, nextProps) {
+  var props = Object.getOwnPropertyNames(prevProps);
+  var propsNext = Object.getOwnPropertyNames(nextProps);
+  if (props.length != propsNext.length) {
+    return false;
+  }
+  for (let key of props) {
+    let val1 = prevProps[key];
+    let val2 = nextProps[key];
+    if (val1 !== val2) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps.feed, nextProps.feed) && isEqual(prevProps.config, nextProps.config);
+}
+
+export default memo(Widget, areEqual);
