@@ -244,6 +244,7 @@ export default function Main({ handleLogin }) {
     setFeeds(newFeeds);
   };
   /* Init feeds */
+  let intervalId = undefined;
   React.useEffect(() => {
     ttRss
       .checkCategories()
@@ -255,11 +256,16 @@ export default function Main({ handleLogin }) {
       })
       .then((feeds) => {
         setFeeds(feeds);
-        setInterval(() => {
+        intervalId = setInterval(() => {
           console.debug("Trigger refresh");
           ttRss.getFeeds().then(setFeeds);
         }, 1000 * 60 * 10);
       });
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, []);
   return (
     <div className="min-h-screen dark:bg-black">
