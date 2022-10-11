@@ -1,10 +1,10 @@
 import React from "react";
 
 export default function AddWidget({ feeds, open, addWidget, skip }) {
+  const ref = React.useRef();
   if (!open) {
     return <React.Fragment />;
   }
-  const ref = React.useRef();
 
   const handleSubmit = (event) => {
     event.preventDefault();

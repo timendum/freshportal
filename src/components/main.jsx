@@ -93,6 +93,7 @@ export default function Main({ handleLogin }) {
       refreshUnread([], []);
     };
   }, [widgets, feeds]);
+   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (darkPreference()) {
       if (!darkMode) {
@@ -101,6 +102,7 @@ export default function Main({ handleLogin }) {
     }
     setWidgetsFromStorage(setWidgets);
   }, []);
+  /* eslint-enable */
   /* Util funct to generate widgets */
   const makeWidget = (col) => {
     return widgets
@@ -244,8 +246,8 @@ export default function Main({ handleLogin }) {
     setFeeds(newFeeds);
   };
   /* Init feeds */
-  let intervalId = undefined;
   React.useEffect(() => {
+    let intervalId = undefined;
     ttRss
       .checkCategories()
       .then((resp) => {
