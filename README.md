@@ -7,18 +7,18 @@ Any help is appreciated, on everything, I'm not a front-end developer.
 
 Installation
 -------------
-Download all the files in a directory on the same webserver of Tiny Tiny RSS.
 
-On the Tiny Tiny RSS enable the API access.
+Just unzip the latest release (or build it by yourself) and put it somewere, the only backend needed is [Tiny Tiny RSS](https://tt-rss.org/) itself.
 
-Create a "Portal" category and add new feeds.
-
-The go to index.html.
+1. Put the build files in a directory on the same webserver of Tiny Tiny RSS.
+1. On the Tiny Tiny RSS istance enable the API access.
+1. Create a "Portal" category and add feeds to this category.
+1. The go to index.html.
 
 End
 
 ### Note ###
-You can install the Tiny Tiny RSS Portal anywhere, even in your hard disk, but you have to enable the `Access-Control-Allow-Origin` header in ttrss the webserver.
+You can install the Tiny Tiny RSS Portal anywhere, but you have to configure the `Access-Control-Allow-Origin` header in ttrss the webserver. It works even in your hard disk, but the icon generator won't work, because of security policies on opening "local" files.
 
 
 Details
