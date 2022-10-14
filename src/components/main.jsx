@@ -235,7 +235,7 @@ export default function Main({ handleLogin }) {
       console.log("updateFeed: feed not found", feed);
       return;
     }
-    newFeeds[idx] == feed;
+    newFeeds[idx] = feed;
     setFeeds(newFeeds);
   };
   /* Init feeds */
