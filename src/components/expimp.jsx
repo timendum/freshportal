@@ -1,10 +1,23 @@
 import React from "react";
 
 export default function ExpImp({ open, doReset }) {
+  const ref = React.useRef();
   if (!open) {
     return <React.Fragment />;
   }
-  const ref = React.useRef();
+  const localData = {};
+  if (localStorage.getItem("TTRssWidgets")) {
+    localData.widgets = JSON.parse(localStorage.getItem("TTRssWidgets"));
+  }
+  if (localStorage.getItem("TTRssSession")) {
+    localData.session = localStorage.getItem("TTRssSession");
+  }
+  if (localStorage.getItem("TTRssHost")) {
+    localData.base = localStorage.getItem("TTRssHost");
+  }
+  if (localStorage.getItem("TTRssTheme")) {
+    localData.theme = localStorage.getItem("TTRssTheme");
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -49,12 +62,7 @@ export default function ExpImp({ open, doReset }) {
           <textarea
             name="jsontxt"
             className="input-primary block h-60 w-full px-3 py-1.5"
-            defaultValue={JSON.stringify({
-              widgets: JSON.parse(localStorage.getItem("TTRssWidgets")),
-              session: localStorage.getItem("TTRssSession"),
-              base: localStorage.getItem("TTRssHost"),
-              theme: localStorage.getItem("TTRssTheme")
-            })}
+            defaultValue={JSON.stringify(localData)}
           ></textarea>
           <div className="text-right">
             <button

@@ -1,7 +1,7 @@
 import React from "react";
 import { ttRss } from "../ttrss.js";
 
-export default function LoginPage({ handleLogin }) {
+export default function LoginForm({ handleLogin }) {
   const [loginError, setloginError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   let defaultHost = localStorage.getItem("TTRssHost");
@@ -70,7 +70,7 @@ export default function LoginPage({ handleLogin }) {
                 defaultValue={defaultHost}
               />
             </div>{" "}
-            {loginError && (
+            {!!loginError && (
               <div role="alert">
                 <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">
                   {loginError}

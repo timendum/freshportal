@@ -2,7 +2,7 @@
   "name": "ttportal",
   "version": "1.0.0",
   "description": "A react frontend for Tiny Tiny RSS",
-   "homepage": ".",
+  "homepage": ".",
   "keywords": [
     "react",
     "ttrss",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@babel/runtime": "7.13.8",
     "autoprefixer": "^10.4.12",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "postcss": "^8.4.16",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
