@@ -4,7 +4,7 @@ import Loading from "./components/loading";
 import MainLogin from "./components/mainLogin";
 import Main from "./components/main";
 
-import { ttRss } from "./ttrss";
+import ttRss from "./ttrss";
 import { darkPreference } from "./components/utils";
 import "./styles.css";
 
@@ -26,7 +26,8 @@ export default function App() {
   }, []);
   if (isLoggedIn === false) {
     return <MainLogin handleLogin={setLoggedIn} />;
-  } else if (isLoggedIn === true) {
+  }
+  if (isLoggedIn === true) {
     localStorage.setItem("TTRssSession", ttRss.session);
     localStorage.setItem("TTRssHost", ttRss.base);
     return <Main handleLogin={setLoggedIn} />;

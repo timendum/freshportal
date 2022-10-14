@@ -6,7 +6,7 @@ import Topbar from "./topbar";
 import Widget from "./widget";
 import AddWidget from "./addWidget";
 import ExpImp from "./expimp";
-import { ttRss } from "../ttrss.js";
+import ttRss from "../ttrss";
 
 function setWidgetsFromStorage(setWidgets) {
   try {
@@ -20,25 +20,25 @@ function setWidgetsFromStorage(setWidgets) {
   }
 }
 
-const refreshUnread = function (feeds, widgets) {
+const refreshUnread = (feeds, widgets) => {
   const ids = widgets.map((w) => parseInt(w.id, 10));
   let c = feeds
     .filter((e) => ids.indexOf(e.id) > -1)
     .map((e) => e.unread)
     .reduce((a, b) => a + b, 0);
-  const link = document.querySelector('link[type="image/x-icon"]');
+  const link = document.querySelector("link[type='image/x-icon']");
   if (!link.dataset.originalUrl) {
     link.dataset.originalUrl = link.href;
   }
   if (!link.dataset.blankicon) {
     // cache blank img
-    let canvas = document.getElementById("faviconc");
+    const canvas = document.getElementById("faviconc");
     canvas.width = 32;
     canvas.height = 32;
-    let ctx = canvas.getContext("2d");
-    let img = new Image();
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
     img.src = "./faviconblank.png";
-    img.onload = function () {
+    img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
       link.dataset.blankicon = link.href = canvas.toDataURL("image/x-icon");
@@ -51,17 +51,17 @@ const refreshUnread = function (feeds, widgets) {
     document.title = "Tiny Tiny Portal";
     return;
   }
-  document.title = "Tiny Tiny Portal (" + c + ")";
+  document.title = `Tiny Tiny Portal (${c})`;
   if (c > 99) {
     c = "\u221E";
   }
-  let canvas = document.getElementById("faviconc");
+  const canvas = document.getElementById("faviconc");
   canvas.width = 32;
   canvas.height = 32;
-  let ctx = canvas.getContext("2d");
-  let img = new Image();
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
   img.src = link.dataset.blankicon;
-  img.onload = function () {
+  img.onload = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
     ctx.fillStyle = "#FFF";
@@ -97,39 +97,37 @@ export default function Main({ handleLogin }) {
     setWidgetsFromStorage(setWidgets);
   }, []);
   /* Util funct to generate widgets */
-  const makeWidget = (col) => {
-    return widgets
-      .filter((_, i) => i % 3 === col)
-      .map((widget, i) => {
-        if (!Object.prototype.hasOwnProperty.call(widget, "id")) {
-          return <div key={"index-" + i} />;
+  const makeWidget = (col) => widgets
+    .filter((_, i) => i % 3 === col)
+    .map((widget, i) => {
+      if (!Object.prototype.hasOwnProperty.call(widget, "id")) {
+        return <div key={`index-${i}`} />;
+      }
+      let widgetFeed = null;
+      for (const feed of feeds) {
+        if (parseInt(feed.id, 10) === parseInt(widget.id, 10)) {
+          widgetFeed = feed;
+          break;
         }
-        let widgetFeed = null;
-        for (let feed of feeds) {
-          if (parseInt(feed.id, 10) === parseInt(widget.id, 10)) {
-            widgetFeed = feed;
-            break;
-          }
-        }
-        if (!widgetFeed) {
-          return (
-            <div key={widget.id}>
-              <div>Feed not found</div>;
-            </div>
-          );
-        }
+      }
+      if (!widgetFeed) {
         return (
-          <Widget
-            key={widget.id}
-            feed={widgetFeed}
-            config={widget}
-            updateConfig={updateConfig}
-            updateFeed={updateFeed}
-            move={moveWidget}
-          />
+          <div key={widget.id}>
+            <div>Feed not found</div>
+          </div>
         );
-      });
-  };
+      }
+      return (
+        <Widget
+          key={widget.id}
+          feed={widgetFeed}
+          config={widget}
+          updateConfig={updateConfig}
+          updateFeed={updateFeed}
+          move={moveWidget}
+        />
+      );
+    });
   /* Change and persist theme */
   const changeTheme = () => {
     localStorage.setItem("TTRssTheme", !darkMode ? "dark" : "light");
@@ -145,12 +143,12 @@ export default function Main({ handleLogin }) {
     setAddWiget(false);
     if (id) {
       const currentColors = widgets.map((w) => w.color);
-      let missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
+      const missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
       let newColor = colors[widgets.length % colors.length];
       if (missingColors.length > 0) {
-        newColor = missingColors[0];
+        newColor = missingColors.shift();
       }
-      const newW = [{ id: id, color: newColor }];
+      const newW = [{ id, color: newColor }];
       const idx = widgets.findIndex((e) => Object.prototype.hasOwnProperty.call(e, "id"));
       let newArray = [...widgets];
       if (idx > -1) {
@@ -167,12 +165,12 @@ export default function Main({ handleLogin }) {
     if (!id) {
       return;
     }
-    const idx = widgets.findIndex((e) => parseInt(e.id) === parseInt(id));
+    const idx = widgets.findIndex((e) => parseInt(e.id, 10) === parseInt(id, 10));
     if (idx < 0) {
       console.log("moveWidget: widget not found", id);
       return;
     }
-    let newIdx = undefined;
+    let newIdx;
     switch (direction) {
       case "up":
         if (idx >= 3) {
@@ -190,13 +188,15 @@ export default function Main({ handleLogin }) {
         }
         break;
       case "right":
-        if (idx % 3 != 2) {
+        if (idx % 3 !== 2) {
           newIdx = idx + 1;
         }
         break;
+      default:
+        console.log("moveWidget: direction unhandled", direction, id);
     }
     if (newIdx !== undefined) {
-      let newWidgets = [...widgets];
+      const newWidgets = [...widgets];
       if (newIdx >= newWidgets.length) {
         newWidgets.push({});
       }
@@ -214,7 +214,7 @@ export default function Main({ handleLogin }) {
   };
   /* Update and persist widgets config on change */
   const updateConfig = (widget) => {
-    const idx = widgets.findIndex((e) => parseInt(e.id) === parseInt(widget.id));
+    const idx = widgets.findIndex((e) => parseInt(e.id, 10) === parseInt(widget.id, 10));
     if (idx < 0) {
       console.log("updateConfig: widget not found", widget);
       return;
@@ -240,7 +240,7 @@ export default function Main({ handleLogin }) {
   };
   /* Init feeds */
   React.useEffect(() => {
-    let intervalId = undefined;
+    let intervalId;
     ttRss
       .checkCategories()
       .then((resp) => {
@@ -249,8 +249,8 @@ export default function Main({ handleLogin }) {
         }
         return ttRss.getFeeds();
       })
-      .then((feeds) => {
-        setFeeds(feeds);
+      .then((newFeeds) => {
+        setFeeds(newFeeds);
         intervalId = setInterval(() => {
           console.debug("Trigger refresh");
           ttRss.getFeeds().then(setFeeds);
@@ -267,7 +267,7 @@ export default function Main({ handleLogin }) {
       <Topbar
         handleLogin={handleLogin}
         setAddWiget={setAddWiget}
-        isLoggedIn={true}
+        isLoggedIn
         setExpImp={setExpImp}
         toggleDark={changeTheme}
       />

@@ -1,5 +1,5 @@
 import React from "react";
-import { ttRss } from "../ttrss.js";
+import ttRss from "../ttrss";
 
 export default function LoginForm({ handleLogin }) {
   const [loginError, setloginError] = React.useState(null);
@@ -8,13 +8,7 @@ export default function LoginForm({ handleLogin }) {
   if (defaultHost) {
     defaultHost = defaultHost.replace(/api\/$/, "");
   } else {
-    defaultHost =
-      document.location.protocol +
-      "//" +
-      document.location.hostname +
-      ":" +
-      document.location.port +
-      "/";
+    defaultHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;
   }
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -22,7 +16,7 @@ export default function LoginForm({ handleLogin }) {
     const data = new FormData(event.currentTarget);
     let ttLocation = data.get("location");
     ttLocation = ttLocation.replace(/\/+$/, "");
-    ttRss.base = ttLocation + "/api/";
+    ttRss.base = `${ttLocation}/api/`;
     setloginError();
     ttRss
       .login(data.get("user"), data.get("password"))
@@ -69,7 +63,8 @@ export default function LoginForm({ handleLogin }) {
                 label="TT-RSS Base URL"
                 defaultValue={defaultHost}
               />
-            </div>{" "}
+            </div>
+            {" "}
             {!!loginError && (
               <div role="alert">
                 <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">

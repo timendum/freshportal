@@ -19,12 +19,17 @@ export default function WidgetPagination({ skip, sizeLimit, setSkip }) {
       disabled = true;
     }
     let classes = "px-1 md:px-2 btn-primary mx-auto block";
-    if (newPage == page) {
+    if (newPage === page) {
       classes += " bg-teal-500 dark:text-gray-600 dark:border-teal-400 dark:bg-teal-400";
     }
     return (
       <li key={text + String(newPage)} className="basis-[10%]">
-        <button className={classes} disabled={disabled} onClick={() => handleChange(newPage)}>
+        <button
+          type="button"
+          className={classes}
+          disabled={disabled}
+          onClick={() => handleChange(newPage)}
+        >
           {text}
         </button>
       </li>

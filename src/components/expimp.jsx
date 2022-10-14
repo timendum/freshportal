@@ -3,7 +3,7 @@ import React from "react";
 export default function ExpImp({ open, doReset }) {
   const ref = React.useRef();
   if (!open) {
-    return <React.Fragment />;
+    return null;
   }
   const localData = {};
   if (localStorage.getItem("TTRssWidgets")) {
@@ -24,7 +24,7 @@ export default function ExpImp({ open, doReset }) {
     const data = new FormData(event.currentTarget);
     const jsontxt = data.get("jsontxt");
     try {
-      let jsonv = JSON.parse(jsontxt);
+      const jsonv = JSON.parse(jsontxt);
       if (Object.prototype.hasOwnProperty.call(jsonv, "widgets") && jsonv.widgets) {
         localStorage.setItem("TTRssWidgets", JSON.stringify(jsonv.widgets));
       }
@@ -63,7 +63,7 @@ export default function ExpImp({ open, doReset }) {
             name="jsontxt"
             className="input-primary block h-60 w-full px-3 py-1.5"
             defaultValue={JSON.stringify(localData)}
-          ></textarea>
+          />
           <div className="text-right">
             <button
               className="btn-primary w-full bg-blue-800 px-7 py-3 text-sm leading-snug text-slate-200"
