@@ -82,7 +82,7 @@ export default function Main({ handleLogin }) {
   const [isExpImp, setExpImp] = React.useState(false);
   const [widgets, setWidgets] = React.useState([]);
   const [feeds, setFeeds] = React.useState(false);
-  const [darkMode, setDarkMode] = React.useState(false);
+  const [darkMode, setDarkMode] = React.useState(darkPreference());
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
     if (feeds && widgets.length > 0) {
@@ -93,16 +93,9 @@ export default function Main({ handleLogin }) {
       refreshUnread([], []);
     };
   }, [widgets, feeds]);
-   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
-    if (darkPreference()) {
-      if (!darkMode) {
-        changeTheme();
-      }
-    }
     setWidgetsFromStorage(setWidgets);
   }, []);
-  /* eslint-enable */
   /* Util funct to generate widgets */
   const makeWidget = (col) => {
     return widgets
@@ -274,6 +267,7 @@ export default function Main({ handleLogin }) {
       <Topbar
         handleLogin={handleLogin}
         setAddWiget={setAddWiget}
+        isLoggedIn={true}
         setExpImp={setExpImp}
         toggleDark={changeTheme}
       />

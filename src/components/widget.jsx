@@ -18,7 +18,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const [skip, setSkip] = useState(0);
   const [rows, setRows] = useState([]);
   const unread = feed.unread;
-   /* eslint-disable react-hooks/exhaustive-deps */
+  /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
       ttRss.getContent(feed.id, sizeLimit, skip, false).then((rows) => {
@@ -26,7 +26,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       });
     }
   }, [skip, feed]);
-  
+
   React.useEffect(() => {
     if (!isCollapsed) {
       if (rows.length < sizeLimit) {

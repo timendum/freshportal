@@ -1,7 +1,7 @@
 import React from "react";
 
 import Loading from "./components/loading";
-import LoginPage from "./components/login";
+import MainLogin from "./components/mainLogin";
 import Main from "./components/main";
 
 import { ttRss } from "./ttrss";
@@ -25,7 +25,7 @@ export default function App() {
     }
   }, []);
   if (isLoggedIn === false) {
-    return <LoginPage handleLogin={setLoggedIn} />;
+    return <MainLogin handleLogin={setLoggedIn} />;
   } else if (isLoggedIn === true) {
     localStorage.setItem("TTRssSession", ttRss.session);
     localStorage.setItem("TTRssHost", ttRss.base);

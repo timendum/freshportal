@@ -20,7 +20,7 @@ function Button({ onClick, icon, text }) {
   );
 }
 
-export default function Topbar({ handleLogin, setAddWiget, setExpImp, toggleDark }) {
+export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp, toggleDark }) {
   return (
     <div className="flex bg-slate-700 px-2 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-1">
       <h1 className="grow align-text-bottom text-xl lg:mt-1">Tiny Tiny RSS</h1>
@@ -31,19 +31,23 @@ export default function Topbar({ handleLogin, setAddWiget, setExpImp, toggleDark
         <FontAwesomeIcon icon={faMoon} className="dark:hidden" />
         <FontAwesomeIcon icon={faSun} className="hidden dark:inline-block" />
       </button>
-      <Button onClick={() => setAddWiget(true)} icon={faSquarePlus} text="Add Widget" />
+      {!!isLoggedIn && (
+        <Button onClick={() => setAddWiget(true)} icon={faSquarePlus} text="Add Widget" />
+      )}
       <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" />
-      <Button
-        onClick={() => {
-          ttRss.logout().then((resp) => {
-            if (resp) {
-              handleLogin(false);
-            }
-          });
-        }}
-        icon={faRightFromBracket}
-        text="Logout"
-      />
+      {!!isLoggedIn && (
+        <Button
+          onClick={() => {
+            ttRss.logout().then((resp) => {
+              if (resp) {
+                handleLogin(false);
+              }
+            });
+          }}
+          icon={faRightFromBracket}
+          text="Logout"
+        />
+      )}
     </div>
   );
 }

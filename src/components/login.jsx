@@ -1,7 +1,7 @@
 import React from "react";
 import { ttRss } from "../ttrss.js";
 
-export default function LoginPage({ handleLogin }) {
+export default function LoginForm({ handleLogin }) {
   const [loginError, setloginError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   let defaultHost = localStorage.getItem("TTRssHost");
