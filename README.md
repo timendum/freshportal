@@ -27,7 +27,7 @@ This is a re-implmentation of [the original ttportal](https://github.com/timendu
 
 
 ### Dependencies ###
-* React
-* He for HTML unescaping (because some feeds are bad)
-* FontAwesome for the icons
-* Tailwind CSS for styling
+* [React](https://reactjs.org/)
+* [he](https://github.com/mathiasbynens/he) for HTML unescaping (because some feeds are bad)
+* [FontAwesome](https://fontawesome.com/) for the icons
+* [Tailwind CSS](https://tailwindcss.com/) for styling utility classes
