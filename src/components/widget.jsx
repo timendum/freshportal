@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ttRss } from "../ttrss.js";
+import ttRss from "../ttrss";
 
 import Loading from "./loading";
 import WidgetHeader from "./widgetHeader";
@@ -17,22 +17,18 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const [color, setColor] = useState(config.color || "gray");
   const [skip, setSkip] = useState(0);
   const [rows, setRows] = useState([]);
-  const unread = feed.unread;
+  const { unread } = feed;
   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
-      ttRss.getContent(feed.id, sizeLimit, skip, false).then((rows) => {
-        setRows(rows);
-      });
+      ttRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
     }
   }, [skip, feed]);
 
   React.useEffect(() => {
     if (!isCollapsed) {
       if (rows.length < sizeLimit) {
-        ttRss.getContent(feed.id, sizeLimit, skip, false).then((rows) => {
-          setRows(rows);
-        });
+        ttRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
       }
     }
   }, [sizeLimit]);
@@ -71,7 +67,12 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setSizeLimit(config.sizeLimit || 10);
       setColor(config.color || "gray");
     } else if (name === "save") {
-      updateConfig({ id: feed.id, sizeLimit, wType, color });
+      updateConfig({
+        id: feed.id,
+        sizeLimit,
+        wType,
+        color,
+      });
       setConfiguring(false);
     } else if (name === "remove") {
       updateConfig({ id: feed.id, remove: true });
@@ -83,19 +84,13 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setMoving(!isMoving);
     } else if (name === "readAll") {
       const countNumber = rows.filter((e) => e.unread).length;
-      let markAction = () => {
-        return ttRss.markReadFeed(feed.id);
-      };
+      let markAction = () => ttRss.markReadFeed(feed.id);
       if (countNumber === unread) {
-        markAction = () => {
-          return ttRss.markReadItems(rows.filter((e) => e.unread).map((e) => e.id));
-        };
+        markAction = () => ttRss.markReadItems(rows.filter((e) => e.unread).map((e) => e.id));
       }
       markAction().then(() => {
         const newRows = [...rows];
-        for (let row of newRows) {
-          row.unread = false;
-        }
+        newRows.forEach((row) => {row.unread = false; });
         feed.unread = 0;
         updateFeed(feed);
         setRows(newRows);
@@ -103,7 +98,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     }
   };
   const updateLink = (id) => {
-    for (let row of rows) {
+    for (const row of rows) {
       if (row.id === id) {
         if (row.unread) {
           row.unread = false;
@@ -135,9 +130,9 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
           {rows.length < 1 && <Loading />}
           {rows.length > 0 && (
             <ul className="px-1 lg:space-y-1 xl:p-2 xl:px-3">
-              {rows.slice(0, sizeLimit).map((row) => {
-                return <WidgetLink key={row.id} row={row} wType={wType} updateLink={updateLink} />;
-              })}
+              {rows.slice(0, sizeLimit).map((row) => (
+                <WidgetLink key={row.id} row={row} wType={wType} updateLink={updateLink} />
+              ))}
             </ul>
           )}
           {rows.length >= sizeLimit && (

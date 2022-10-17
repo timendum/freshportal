@@ -3,7 +3,7 @@ import React from "react";
 export default function AddWidget({ feeds, open, addWidget, skip }) {
   const ref = React.useRef();
   if (!open) {
-    return <React.Fragment />;
+    return null;
   }
 
   const handleSubmit = (event) => {
@@ -30,13 +30,11 @@ export default function AddWidget({ feeds, open, addWidget, skip }) {
           <select name="feedId" className="input-primary block w-full px-3 py-1.5">
             {feeds
               .filter((feed) => skip.indexOf(parseInt(feed.id, 10)) === -1)
-              .map((feed) => {
-                return (
-                  <option key={feed.id} value={feed.id}>
-                    {feed.title}
-                  </option>
-                );
-              })}
+              .map((feed) => (
+                <option key={feed.id} value={feed.id}>
+                  {feed.title}
+                </option>
+              ))}
           </select>
           <button
             className="btn-primary w-full bg-blue-800 px-7 py-3 text-sm leading-snug text-slate-200"

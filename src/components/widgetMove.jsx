@@ -8,7 +8,7 @@ export default function WidgetMove({ handleCommand }) {
           <button
             type="button"
             onClick={() => handleCommand("move", "up")}
-            className="btn-primary w-20	 bg-blue-800 px-1 md:px-2"
+            className="btn-primary w-20 bg-blue-800 px-1 md:px-2"
           >
             Up
           </button>
@@ -17,7 +17,7 @@ export default function WidgetMove({ handleCommand }) {
           <button
             type="button"
             onClick={() => handleCommand("move", "left")}
-            className="btn-primary mx-2	 w-20 bg-blue-800 px-1 md:px-2"
+            className="btn-primary mx-2 w-20 bg-blue-800 px-1 md:px-2"
           >
             Left
           </button>
@@ -26,7 +26,7 @@ export default function WidgetMove({ handleCommand }) {
           <button
             type="button"
             onClick={() => handleCommand("move", "right")}
-            className="btn-primary mx-2	w-20 bg-blue-800 px-1 md:px-2"
+            className="btn-primary mx-2 w-20 bg-blue-800 px-1 md:px-2"
           >
             Right
           </button>
@@ -35,7 +35,7 @@ export default function WidgetMove({ handleCommand }) {
           <button
             type="button"
             onClick={() => handleCommand("move", "down")}
-            className="btn-primary w-20	bg-blue-800 px-1 md:px-2"
+            className="btn-primary w-20 bg-blue-800 px-1 md:px-2"
           >
             Down
           </button>

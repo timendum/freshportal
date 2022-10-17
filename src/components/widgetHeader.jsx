@@ -6,13 +6,14 @@ import {
   faXmarkCircle,
   faCaretUp,
   faCaretDown,
-  faUpDownLeftRight
+  faUpDownLeftRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
-    <div className="flex items-center	gap-px dark:text-zinc-300 md:gap-1 md:px-1">
+    <div className="flex items-center gap-px dark:text-zinc-300 md:gap-1 md:px-1">
       <button
+        type="button"
         className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("toggleCollapse");
@@ -21,6 +22,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         <FontAwesomeIcon icon={isCollapsed ? faCaretUp : faCaretDown} />
       </button>
       <button
+        type="button"
         disabled={unread < 1}
         onClick={() => {
           handleCommand("readAll");
@@ -32,6 +34,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <h4 className="grow text-lg">{feed.title}</h4>
       <button
+        type="button"
         className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("refresh");
@@ -40,6 +43,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         <FontAwesomeIcon icon={faArrowsRotate} size="xs" />
       </button>
       <button
+        type="button"
         className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("startMoving");
@@ -48,6 +52,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         <FontAwesomeIcon icon={faUpDownLeftRight} size="xs" />
       </button>
       <button
+        type="button"
         className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("toggleConfiguring");
@@ -56,6 +61,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         <FontAwesomeIcon icon={faGear} size="xs" />
       </button>
       <button
+        type="button"
         className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("remove");

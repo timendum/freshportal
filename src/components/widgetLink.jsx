@@ -1,7 +1,7 @@
 import React from "react";
 import he from "he";
 
-import { ttRss } from "../ttrss.js";
+import ttRss from "../ttrss";
 
 export default function WidgetLink({ row, wType, updateLink }) {
   const isRead = !row.unread;
@@ -14,9 +14,9 @@ export default function WidgetLink({ row, wType, updateLink }) {
 
   return (
     <li
-      className={
-        "truncate" + (!isRead ? " dark:text-zinc-200" : " text-slate-400 dark:text-zinc-400")
-      }
+      className={`truncate${
+        !isRead ? " dark:text-zinc-200" : " text-slate-400 dark:text-zinc-400"
+      }`}
     >
       <a
         href={row.link}
