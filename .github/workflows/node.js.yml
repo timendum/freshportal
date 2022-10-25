@@ -25,12 +25,15 @@ jobs:
       run: |
         npm install
         npm run-script build
-        tar -cvzf release.tar.gz -C build .
+        tar -cvzf release.tar.gz --exclude='*.map' -C build .
+        tar -cvzf release-with-maps.tar.gz -C build .
     - name: GH Release
       uses: softprops/action-gh-release@v0.1.14
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: release.tar.gz
+        files: |
+          release.tar.gz
+          release-with-maps.tar.gz
     - name: Publish
       uses: peaceiris/actions-gh-pages@v3
       with:
