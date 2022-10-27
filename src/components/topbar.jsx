@@ -16,7 +16,7 @@ function Button({ onClick, icon, text }) {
       onClick={onClick}
       className="btn-primary inline-block px-2 py-1 text-xs font-medium leading-tight lg:px-5 lg:py-2.5"
     >
-      <FontAwesomeIcon icon={icon} />
+      <FontAwesomeIcon icon={icon} className="pr-1 lg:pr-2" />
       {text}
     </button>
   );
