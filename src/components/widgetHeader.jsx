@@ -15,6 +15,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       <button
         type="button"
         className="btn-primary md:px-1"
+        title={isCollapsed ? "Expand" : "Collapse"}
         onClick={() => {
           handleCommand("toggleCollapse");
         }}
@@ -36,6 +37,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       <button
         type="button"
         className="btn-primary md:px-1"
+        title="Fetch new articles"
         onClick={() => {
           handleCommand("refresh");
         }}
@@ -45,6 +47,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       <button
         type="button"
         className="btn-primary md:px-1"
+        title="Move this widget"
         onClick={() => {
           handleCommand("startMoving");
         }}
@@ -54,6 +57,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       <button
         type="button"
         className="btn-primary md:px-1"
+        title="Configure this widget"
         onClick={() => {
           handleCommand("toggleConfiguring");
         }}
@@ -62,6 +66,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <button
         type="button"
+        title="Remove this widget"
         className="btn-primary md:px-1"
         onClick={() => {
           handleCommand("remove");

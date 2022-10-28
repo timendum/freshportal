@@ -28,6 +28,7 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
       <h1 className="grow align-text-bottom text-xl lg:mt-1">Tiny Tiny RSS</h1>
       <button
         type="button"
+        title="Toggle Dark mode"
         onClick={toggleDark}
         className="btn-primary inline-block px-2 py-1 text-xs leading-tight lg:px-5 lg:py-2.5"
       >
