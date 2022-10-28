@@ -29,7 +29,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
           handleCommand("readAll");
         }}
         className="btn-primary text-[1.1rem] md:px-1"
-        title="Mark all as read"
+        title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
       </button>
