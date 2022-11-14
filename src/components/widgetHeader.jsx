@@ -11,10 +11,11 @@ import {
 
 export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
-    <div className="flex items-center gap-px dark:text-zinc-300 md:gap-1 md:px-1">
+    <div className="flex gap-px dark:text-zinc-300 md:gap-1 lg:gap-2 md:px-1 lg:px-2">
       <button
         type="button"
-        className="btn-primary md:px-1"
+        className="btn-primary"
+        title={isCollapsed ? "Expand" : "Collapse"}
         onClick={() => {
           handleCommand("toggleCollapse");
         }}
@@ -27,8 +28,8 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         onClick={() => {
           handleCommand("readAll");
         }}
-        className="btn-primary text-[1.1rem] md:px-1"
-        title="Mark all as read"
+        className="btn-primary text-[1.1rem]"
+        title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
       </button>
@@ -36,6 +37,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       <button
         type="button"
         className="btn-primary md:px-1"
+        title="Fetch new articles"
         onClick={() => {
           handleCommand("refresh");
         }}
@@ -44,7 +46,8 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <button
         type="button"
-        className="btn-primary md:px-1"
+        className="btn-primary"
+        title="Move this widget"
         onClick={() => {
           handleCommand("startMoving");
         }}
@@ -53,7 +56,8 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <button
         type="button"
-        className="btn-primary md:px-1"
+        className="btn-primary"
+        title="Configure this widget"
         onClick={() => {
           handleCommand("toggleConfiguring");
         }}
@@ -62,7 +66,8 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <button
         type="button"
-        className="btn-primary md:px-1"
+        title="Remove this widget"
+        className="btn-primary"
         onClick={() => {
           handleCommand("remove");
         }}
