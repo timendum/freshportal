@@ -5,7 +5,7 @@ export default function LoginForm({ handleLogin }) {
   const [loginError, setloginError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   let defaultHost = localStorage.getItem("TTRssHost");
-  if (defaultHost) {
+  if (defaultHost && defaultHost.startsWith("http")) {
     defaultHost = defaultHost.replace(/api\/$/, "");
   } else {
     defaultHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;

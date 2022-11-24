@@ -11,10 +11,10 @@ import {
 
 export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
-    <div className="flex gap-px dark:text-zinc-300 md:gap-1 lg:gap-2 md:px-1 lg:px-2">
+    <div className="flex dark:text-zinc-300 md:px-1">
       <button
         type="button"
-        className="btn-primary"
+        className="btn-primary md:px-0.5 lg:px-1"
         title={isCollapsed ? "Expand" : "Collapse"}
         onClick={() => {
           handleCommand("toggleCollapse");
@@ -28,12 +28,12 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         onClick={() => {
           handleCommand("readAll");
         }}
-        className="btn-primary text-[1.1rem]"
+        className="btn-primary text-[1.1rem] md:px-0.5 lg:px-1"
         title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
       </button>
-      <h4 className="grow text-lg">{feed.title}</h4>
+      <h4 className="grow text-lg md:px-0.5">{feed.title}</h4>
       <button
         type="button"
         className="btn-primary md:px-1"
@@ -46,7 +46,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <button
         type="button"
-        className="btn-primary"
+        className="btn-primary md:px-0.5 lg:px-1"
         title="Move this widget"
         onClick={() => {
           handleCommand("startMoving");
@@ -56,7 +56,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       </button>
       <button
         type="button"
-        className="btn-primary"
+        className="btn-primary md:px-0.5 lg:px-1"
         title="Configure this widget"
         onClick={() => {
           handleCommand("toggleConfiguring");
@@ -67,7 +67,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       <button
         type="button"
         title="Remove this widget"
-        className="btn-primary"
+        className="btn-primary md:px-0.5 lg:px-1"
         onClick={() => {
           handleCommand("remove");
         }}
