@@ -148,14 +148,14 @@ export default function Main({ handleLogin }) {
       if (missingColors.length > 0) {
         newColor = missingColors.shift();
       }
-      const newW = [{ id, color: newColor }];
+      const newW = { id, color: newColor };
       const idx = widgets.findIndex((e) => Object.prototype.hasOwnProperty.call(e, "id"));
       let newArray = [...widgets];
       if (idx > -1) {
         // empty widget, fill first
         newArray[idx] = newW;
       } else {
-        newArray = newArray.concat(newW);
+        newArray = newArray.concat([newW]);
       }
       localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
       setWidgets(newArray);
