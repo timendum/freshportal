@@ -53,7 +53,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }) {
           <option value="excerpt">With excerpt</option>
         </select>
         <div className="col-span-2">
-          <input className="btn-primary mx-2 bg-blue-800 px-1 text-slate-200 md:px-2" value="reset" />
+          <button className="btn-primary mx-2 bg-blue-800 px-1 text-slate-200 md:px-2" value="reset" />
           <button
             className="btn-primary mx-2 bg-blue-800 px-1  text-slate-200 md:px-2"
             type="submit"
