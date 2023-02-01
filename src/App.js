@@ -20,7 +20,7 @@ export default function App() {
     ttRss.isLoggedIn().then(setLoggedIn).catch(console.log);
   }, []);
   React.useEffect(() => {
-    if (darkPreference) {
+    if (darkPreference()) {
       document.body.classList.add("dark");
     }
   }, []);
