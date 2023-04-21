@@ -6,17 +6,17 @@ export default function ExpImp({ open, doReset }) {
     return null;
   }
   const localData = {};
-  if (localStorage.getItem("TTRssWidgets")) {
-    localData.widgets = JSON.parse(localStorage.getItem("TTRssWidgets"));
+  if (localStorage.getItem("FRWidgets")) {
+    localData.widgets = JSON.parse(localStorage.getItem("FRWidgets"));
   }
-  if (localStorage.getItem("TTRssSession")) {
-    localData.session = localStorage.getItem("TTRssSession");
+  if (localStorage.getItem("FRSession")) {
+    localData.session = localStorage.getItem("FRSession");
   }
-  if (localStorage.getItem("TTRssHost")) {
-    localData.base = localStorage.getItem("TTRssHost");
+  if (localStorage.getItem("FRHost")) {
+    localData.base = localStorage.getItem("FRHost");
   }
-  if (localStorage.getItem("TTRssTheme")) {
-    localData.theme = localStorage.getItem("TTRssTheme");
+  if (localStorage.getItem("FRTheme")) {
+    localData.theme = localStorage.getItem("FRTheme");
   }
 
   const handleSubmit = (event) => {
@@ -26,16 +26,16 @@ export default function ExpImp({ open, doReset }) {
     try {
       const jsonv = JSON.parse(jsontxt);
       if (Object.prototype.hasOwnProperty.call(jsonv, "widgets") && jsonv.widgets) {
-        localStorage.setItem("TTRssWidgets", JSON.stringify(jsonv.widgets));
+        localStorage.setItem("FRWidgets", JSON.stringify(jsonv.widgets));
       }
       if (Object.prototype.hasOwnProperty.call(jsonv, "session") && jsonv.session) {
-        localStorage.setItem("TTRssSession", jsonv.session);
+        localStorage.setItem("FRSession", jsonv.session);
       }
       if (Object.prototype.hasOwnProperty.call(jsonv, "base") && jsonv.base) {
-        localStorage.setItem("TTRssHost", jsonv.base);
+        localStorage.setItem("FRHost", jsonv.base);
       }
       if (Object.prototype.hasOwnProperty.call(jsonv, "theme") && jsonv.theme) {
-        localStorage.setItem("TTRssTheme", jsonv.theme);
+        localStorage.setItem("FRTheme", jsonv.theme);
       }
       doReset(true);
     } catch (e) {

@@ -1,13 +1,15 @@
 import React from "react";
 import he from "he";
 
-import ttRss from "../ttrss";
+import freshRss from "../freshrss";
 
 export default function WidgetLink({ row, wType, updateLink }) {
-  const isRead = !row.unread;
-  const excerpt = he.decode(row.excerpt).trim();
+  const isRead = row.categories.indexOf("user/-/state/com.google/read") > -1;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(row.summary.content, "application/xml");
+  const excerpt = doc.getElementsByTagName("body")[0].textContent
   const markRead = () => {
-    ttRss.markReadItems([row.id]).then(() => {
+    freshRss.markReadItems([row.id]).then(() => {
       updateLink(row.id);
     });
   };
@@ -19,7 +21,7 @@ export default function WidgetLink({ row, wType, updateLink }) {
       }`}
     >
       <a
-        href={row.link}
+        href={row.canonical[0].href}
         target="_blank"
         className="underline"
         title={wType === "excerpt" ? row.title : excerpt}

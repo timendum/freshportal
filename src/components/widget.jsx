@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ttRss from "../ttrss";
+import freshRss from "../freshrss";
 
 import Loading from "./loading";
 import WidgetHeader from "./widgetHeader";
@@ -17,18 +17,18 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const [color, setColor] = useState(config.color || "gray");
   const [skip, setSkip] = useState(0);
   const [rows, setRows] = useState([]);
-  const { unread } = feed;
+  //const { unread } = feed;
   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
-      ttRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
+      freshRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
     }
   }, [skip, feed]);
 
   React.useEffect(() => {
     if (!isCollapsed) {
       if (rows.length < sizeLimit) {
-        ttRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
+        freshRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
       }
     }
   }, [sizeLimit]);
@@ -44,9 +44,9 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setColor(config.color || "gray");
       setMoving(false);
     } else if (name === "refresh") {
-      ttRss
+      freshRss
         .getUpdatedContent(feed.id)
-        .then(() => ttRss.getFeeds())
+        .then(() => freshRss.getFeeds())
         .then((feeds) => {
           const idx = feeds.findIndex((e) => e.id === feed.id);
           if (idx < 0) {
@@ -83,11 +83,11 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setConfiguring(false);
       setMoving(!isMoving);
     } else if (name === "readAll") {
-      const countNumber = rows.filter((e) => e.unread).length;
-      let markAction = () => ttRss.markReadFeed(feed.id);
-      if (countNumber === unread) {
-        markAction = () => ttRss.markReadItems(rows.filter((e) => e.unread).map((e) => e.id));
-      }
+      //const countNumber = rows.filter((e) => e.unread).length;
+      let markAction = () => freshRss.markReadFeed(feed.id);
+      //if (countNumber === unread) {
+      //  markAction = () => freshRss.markReadItems(rows.filter((e) => e.unread).map((e) => e.id));
+      //}
       markAction().then(() => {
         const newRows = [...rows];
         newRows.forEach((row) => {row.unread = false; });
@@ -100,15 +100,15 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const updateLink = (id) => {
     for (const row of rows) {
       if (row.id === id) {
-        if (row.unread) {
-          row.unread = false;
-          if (unread > -1) {
-            feed.unread = unread - 1;
-            updateFeed(feed);
-          }
+        let idx = row.categories.indexOf("user/-/state/com.google/read");
+        if (idx === -1) {
+          row.categories.push("user/-/state/com.google/read");
+          //feed.unread = unread - 1;
+          updateFeed(feed);
           setRows(rows);
           break;
         }
+        return;
       }
     }
   };
@@ -117,7 +117,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     <div className={`block rounded-lg border widget-${color} shadow-md lg:border-2`}>
       <WidgetHeader
         feed={feed}
-        unread={unread}
+        //unread={unread}
         isCollapsed={isCollapsed}
         handleCommand={handleCommand}
       />

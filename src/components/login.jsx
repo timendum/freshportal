@@ -1,12 +1,12 @@
 import React from "react";
-import ttRss from "../ttrss";
+import freshRss from "../freshrss";
 
 export default function LoginForm({ handleLogin }) {
   const [loginError, setloginError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
-  let defaultHost = localStorage.getItem("TTRssHost");
+  let defaultHost = localStorage.getItem("FRHost");
   if (defaultHost && defaultHost.startsWith("http")) {
-    defaultHost = defaultHost.replace(/api\/$/, "");
+    defaultHost = defaultHost.replace(/\/api.+$/, "/");
   } else {
     defaultHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;
   }
@@ -14,11 +14,11 @@ export default function LoginForm({ handleLogin }) {
     event.preventDefault();
     setLoading(true);
     const data = new FormData(event.currentTarget);
-    let ttLocation = data.get("location");
-    ttLocation = ttLocation.replace(/\/+$/, "");
-    ttRss.base = `${ttLocation}/api/`;
+    let apiLocation = data.get("location");
+    apiLocation = apiLocation.replace(/\/+$/, "");
+    freshRss.base = `${apiLocation}/api/greader.php/`;
     setloginError();
-    ttRss
+    freshRss
       .login(data.get("user"), data.get("password"))
       .then((result) => {
         console.debug("login", result);
@@ -50,7 +50,7 @@ export default function LoginForm({ handleLogin }) {
               <input
                 type="password"
                 className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
-                placeholder="Password"
+                placeholder="API Password"
                 name="password"
                 autoComplete="current-password"
               />
@@ -58,9 +58,9 @@ export default function LoginForm({ handleLogin }) {
             <div className="mb-6">
               <input
                 className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
-                placeholder="Username"
+                placeholder="FreshRSS URL"
                 name="location"
-                label="TT-RSS Base URL"
+                label="FreshRSS Base URL"
                 defaultValue={defaultHost}
               />
             </div>

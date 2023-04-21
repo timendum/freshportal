@@ -7,7 +7,7 @@ import {
   faMoon,
   faSun,
 } from "@fortawesome/free-solid-svg-icons";
-import ttRss from "../ttrss";
+import freshRss from "../freshrss";
 
 function Button({ onClick, icon, text }) {
   return (
@@ -25,7 +25,7 @@ function Button({ onClick, icon, text }) {
 export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp, toggleDark }) {
   return (
     <div className="flex bg-slate-700 px-2 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 py-1 lg:py-2">
-      <h1 className="grow align-text-bottom text-xl">Tiny Tiny RSS</h1>
+      <h1 className="grow align-text-bottom text-xl">FreshRSS Portal</h1>
       <button
         type="button"
         title="Toggle Dark mode"
@@ -41,13 +41,7 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
       <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" />
       {!!isLoggedIn && (
         <Button
-          onClick={() => {
-            ttRss.logout().then((resp) => {
-              if (resp) {
-                handleLogin(false);
-              }
-            });
-          }}
+          onClick={() => handleLogin(false)}
           icon={faRightFromBracket}
           text="Logout"
         />

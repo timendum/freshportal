@@ -29,7 +29,6 @@ export default function AddWidget({ feeds, open, addWidget, skip }) {
           <h4 className="text-lg dark:text-gray-200">Feed to be added:</h4>
           <select name="feedId" className="input-primary block w-full px-3 py-1.5">
             {feeds
-              .filter((feed) => skip.indexOf(parseInt(feed.id, 10)) === -1)
               .map((feed) => (
                 <option key={feed.id} value={feed.id}>
                   {feed.title}

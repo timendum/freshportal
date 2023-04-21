@@ -4,7 +4,7 @@ import Loading from "./components/loading";
 import MainLogin from "./components/mainLogin";
 import Main from "./components/main";
 
-import ttRss from "./ttrss";
+import freshRss from "./freshrss";
 import { darkPreference } from "./components/utils";
 import "./styles.css";
 
@@ -12,12 +12,12 @@ export default function App() {
   const [isLoggedIn, setLoggedIn] = React.useState(null);
   React.useEffect(() => {
     try {
-      ttRss.session = localStorage.getItem("TTRssSession");
-      ttRss.base = localStorage.getItem("TTRssHost");
+      freshRss.session = localStorage.getItem("FRSession");
+      freshRss.base = localStorage.getItem("FRHost");
     } catch (e) {
       // pass
     }
-    ttRss.isLoggedIn().then(setLoggedIn).catch(console.log);
+    freshRss.isLoggedIn().then(setLoggedIn).catch(console.log);
   }, []);
   React.useEffect(() => {
     if (darkPreference()) {
@@ -28,8 +28,8 @@ export default function App() {
     return <MainLogin handleLogin={setLoggedIn} />;
   }
   if (isLoggedIn === true) {
-    localStorage.setItem("TTRssSession", ttRss.session);
-    localStorage.setItem("TTRssHost", ttRss.base);
+    localStorage.setItem("FRSession", freshRss.session);
+    localStorage.setItem("FRHost", freshRss.base);
     return <Main handleLogin={setLoggedIn} />;
   }
   // loading screen

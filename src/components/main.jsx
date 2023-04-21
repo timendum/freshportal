@@ -6,22 +6,22 @@ import Topbar from "./topbar";
 import Widget from "./widget";
 import AddWidget from "./addWidget";
 import ExpImp from "./expimp";
-import ttRss from "../ttrss";
+import freshRss from "../freshrss";
 
 function setWidgetsFromStorage(setWidgets) {
   try {
-    const sWidgets = JSON.parse(localStorage.getItem("TTRssWidgets"));
+    const sWidgets = JSON.parse(localStorage.getItem("FRWidgets"));
     if (sWidgets && sWidgets.length > 0) {
       console.debug("from storage", sWidgets);
       setWidgets(sWidgets);
     }
   } catch (e) {
-    localStorage.removeItem("TTRssWidgets");
+    localStorage.removeItem("FRWidgets");
   }
 }
 
 const refreshUnread = (feeds, widgets) => {
-  const ids = widgets.map((w) => parseInt(w.id, 10));
+  const ids = widgets.map((w) => w.id);
   let c = feeds
     .filter((e) => ids.indexOf(e.id) > -1)
     .map((e) => e.unread)
@@ -48,10 +48,10 @@ const refreshUnread = (feeds, widgets) => {
   }
   if (c < 1) {
     link.href = link.dataset.originalUrl;
-    document.title = "Tiny Tiny Portal";
+    document.title = "FreshRSS Portal";
     return;
   }
-  document.title = `Tiny Tiny Portal (${c})`;
+  document.title = `FreshRSS Portal (${c})`;
   if (c > 99) {
     c = "\u221E";
   }
@@ -105,7 +105,7 @@ export default function Main({ handleLogin }) {
       }
       let widgetFeed = null;
       for (const feed of feeds) {
-        if (parseInt(feed.id, 10) === parseInt(widget.id, 10)) {
+        if (feed.id === widget.id) {
           widgetFeed = feed;
           break;
         }
@@ -130,7 +130,7 @@ export default function Main({ handleLogin }) {
     });
   /* Change and persist theme */
   const changeTheme = () => {
-    localStorage.setItem("TTRssTheme", !darkMode ? "dark" : "light");
+    localStorage.setItem("FRTheme", !darkMode ? "dark" : "light");
     if (!darkMode) {
       document.body.classList.add("dark");
     } else {
@@ -149,7 +149,7 @@ export default function Main({ handleLogin }) {
         newColor = missingColors.shift();
       }
       const newW = { id, color: newColor };
-      const idx = widgets.findIndex((e) => Object.prototype.hasOwnProperty.call(e, "id") && parseInt(e.id, 10) == parseInt(id, 10));
+      const idx = widgets.findIndex((e) => Object.prototype.hasOwnProperty.call(e, "id") && e.id == id);
       let newArray = [...widgets];
       if (idx > -1) {
         // widget update
@@ -158,7 +158,7 @@ export default function Main({ handleLogin }) {
         // new widget
         newArray = newArray.concat([newW]);
       }
-      localStorage.setItem("TTRssWidgets", JSON.stringify(newArray));
+      localStorage.setItem("FRWidgets", JSON.stringify(newArray));
       setWidgets(newArray);
     }
   };
@@ -166,7 +166,7 @@ export default function Main({ handleLogin }) {
     if (!id) {
       return;
     }
-    const idx = widgets.findIndex((e) => parseInt(e.id, 10) === parseInt(id, 10));
+    const idx = widgets.findIndex((e) => e.id === id);
     if (idx < 0) {
       console.log("moveWidget: widget not found", id);
       return;
@@ -202,7 +202,7 @@ export default function Main({ handleLogin }) {
         newWidgets.push({});
       }
       [newWidgets[idx], newWidgets[newIdx]] = [newWidgets[newIdx], newWidgets[idx]];
-      localStorage.setItem("TTRssWidgets", JSON.stringify(newWidgets));
+      localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
       setWidgets(newWidgets);
     }
   };
@@ -215,7 +215,7 @@ export default function Main({ handleLogin }) {
   };
   /* Update and persist widgets config on change */
   const updateConfig = (widget) => {
-    const idx = widgets.findIndex((e) => parseInt(e.id, 10) === parseInt(widget.id, 10));
+    const idx = widgets.findIndex((e) => e.id === widget.id);
     if (idx < 0) {
       console.log("updateConfig: widget not found", widget);
       return;
@@ -226,7 +226,7 @@ export default function Main({ handleLogin }) {
     } else {
       newWidgets[idx] = widget;
     }
-    localStorage.setItem("TTRssWidgets", JSON.stringify(newWidgets));
+    localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
     setWidgets(newWidgets);
   };
   const updateFeed = (feed) => {
@@ -242,19 +242,13 @@ export default function Main({ handleLogin }) {
   /* Init feeds */
   React.useEffect(() => {
     let intervalId;
-    ttRss
-      .checkCategories()
-      .then((resp) => {
-        if (!resp) {
-          return { id: null, title: "Portal category not found on TT-RSS" };
-        }
-        return ttRss.getFeeds();
-      })
+    freshRss
+      .getFeeds()
       .then((newFeeds) => {
         setFeeds(newFeeds);
         intervalId = setInterval(() => {
           console.debug("Trigger refresh");
-          ttRss.getFeeds().then(setFeeds);
+          freshRss.getFeeds().then(setFeeds);
         }, 1000 * 60 * 10);
       });
     return () => {
@@ -288,7 +282,7 @@ export default function Main({ handleLogin }) {
         feeds={feeds}
         open={isAddWidget}
         addWidget={addWidget}
-        skip={widgets.map((w) => parseInt(w.id, 10))}
+        skip={widgets.map((w) => w.id)}
       />
       <ExpImp open={isExpImp} doReset={handleExpImp} />
     </div>

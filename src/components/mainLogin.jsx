@@ -11,7 +11,7 @@ export default function MainLogin({ handleLogin }) {
 
   /* Change and persist theme */
   const changeTheme = () => {
-    localStorage.setItem("TTRssTheme", !darkMode ? "dark" : "light");
+    localStorage.setItem("FRTheme", !darkMode ? "dark" : "light");
     if (!darkMode) {
       document.body.classList.add("dark");
     } else {

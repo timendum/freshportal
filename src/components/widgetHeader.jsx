@@ -9,7 +9,7 @@ import {
   faUpDownLeftRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
+export default function WidgetHeader({ feed, /*unread,*/ isCollapsed, handleCommand }) {
   return (
     <div className="flex dark:text-zinc-300 md:px-1">
       <button
@@ -22,7 +22,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
       >
         <FontAwesomeIcon icon={isCollapsed ? faCaretUp : faCaretDown} />
       </button>
-      <button
+      {/* <button
         type="button"
         disabled={unread < 1}
         onClick={() => {
@@ -32,9 +32,9 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
-      </button>
+      </button> */}
       <h4 className="grow text-lg md:px-0.5">{feed.title}</h4>
-      <button
+      {/* <button
         type="button"
         className="btn-primary md:px-1"
         title="Fetch new articles"
@@ -43,7 +43,7 @@ export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand 
         }}
       >
         <FontAwesomeIcon icon={faArrowsRotate} size="xs" />
-      </button>
+      </button> */}
       <button
         type="button"
         className="btn-primary md:px-0.5 lg:px-1"

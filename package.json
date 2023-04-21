@@ -1,18 +1,17 @@
 {
   "name": "ttportal",
   "version": "1.0.0",
-  "description": "A react frontend for Tiny Tiny RSS",
+  "description": "A react frontend for FreshRSS",
   "homepage": ".",
   "keywords": [
     "react",
-    "ttrss",
+    "freshrs",
     "portal"
   ],
   "main": "src/index.js",
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "he": "^1.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-scripts": "5.0.1"
