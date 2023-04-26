@@ -6,7 +6,10 @@ export default function WidgetLink({ row, wType, updateLink }) {
   const isRead = row.categories.indexOf("user/-/state/com.google/read") > -1;
   const parser = new DOMParser();
   const doc = parser.parseFromString(row.summary.content, "text/html");
-  const excerpt = doc.getElementsByTagName("body")[0].textContent;
+  let excerpt = doc.getElementsByTagName("body")[0].textContent.trim();
+  if (excerpt.length < 1) {
+    excerpt = "\u00A0";
+  }
   const markRead = () => {
     freshRss.markReadItems([row.id]).then(() => {
       updateLink(row.id);
