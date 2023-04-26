@@ -12,6 +12,8 @@ export default function AddWidget({ feeds, open, addWidget, skip }) {
     const id = data.get("feedId");
     addWidget(id);
   };
+  feeds = feeds.filter((feed) => skip.indexOf(feed.id) === -1);
+  feeds.sort((a, b) => a.title.localeCompare(b.title))
   return (
     <div
       onClick={(event) => {
@@ -29,8 +31,6 @@ export default function AddWidget({ feeds, open, addWidget, skip }) {
           <h4 className="text-lg dark:text-gray-200">Feed to be added:</h4>
           <select name="feedId" className="input-primary block w-full px-3 py-1.5">
             {feeds
-              .filter((feed) => skip.indexOf(feed.id) === -1)
-              .toSorted((a, b) => a.title.localeCompare(b.title))
               .map((feed) => (
               <option key={feed.id} value={feed.id}>
                 {feed.title}
