@@ -92,7 +92,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     }
   };
   const setContinuation = (c) => {
-    console.log(feed, c, pag);
     const idx = pag.indexOf(c);
     if (idx > -1) {
       setPag(pag.splice(0, idx + 1));
