@@ -1,7 +1,6 @@
 import React from "react";
 
 export default function WidgetPagination({ pag, oldest, setContinuation }) {
-  const page = pag[pag.length-1];
   function makeButton(newPage) {
     let disabled = newPage === pag.length-1;
     let text = String(newPage+1);
@@ -26,7 +25,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
       target = pag[newPage];
     }
     let classes = "md:px-1 xl:px-2 btn-primary mx-auto block";
-    if (newPage === page) {
+    if (newPage === pag.length-1) {
       classes +=
         " bg-teal-500 dark:text-gray-600 dark:border-teal-400 dark:bg-teal-400 disabled:hover:bg-teal-500 disabled:hover:dark:bg-teal-400";
     }
