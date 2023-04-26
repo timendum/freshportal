@@ -104,12 +104,28 @@ freshRss.logout = () => {
   return Promise.resolve(true);
 };
 
-freshRss.getFeeds = () =>
-  request("reader/api/0/subscription/list").then((resp) => resp["subscriptions"]);
+freshRss.getFeeds = () => {
+  return Promise.all([
+    request("reader/api/0/subscription/list"),
+    request("reader/api/0/tag/list")
+  ]).then((values) => {
+    const subs = values[0]["subscriptions"];
+    for (const tag of values[1]["tags"]) {
+      if (Object.keys(tag).indexOf("type") > -1) {
+        const splitted = tag.id.split("/");
+        subs.push({
+          id: tag.id,
+          title: splitted[splitted.length - 1]
+        });
+      }
+    }
+    return subs;
+  });
+};
 freshRss.getContent = (id, limit, c) => {
   return request("reader/api/0/stream/contents/" + id, {
     n: limit,
-    c,
+    c
   }).then((resp) => resp["items"]);
 };
 freshRss.markReadItems = (ids) =>
@@ -125,12 +141,7 @@ freshRss.markReadItems = (ids) =>
     .then((resp) => resp === "OK")
     .catch(() => false);
 freshRss.markReadFeed = (id) =>
-  request(
-    "reader/api/0/mark-all-as-read",
-    {output: "text"},
-    {s: id},
-    true
-  )
+  request("reader/api/0/mark-all-as-read", { output: "text" }, { s: id }, true)
     .then((data) => data.status === "OK")
     .catch(() => false);
 freshRss.getUnreads = () => request("reader/api/0/unread-count");

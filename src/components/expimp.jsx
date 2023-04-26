@@ -51,7 +51,7 @@ export default function ExpImp({ open, doReset }) {
           doReset(false);
         }
       }}
-      className="fade fixed top-0 left-0 h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-400/50 outline-none"
+      className="fade fixed left-0 top-0 h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-400/50 outline-none"
     >
       <div
         ref={ref}

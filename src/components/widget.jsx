@@ -21,14 +21,14 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
-      freshRss.getContent(feed.id, sizeLimit, pag[pag.length-1], false).then(setRows);
+      freshRss.getContent(feed.id, sizeLimit, pag[pag.length - 1], false).then(setRows);
     }
   }, [pag, feed]);
 
   React.useEffect(() => {
     if (!isCollapsed) {
       if (rows.length < sizeLimit) {
-        freshRss.getContent(feed.id, sizeLimit, pag[pag.length-1], false).then(setRows);
+        freshRss.getContent(feed.id, sizeLimit, pag[pag.length - 1], false).then(setRows);
       }
     }
   }, [sizeLimit]);
@@ -71,7 +71,9 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setConfiguring(false);
       setMoving(!isMoving);
     } else if (name === "readAll") {
-      const unreadRows = rows.filter((e) => e.categories.indexOf("user/-/state/com.google/read") === -1);
+      const unreadRows = rows.filter(
+        (e) => e.categories.indexOf("user/-/state/com.google/read") === -1
+      );
       let markAction = () => freshRss.markReadFeed(feed.id);
       if (unreadRows.length === unread) {
         markAction = () => freshRss.markReadItems(unreadRows.map((e) => e.id));
@@ -80,7 +82,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
         const newRows = [...rows];
         newRows.forEach((row) => {
           if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
-              row.categories.push("user/-/state/com.google/read");
+            row.categories.push("user/-/state/com.google/read");
           }
         });
         feed.unread = 0;
@@ -93,13 +95,13 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     console.log(feed, c, pag);
     const idx = pag.indexOf(c);
     if (idx > -1) {
-      setPag(pag.splice(0, idx+1));
+      setPag(pag.splice(0, idx + 1));
       return;
     }
     const newPag = [...pag];
     newPag.push(c);
     setPag(newPag);
-  }
+  };
   const updateLink = (id) => {
     for (const row of rows) {
       if (row.id === id) {
@@ -139,7 +141,11 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
             </ul>
           )}
           {rows.length >= sizeLimit && (
-            <WidgetPagination pag={pag} oldest={rows[sizeLimit-1].timestampUsec} setContinuation={setContinuation} />
+            <WidgetPagination
+              pag={pag}
+              oldest={rows[sizeLimit - 1].timestampUsec}
+              setContinuation={setContinuation}
+            />
           )}
         </div>
       </div>
