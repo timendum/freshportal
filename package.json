@@ -1,11 +1,11 @@
 {
-  "name": "ttportal",
+  "name": "freshrssportal",
   "version": "1.0.0",
   "description": "A react frontend for FreshRSS",
   "homepage": ".",
   "keywords": [
     "react",
-    "freshrs",
+    "freshrss",
     "portal"
   ],
   "main": "src/index.js",

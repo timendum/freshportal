@@ -106,11 +106,10 @@ freshRss.logout = () => {
 
 freshRss.getFeeds = () =>
   request("reader/api/0/subscription/list").then((resp) => resp["subscriptions"]);
-//freshRss.getUpdatedContent = (id) => request("updateFeed", { feed_id: id });
 freshRss.getContent = (id, limit, c) => {
   return request("reader/api/0/stream/contents/" + id, {
-    n: limit
-    //c,
+    n: limit,
+    c,
   }).then((resp) => resp["items"]);
 };
 freshRss.markReadItems = (ids) =>
@@ -143,6 +142,7 @@ freshRss.getFeedsFull = () =>
       for (const unread of unreads) {
         if (unread.id == feed.id) {
           feed.unread = unread.count;
+          feed.newestItemTimestampUsec = unread.newestItemTimestampUsec;
           break;
         }
       }

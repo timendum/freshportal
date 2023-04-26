@@ -15,20 +15,20 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const [sizeLimit, setSizeLimit] = useState(config.sizeLimit || 10);
   const [wType, setWType] = useState(config.wType || "excerpt");
   const [color, setColor] = useState(config.color || "gray");
-  const [skip, setSkip] = useState(0);
+  const [pag, setPag] = useState([undefined]);
   const [rows, setRows] = useState([]);
   const { unread } = feed;
   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
-      freshRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
+      freshRss.getContent(feed.id, sizeLimit, pag[pag.length-1], false).then(setRows);
     }
-  }, [skip, feed]);
+  }, [pag, feed]);
 
   React.useEffect(() => {
     if (!isCollapsed) {
       if (rows.length < sizeLimit) {
-        freshRss.getContent(feed.id, sizeLimit, skip, false).then(setRows);
+        freshRss.getContent(feed.id, sizeLimit, pag[pag.length-1], false).then(setRows);
       }
     }
   }, [sizeLimit]);
@@ -43,18 +43,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setSizeLimit(config.sizeLimit || 10);
       setColor(config.color || "gray");
       setMoving(false);
-    } else if (name === "refresh") {
-      freshRss
-        .getUpdatedContent(feed.id)
-        .then(() => freshRss.getFeeds())
-        .then((feeds) => {
-          const idx = feeds.findIndex((e) => e.id === feed.id);
-          if (idx < 0) {
-            console.log("refresh: feed not found", feed);
-            return;
-          }
-          updateFeed(feeds[idx]);
-        });
     } else if (name === "size") {
       setSizeLimit(parseInt(data, 10));
     } else if (name === "wType") {
@@ -101,6 +89,17 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       });
     }
   };
+  const setContinuation = (c) => {
+    console.log(feed, c, pag);
+    const idx = pag.indexOf(c);
+    if (idx > -1) {
+      setPag(pag.splice(0, idx+1));
+      return;
+    }
+    const newPag = [...pag];
+    newPag.push(c);
+    setPag(newPag);
+  }
   const updateLink = (id) => {
     for (const row of rows) {
       if (row.id === id) {
@@ -140,7 +139,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
             </ul>
           )}
           {rows.length >= sizeLimit && (
-            <WidgetPagination skip={skip} sizeLimit={sizeLimit} setSkip={setSkip} />
+            <WidgetPagination pag={pag} oldest={rows[sizeLimit-1].timestampUsec} setContinuation={setContinuation} />
           )}
         </div>
       </div>
