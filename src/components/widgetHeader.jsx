@@ -1,15 +1,15 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowsRotate,
+  //faArrowsRotate,
   faGear,
   faXmarkCircle,
   faCaretUp,
   faCaretDown,
-  faUpDownLeftRight,
+  faUpDownLeftRight
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function WidgetHeader({ feed, /*unread,*/ isCollapsed, handleCommand }) {
+export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
   return (
     <div className="flex dark:text-zinc-300 md:px-1">
       <button
@@ -22,7 +22,7 @@ export default function WidgetHeader({ feed, /*unread,*/ isCollapsed, handleComm
       >
         <FontAwesomeIcon icon={isCollapsed ? faCaretUp : faCaretDown} />
       </button>
-      {/* <button
+      <button
         type="button"
         disabled={unread < 1}
         onClick={() => {
@@ -32,7 +32,7 @@ export default function WidgetHeader({ feed, /*unread,*/ isCollapsed, handleComm
         title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
-      </button> */}
+      </button>
       <h4 className="grow text-lg md:px-0.5">{feed.title}</h4>
       {/* <button
         type="button"

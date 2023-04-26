@@ -1,5 +1,4 @@
 import React from "react";
-import he from "he";
 
 import freshRss from "../freshrss";
 
@@ -7,7 +6,7 @@ export default function WidgetLink({ row, wType, updateLink }) {
   const isRead = row.categories.indexOf("user/-/state/com.google/read") > -1;
   const parser = new DOMParser();
   const doc = parser.parseFromString(row.summary.content, "application/xml");
-  const excerpt = doc.getElementsByTagName("body")[0].textContent
+  const excerpt = doc.getElementsByTagName("body")[0].textContent;
   const markRead = () => {
     freshRss.markReadItems([row.id]).then(() => {
       updateLink(row.id);

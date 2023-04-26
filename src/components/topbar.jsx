@@ -5,7 +5,7 @@ import {
   faFileExport,
   faRightFromBracket,
   faMoon,
-  faSun,
+  faSun
 } from "@fortawesome/free-solid-svg-icons";
 import freshRss from "../freshrss";
 
@@ -24,7 +24,7 @@ function Button({ onClick, icon, text }) {
 
 export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp, toggleDark }) {
   return (
-    <div className="flex bg-slate-700 px-2 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 py-1 lg:py-2">
+    <div className="flex bg-slate-700 px-2 py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
       <h1 className="grow align-text-bottom text-xl">FreshRSS Portal</h1>
       <button
         type="button"
@@ -41,7 +41,13 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
       <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" />
       {!!isLoggedIn && (
         <Button
-          onClick={() => handleLogin(false)}
+          onClick={() => {
+            freshRss.logout().then((resp) => {
+              if (resp) {
+                handleLogin(false);
+              }
+            });
+          }}
           icon={faRightFromBracket}
           text="Logout"
         />

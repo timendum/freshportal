@@ -20,7 +20,8 @@ export default function WidgetPagination({ skip, sizeLimit, setSkip }) {
     }
     let classes = "md:px-1 xl:px-2 btn-primary mx-auto block";
     if (newPage === page) {
-      classes += " bg-teal-500 dark:text-gray-600 dark:border-teal-400 dark:bg-teal-400 disabled:hover:bg-teal-500 disabled:hover:dark:bg-teal-400";
+      classes +=
+        " bg-teal-500 dark:text-gray-600 dark:border-teal-400 dark:bg-teal-400 disabled:hover:bg-teal-500 disabled:hover:dark:bg-teal-400";
     }
     return (
       <li key={text + String(newPage)} className="basis-[10%]">
@@ -37,7 +38,7 @@ export default function WidgetPagination({ skip, sizeLimit, setSkip }) {
   }
   return (
     <nav className="dark:boder-zinc-400 overflow-hidden border-t border-slate-500 dark:text-zinc-400">
-      <ul className="mx-auto flex flex-row gap-0.5 md:py-1 md:gap-1 lg:gap-3 md:px-1 lg:px-2">
+      <ul className="mx-auto flex flex-row gap-0.5 md:gap-1 md:py-1 md:px-1 lg:gap-3 lg:px-2">
         {makeButton(0)}
         {page > 1 && makeButton(1)}
         {page > 5 && makeButton("…")}

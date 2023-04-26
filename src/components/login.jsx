@@ -63,8 +63,7 @@ export default function LoginForm({ handleLogin }) {
                 label="FreshRSS Base URL"
                 defaultValue={defaultHost}
               />
-            </div>
-            {" "}
+            </div>{" "}
             {!!loginError && (
               <div role="alert">
                 <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">

@@ -29,11 +29,13 @@ export default function AddWidget({ feeds, open, addWidget, skip }) {
           <h4 className="text-lg dark:text-gray-200">Feed to be added:</h4>
           <select name="feedId" className="input-primary block w-full px-3 py-1.5">
             {feeds
+              .filter((feed) => skip.indexOf(feed.id) === -1)
+              .toSorted((a, b) => a.title.localeCompare(b.title))
               .map((feed) => (
-                <option key={feed.id} value={feed.id}>
-                  {feed.title}
-                </option>
-              ))}
+              <option key={feed.id} value={feed.id}>
+                {feed.title}
+              </option>
+            ))}
           </select>
           <button
             className="btn-primary w-full bg-blue-800 px-7 py-3 text-sm leading-snug text-slate-200"

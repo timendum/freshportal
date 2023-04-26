@@ -97,37 +97,38 @@ export default function Main({ handleLogin }) {
     setWidgetsFromStorage(setWidgets);
   }, []);
   /* Util funct to generate widgets */
-  const makeWidget = (col) => widgets
-    .filter((_, i) => i % 3 === col)
-    .map((widget, i) => {
-      if (!Object.prototype.hasOwnProperty.call(widget, "id")) {
-        return <div key={`index-${i}`} />;
-      }
-      let widgetFeed = null;
-      for (const feed of feeds) {
-        if (feed.id === widget.id) {
-          widgetFeed = feed;
-          break;
+  const makeWidget = (col) =>
+    widgets
+      .filter((_, i) => i % 3 === col)
+      .map((widget, i) => {
+        if (!Object.prototype.hasOwnProperty.call(widget, "id")) {
+          return <div key={`index-${i}`} />;
         }
-      }
-      if (!widgetFeed) {
+        let widgetFeed = null;
+        for (const feed of feeds) {
+          if (feed.id === widget.id) {
+            widgetFeed = feed;
+            break;
+          }
+        }
+        if (!widgetFeed) {
+          return (
+            <div key={widget.id}>
+              <div>Feed not found</div>
+            </div>
+          );
+        }
         return (
-          <div key={widget.id}>
-            <div>Feed not found</div>
-          </div>
+          <Widget
+            key={widget.id}
+            feed={widgetFeed}
+            config={widget}
+            updateConfig={updateConfig}
+            updateFeed={updateFeed}
+            move={moveWidget}
+          />
         );
-      }
-      return (
-        <Widget
-          key={widget.id}
-          feed={widgetFeed}
-          config={widget}
-          updateConfig={updateConfig}
-          updateFeed={updateFeed}
-          move={moveWidget}
-        />
-      );
-    });
+      });
   /* Change and persist theme */
   const changeTheme = () => {
     localStorage.setItem("FRTheme", !darkMode ? "dark" : "light");
@@ -149,7 +150,9 @@ export default function Main({ handleLogin }) {
         newColor = missingColors.shift();
       }
       const newW = { id, color: newColor };
-      const idx = widgets.findIndex((e) => Object.prototype.hasOwnProperty.call(e, "id") && e.id == id);
+      const idx = widgets.findIndex(
+        (e) => Object.prototype.hasOwnProperty.call(e, "id") && e.id == id
+      );
       let newArray = [...widgets];
       if (idx > -1) {
         // widget update
@@ -242,15 +245,13 @@ export default function Main({ handleLogin }) {
   /* Init feeds */
   React.useEffect(() => {
     let intervalId;
-    freshRss
-      .getFeeds()
-      .then((newFeeds) => {
-        setFeeds(newFeeds);
-        intervalId = setInterval(() => {
-          console.debug("Trigger refresh");
-          freshRss.getFeeds().then(setFeeds);
-        }, 1000 * 60 * 10);
-      });
+    freshRss.getFeedsFull().then((newFeeds) => {
+      setFeeds(newFeeds);
+      intervalId = setInterval(() => {
+        console.debug("Trigger refresh");
+        freshRss.getFeedsFull().then(setFeeds);
+      }, 1000 * 60 * 10);
+    });
     return () => {
       if (intervalId) {
         clearInterval(intervalId);

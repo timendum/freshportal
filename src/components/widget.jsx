@@ -17,7 +17,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const [color, setColor] = useState(config.color || "gray");
   const [skip, setSkip] = useState(0);
   const [rows, setRows] = useState([]);
-  //const { unread } = feed;
+  const { unread } = feed;
   /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
@@ -71,7 +71,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
         id: feed.id,
         sizeLimit,
         wType,
-        color,
+        color
       });
       setConfiguring(false);
     } else if (name === "remove") {
@@ -83,14 +83,18 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setConfiguring(false);
       setMoving(!isMoving);
     } else if (name === "readAll") {
-      //const countNumber = rows.filter((e) => e.unread).length;
+      const unreadRows = rows.filter((e) => e.categories.indexOf("user/-/state/com.google/read") === -1);
       let markAction = () => freshRss.markReadFeed(feed.id);
-      //if (countNumber === unread) {
-      //  markAction = () => freshRss.markReadItems(rows.filter((e) => e.unread).map((e) => e.id));
-      //}
+      if (unreadRows.length === unread) {
+        markAction = () => freshRss.markReadItems(unreadRows.map((e) => e.id));
+      }
       markAction().then(() => {
         const newRows = [...rows];
-        newRows.forEach((row) => {row.unread = false; });
+        newRows.forEach((row) => {
+          if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
+              row.categories.push("user/-/state/com.google/read");
+          }
+        });
         feed.unread = 0;
         updateFeed(feed);
         setRows(newRows);
@@ -103,7 +107,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
         let idx = row.categories.indexOf("user/-/state/com.google/read");
         if (idx === -1) {
           row.categories.push("user/-/state/com.google/read");
-          //feed.unread = unread - 1;
+          feed.unread = unread - 1;
           updateFeed(feed);
           setRows(rows);
           break;
@@ -117,7 +121,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     <div className={`block rounded-lg border widget-${color} shadow-md lg:border-2`}>
       <WidgetHeader
         feed={feed}
-        //unread={unread}
+        unread={unread}
         isCollapsed={isCollapsed}
         handleCommand={handleCommand}
       />

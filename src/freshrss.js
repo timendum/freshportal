@@ -1,27 +1,27 @@
 const freshRss = {
   base: null,
   session: null,
-  token: null,
+  token: null
 };
 
 function getToken() {
   if (freshRss.token) {
     return Promise.resolve(freshRss.token);
   }
-  return request("reader/api/0/token", {output:"text"}).then(resp => {
+  return request("reader/api/0/token", { output: "text" }).then((resp) => {
     freshRss.token = resp;
     return freshRss.token;
-  })
+  });
 }
 
 function request(path, params, data, token) {
   token = token || false;
-  if (token){
+  if (token) {
     return getToken().then((token) => {
       const nData = data;
       nData["T"] = token;
       return request(path, params, nData, false);
-    })
+    });
   }
   const headers = new Headers();
   if (freshRss.session) {
@@ -30,7 +30,7 @@ function request(path, params, data, token) {
   const url = new URL(path, freshRss.base);
   params = params || {};
   if (!("output" in params)) {
-    params["output"] = "json"
+    params["output"] = "json";
   }
   for (const [key, value] of Object.entries(params)) {
     if (value instanceof Array) {
@@ -52,19 +52,17 @@ function request(path, params, data, token) {
       formData.append(key, value);
     }
   }
-  
+
   return fetch(url, {
     method: "POST",
     cache: "no-cache",
     body: formData,
     mode: "cors",
-    headers: headers,
+    headers: headers
   }).then((response) => {
-      if (params["output"] == "json")
-        return response.json()
-      else
-        return response.text()
-    })
+    if (params["output"] == "json") return response.json();
+    else return response.text();
+  });
 }
 
 freshRss.isLoggedIn = () => {
@@ -83,8 +81,9 @@ freshRss.login = (user, pass) => {
   return fetch(url, {
     method: "POST",
     cache: "no-cache",
-    mode: "cors",
-  }).then((response) => response.text())
+    mode: "cors"
+  })
+    .then((response) => response.text())
     .then((resp) => {
       const rows = resp.split("\n").map((r) => r.split("="));
       for (let row of rows) {
@@ -97,24 +96,61 @@ freshRss.login = (user, pass) => {
     })
     .catch(() => false);
 };
+freshRss.logout = () => {
+  freshRss.session = null;
+  freshRss.token = null;
+  localStorage.removeItem("FRSession");
+  localStorage.removeItem("FRHost");
+  return Promise.resolve(true);
+};
 
-freshRss.getFeeds = () => request("reader/api/0/subscription/list")
-  .then((resp) => resp["subscriptions"]);
-freshRss.getUpdatedContent = (id) => request("updateFeed", { feed_id: id });
+freshRss.getFeeds = () =>
+  request("reader/api/0/subscription/list").then((resp) => resp["subscriptions"]);
+//freshRss.getUpdatedContent = (id) => request("updateFeed", { feed_id: id });
 freshRss.getContent = (id, limit, c) => {
   return request("reader/api/0/stream/contents/" + id, {
-    n: limit,
+    n: limit
     //c,
-  }).then(resp => resp["items"]);
+  }).then((resp) => resp["items"]);
 };
-freshRss.markReadItems = (ids) => request("reader/api/0/edit-tag", {output: "text"}, {
-  i: ids,
-  a: "user/-/state/com.google/read",
-}, true).then((resp) => resp === "OK")
-  .catch(() => false);
-freshRss.markReadFeed = (id) => request("/reader/api/0/mark-all-as-read", {
-  s: id,
-}, true).then((data) => data.status === "OK")
-  .catch(() => false);
+freshRss.markReadItems = (ids) =>
+  request(
+    "reader/api/0/edit-tag",
+    { output: "text" },
+    {
+      i: ids,
+      a: "user/-/state/com.google/read"
+    },
+    true
+  )
+    .then((resp) => resp === "OK")
+    .catch(() => false);
+freshRss.markReadFeed = (id) =>
+  request(
+    "reader/api/0/mark-all-as-read",
+    {output: "text"},
+    {s: id},
+    true
+  )
+    .then((data) => data.status === "OK")
+    .catch(() => false);
+freshRss.getUnreads = () => request("reader/api/0/unread-count");
+freshRss.getFeedsFull = () =>
+  Promise.all([freshRss.getFeeds(), freshRss.getUnreads()]).then((values) => {
+    const feeds = values[0];
+    const unreads = values[1]["unreadcounts"];
+    for (const feed of feeds) {
+      for (const unread of unreads) {
+        if (unread.id == feed.id) {
+          feed.unread = unread.count;
+          break;
+        }
+      }
+      if (Object.keys(feed).indexOf("unread") === -1) {
+        console.error("Unread not found for ", feed);
+      }
+    }
+    return feeds;
+  });
 
 export default freshRss;
