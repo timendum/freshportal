@@ -14,11 +14,26 @@ Just unzip the latest release (or build it by yourself) and put it somewhere, th
 1. On the FreshRSS instance enable the API access.
 1. The go to index.html.
 
-End
-
 ### Note ###
 
-You can install the FreshRSS Portal anywhere (ie: in another server), you have to configure the `Access-Control-Allow-Origin` header and the OPTION method in the webserver. It works even in your hard disk, but the icon generator won't work, because of security policies on opening "local" files.
+You can install the FreshRSS Portal anywhere (ie: in another server), you have to configure `Access-Control` headers and allow the OPTION method in the webserver. It works even in your hard disk, but the icon generator won't work, because of security policies on opening "local" files.
+
+For example in Nginx you have to add somthing like:
+
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+        add_header 'Access-Control-Max-Age' '86400' always;
+        add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
+
+And also:
+
+                location ~ ^/api/greader\.php {
+                        if ($request_method = 'OPTIONS' ) {
+                                return 200;
+                        }
+                }
+
 
 Details
 -------------
