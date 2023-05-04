@@ -20,20 +20,32 @@ You can install the FreshRSS Portal anywhere (ie: in another server), you have t
 
 For example in Nginx you have to add somthing like:
 
-        add_header 'Access-Control-Allow-Origin' '*' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
-        add_header 'Access-Control-Max-Age' '86400' always;
-        add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
+        location ~ ^/api/greader.php(/.+)?$ {
+                add_header 'Access-Control-Allow-Origin' '*' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+                add_header 'Access-Control-Max-Age' '86400' always;
+                add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
 
-And also:
-
-                location ~ ^/api/greader\.php {
-                        if ($request_method = 'OPTIONS' ) {
-                                return 200;
-                        }
+                if ($request_method = 'OPTIONS' ) {
+                        return 200;
                 }
+                fastcgi_split_path_info ^(.+\.php)(/.*)$;
 
+		fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+		fastcgi_split_path_info ^(.+\.php)(/.*)$;
+		# By default, the variable PATH_INFO is not set under PHP-FPM
+		# But FreshRSS API greader.php need it. If you have a “Bad Request” error, double check this var!
+		# NOTE: the separate $path_info variable is required. For more details, see:
+		# https://trac.nginx.org/nginx/ticket/321
+		set $path_info $fastcgi_path_info;
+		fastcgi_param PATH_INFO $path_info;
+		include fastcgi_params;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	}
+
+From `fastcgi_split_path_info` and under is taken from the [official documentation](https://freshrss.github.io/FreshRSS/en/admins/10_ServerConfig.html) for Nginx.  
+This configuration handle the special case for the Google Reader API, allowing the invoking of the API from outside the server (see `Access-Control-Allow-Origin`), return 200 for `OPTIONS` call and allow caching of the preflight results.
 
 Details
 -------------
