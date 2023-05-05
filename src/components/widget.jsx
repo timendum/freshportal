@@ -18,21 +18,11 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
   const [pag, setPag] = useState([undefined]);
   const [rows, setRows] = useState([]);
   const { unread } = feed;
-  /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     if (!isCollapsed) {
       freshRss.getContent(feed.id, sizeLimit, pag[pag.length - 1], false).then(setRows);
     }
-  }, [pag, feed]);
-
-  React.useEffect(() => {
-    if (!isCollapsed) {
-      if (rows.length < sizeLimit) {
-        freshRss.getContent(feed.id, sizeLimit, pag[pag.length - 1], false).then(setRows);
-      }
-    }
-  }, [sizeLimit]);
-  /* eslint-enable */
+  }, [feed, pag, sizeLimit, isCollapsed]);
   const handleCommand = (name, data) => {
     if (name === "toggleCollapse") {
       setCollapsed(!isCollapsed);
