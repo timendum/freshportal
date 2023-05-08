@@ -19,8 +19,8 @@ function setWidgetsFromStorage(setWidgets) {
     localStorage.removeItem("FRWidgets");
   }
 }
-
 const refreshUnread = (feeds, widgets) => {
+  // Update the faviconc according to the unread count.
   const ids = widgets.map((w) => w.id);
   let c = feeds
     .filter((e) => ids.indexOf(e.id) > -1)
@@ -78,10 +78,10 @@ const refreshUnread = (feeds, widgets) => {
 };
 
 export default function Main({ handleLogin }) {
-  const [isAddWidget, setAddWiget] = React.useState(false);
-  const [isExpImp, setExpImp] = React.useState(false);
-  const [widgets, setWidgets] = React.useState([]);
-  const [feeds, setFeeds] = React.useState(false);
+  const [isAddWidget, setAddWiget] = React.useState(false); // is Add widget modal open?
+  const [isExpImp, setExpImp] = React.useState(false); // is Export import modal open?
+  const [widgets, setWidgets] = React.useState([]); // list of widgets
+  const [feeds, setFeeds] = React.useState(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
@@ -94,6 +94,7 @@ export default function Main({ handleLogin }) {
     };
   }, [widgets, feeds]);
   React.useEffect(() => {
+    // only on "mount", check if localStorage and restore from it
     setWidgetsFromStorage(setWidgets);
   }, []);
   /* Util funct to generate widgets */
@@ -233,6 +234,7 @@ export default function Main({ handleLogin }) {
     setWidgets(newWidgets);
   };
   const updateFeed = (feed) => {
+    // Update a single feed, usually triggered from within the Widget with the feed
     const newFeeds = [...feeds];
     const idx = newFeeds.findIndex((e) => e.id === feed.id);
     if (idx < 0) {
@@ -242,14 +244,35 @@ export default function Main({ handleLogin }) {
     newFeeds[idx] = feed;
     setFeeds(newFeeds);
   };
-  /* Init feeds */
+  const setUpdatedFeeds = (updatedFeeds) => {
+    /* This function changes the feed objects in `feeds` ONLY
+       if the object is in a different state (ie: unread count or update timestamp).
+       If the object is the same, React will not trigger the update and so the API call.
+     */
+    const newFeeds = [...feeds]; // Create a new array, so it will perform Main refresh/redraw.
+    for (const feed of updatedFeeds) {
+        const idx = newFeeds.findIndex((e) => e.id === feed.id);
+        if (idx < 0) {
+            // new feed!
+            newFeeds.append(feed);
+        }
+        const oldFeed = newFeeds[idx];
+        if (feed.unread != oldFeed.unread || feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec) {
+            // need refresh, so create use the new object
+            newFeeds[idx] = feed;
+        }
+        // else, keep the old one
+    }
+    setFeeds(newFeeds);
+  };
+  /* Init feeds and setup refresh */
   React.useEffect(() => {
     let intervalId;
     freshRss.getFeedsFull().then((newFeeds) => {
       setFeeds(newFeeds);
       intervalId = setInterval(() => {
         console.debug("Trigger refresh");
-        freshRss.getFeedsFull().then(setFeeds);
+        freshRss.getFeedsFull().then(setUpdatedFeeds);
       }, 1000 * 60 * 10);
     });
     return () => {
