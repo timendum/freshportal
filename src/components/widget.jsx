@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import freshRss from "../freshrss";
 
 import Loading from "./loading";
@@ -9,14 +9,14 @@ import WidgetLink from "./widgetLink";
 import WidgetPagination from "./widgetPagination";
 
 export default function Widget({ feed, config, updateConfig, updateFeed, move }) {
-  const [isCollapsed, setCollapsed] = useState(false);
-  const [isMoving, setMoving] = useState(false);
-  const [isConfiguring, setConfiguring] = useState(false);
-  const [sizeLimit, setSizeLimit] = useState(config.sizeLimit || 10);
-  const [wType, setWType] = useState(config.wType || "excerpt");
-  const [color, setColor] = useState(config.color || "gray");
-  const [pag, setPag] = useState([undefined]);
-  const [rows, setRows] = useState([]);
+  const [isCollapsed, setCollapsed] = React.useState(false);
+  const [isMoving, setMoving] = React.useState(false);
+  const [isConfiguring, setConfiguring] = React.useState(false);
+  const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
+  const [wType, setWType] = React.useState(config.wType || "excerpt");
+  const [color, setColor] = React.useState(config.color || "gray");
+  const [pag, setPag] = React.useState([undefined]);
+  const [rows, setRows] = React.useState([]);
   const { unread } = feed;
   React.useEffect(() => {
     if (!isCollapsed) {

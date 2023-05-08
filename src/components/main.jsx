@@ -244,7 +244,7 @@ export default function Main({ handleLogin }) {
     newFeeds[idx] = feed;
     setFeeds(newFeeds);
   };
-  const setUpdatedFeeds = (updatedFeeds) => {
+  const setUpdatedFeeds = React.useCallback((updatedFeeds) => {
     /* This function changes the feed objects in `feeds` ONLY
        if the object is in a different state (ie: unread count or update timestamp).
        If the object is the same, React will not trigger the update and so the API call.
@@ -264,7 +264,7 @@ export default function Main({ handleLogin }) {
         // else, keep the old one
     }
     setFeeds(newFeeds);
-  };
+  }, [feeds]);
   /* Init feeds and setup refresh */
   React.useEffect(() => {
     let intervalId;
@@ -280,7 +280,7 @@ export default function Main({ handleLogin }) {
         clearInterval(intervalId);
       }
     };
-  }, []);
+  }, [setUpdatedFeeds]);
   return (
     <div className="min-h-screen dark:bg-black">
       <Topbar
