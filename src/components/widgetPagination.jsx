@@ -15,6 +15,8 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
     } else if (newPage === "+") {
       text = ">";
       target = oldest;
+    } else if (newPage === pag.length) {
+      target = oldest;
     } else if (newPage === "…") {
       text = "…";
       disabled = true;
@@ -46,9 +48,10 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
     <nav className="dark:boder-zinc-400 overflow-hidden border-t border-slate-500 dark:text-zinc-400">
       <ul className="mx-auto flex flex-row gap-0.5 md:gap-1 md:px-1 md:py-1 lg:gap-3 lg:px-2">
         {makeButton("-")}
-        {[4, 3, 2, 1, 0].filter((e) => e < pag.length).map((e) => makeButton(pag.length - e - 1))}
+        {[3, 2, 1, 0].filter((e) => e < pag.length).map((e) => makeButton(pag.length - e - 1))}
+        {makeButton(pag.length)}
         {makeButton("…")}
-        {[-1, -2, -3, -4, -5].filter((e) => -e > pag.length).map((e) => makeButton(e))}
+        {[-1, -2, -3, -4].filter((e) => -e > pag.length).map((e) => makeButton(e))}
         {makeButton("+")}
       </ul>
     </nav>
