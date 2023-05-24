@@ -264,6 +264,7 @@ export default function Main({ handleLogin }) {
               if (idx < 0) {
                   // new feed!
                   newFeeds.append(feed);
+                  continue;
               }
               const oldFeed = newFeeds[idx];
               if (feed.unread != oldFeed.unread || feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec) {
