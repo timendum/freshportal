@@ -56,3 +56,18 @@ This is a re-implementation of [the original ttportal](https://github.com/timend
 * [React](https://reactjs.org/)
 * [FontAwesome](https://fontawesome.com/) for the icons
 * [Tailwind CSS](https://tailwindcss.com/) for styling utility classes
+
+Screenshots
+-----------
+
+At 1920x1080, dark mode:
+
+![1920x1080, dark mode](/../../blob/images/screenshot-1.png?raw=true)
+
+At 1600x900, light mode:
+
+![1600x900, light mode](/../../blob/images/screenshot-2.png?raw=true)
+
+At 1280x720, dark mode:
+
+![1280x720, dark mode](/../../blob/images/screenshot-3.png?raw=true)
