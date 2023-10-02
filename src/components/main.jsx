@@ -260,19 +260,22 @@ export default function Main({ handleLogin }) {
           */
           const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
           for (const feed of updatedFeeds) {
-              const idx = newFeeds.findIndex((e) => e.id === feed.id);
-              if (idx < 0) {
-                  // new feed!
-                  newFeeds.append(feed);
-                  continue;
-              }
-              const oldFeed = newFeeds[idx];
-              if (feed.unread != oldFeed.unread || feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec) {
-                  // need refresh, so create use the new object
-                  newFeeds[idx] = feed;
-                  console.debug("Changed:", feed, oldFeed);
-              }
-              // else, keep the old one
+            const idx = newFeeds.findIndex((e) => e.id === feed.id);
+            if (idx < 0) {
+              // new feed!
+              newFeeds.append(feed);
+              continue;
+            }
+            const oldFeed = newFeeds[idx];
+            if (
+              feed.unread != oldFeed.unread ||
+              feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
+            ) {
+              // need refresh, so create use the new object
+              newFeeds[idx] = feed;
+              console.debug("Changed:", feed, oldFeed);
+            }
+            // else, keep the old one
           }
           lastFeeds = newFeeds;
           setFeeds(newFeeds);
