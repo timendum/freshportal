@@ -25,7 +25,6 @@ jobs:
       run: |
         npm install
         npm run-script build
-        mkdir 
         tar -cvzf release.tar.gz --exclude='*.map' -C build .
         tar -cvzf release-with-maps.tar.gz -C build .
     - name: GH Release
