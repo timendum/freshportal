@@ -4,9 +4,11 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
   function makeButton(newPage) {
     let disabled = newPage === pag.length - 1;
     let text = String(newPage + 1);
+    let tooltip = "Go to page" + text;
     let target = undefined;
     if (newPage === "-") {
       text = "<";
+      tooltip = "Previous page";
       if (pag.length > 1) {
         target = pag[pag.length - 2];
       } else {
@@ -14,14 +16,17 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
       }
     } else if (newPage === "+") {
       text = ">";
+      tooltip = "Next page";
       target = oldest;
     } else if (newPage === pag.length) {
       target = oldest;
     } else if (newPage === "…" || newPage === "-…") {
       text = "…";
+      tooltip = null;
       disabled = true;
     } else if (newPage < 0) {
       text = " ";
+      tooltip = null;
       disabled = true;
     } else {
       target = pag[newPage];
@@ -35,6 +40,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
       <li key={text + String(newPage)} className="basis-[12.5%]">
         <button
           type="button"
+          title={tooltip}
           className={classes}
           disabled={disabled}
           onClick={() => setContinuation(target)}
