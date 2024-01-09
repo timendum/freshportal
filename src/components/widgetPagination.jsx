@@ -4,7 +4,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
   function makeButton(newPage) {
     let disabled = newPage === pag.length - 1;
     let text = String(newPage + 1);
-    let tooltip = "Go to page" + text;
+    let tooltip = "Go to page " + text;
     let target = undefined;
     if (newPage === "-") {
       text = "<";
