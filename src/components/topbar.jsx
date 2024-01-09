@@ -9,11 +9,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import freshRss from "../freshrss";
 
-function Button({ onClick, icon, text }) {
+function Button({ onClick, icon, text, tooltip }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={tooltip}
       className="btn-primary inline-block px-2 text-xs font-medium leading-tight lg:px-5"
     >
       <FontAwesomeIcon icon={icon} className="pr-1 lg:pr-2" />
@@ -36,9 +37,9 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
         <FontAwesomeIcon icon={faSun} className="hidden dark:inline-block" />
       </button>
       {!!isLoggedIn && (
-        <Button onClick={() => setAddWiget(true)} icon={faSquarePlus} text="Add Widget" />
+        <Button onClick={() => setAddWiget(true)} icon={faSquarePlus} text="Add Widget" tooltip="Create a new widget" />
       )}
-      <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" />
+      <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" tooltip="Export or import configuration" />
       {!!isLoggedIn && (
         <Button
           onClick={() => {
@@ -49,6 +50,7 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
             });
           }}
           icon={faRightFromBracket}
+          tooltip="Logout"
           text="Logout"
         />
       )}
