@@ -27,12 +27,12 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
   return (
     <div className="flex bg-slate-700 px-2 py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
       <h1 className="grow align-text-bottom text-xl">
-      {!!isLoggedIn && (
-        <a href={freshRss.base.substring(0, freshRss.base.length - 16)} title="Open FreshRSS">FreshRSS Portal</a>
+        {!!isLoggedIn && (
+          <a href={freshRss.base.substring(0, freshRss.base.length - 16)} title="Open FreshRSS" target="_blank">
+            FreshRSS Portal
+          </a>
         )}
-      {!isLoggedIn && (
-        <div>FreshRSS Portal</div>
-        )}
+        {!isLoggedIn && <div>FreshRSS Portal</div>}
       </h1>
       <button
         type="button"
@@ -44,9 +44,19 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
         <FontAwesomeIcon icon={faSun} className="hidden dark:inline-block" />
       </button>
       {!!isLoggedIn && (
-        <Button onClick={() => setAddWiget(true)} icon={faSquarePlus} text="Add Widget" tooltip="Create a new widget" />
+        <Button
+          onClick={() => setAddWiget(true)}
+          icon={faSquarePlus}
+          text="Add Widget"
+          tooltip="Create a new widget"
+        />
       )}
-      <Button onClick={() => setExpImp(true)} icon={faFileExport} text="Export" tooltip="Export or import configuration" />
+      <Button
+        onClick={() => setExpImp(true)}
+        icon={faFileExport}
+        text="Export"
+        tooltip="Export or import configuration"
+      />
       {!!isLoggedIn && (
         <Button
           onClick={() => {
