@@ -28,7 +28,7 @@ export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp
     <div className="flex bg-slate-700 px-2 py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
       <h1 className="grow align-text-bottom text-xl">
         {!!isLoggedIn && (
-          <a href={freshRss.base.substring(0, freshRss.base.length - 16)} title="Open FreshRSS" target="_blank">
+          <a href={freshRss.base.substring(0, freshRss.base.length - 16)} title="Open FreshRSS" target="_blank" rel="noreferrer">
             FreshRSS Portal
           </a>
         )}
