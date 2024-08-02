@@ -1,29 +1,38 @@
 import React from "react";
-import freshRss from "../freshrss";
+import { FeedContent, freshRss, FullFeed } from "../freshrss";
+import { WidgetType, HandleCommandType } from "./interfaces";
 
 import Loading from "./loading";
-import WidgetHeader from "./widgetHeader";
 import WidgetConfig from "./widgetConfig";
-import WidgetMove from "./widgetMove";
+import WidgetHeader from "./widgetHeader";
 import WidgetLink from "./widgetLink";
+import WidgetMove from "./widgetMove";
 import WidgetPagination from "./widgetPagination";
 
-export default function Widget({ feed, config, updateConfig, updateFeed, move }) {
+interface WidgetProp {
+  feed: FullFeed;
+  config: WidgetType;
+  updateConfig(widget: WidgetType, remove?: boolean): void;
+  updateFeed(feed: FullFeed): void;
+  move(id: string, direction: string): void;
+}
+
+export default function Widget({ feed, config, updateConfig, updateFeed, move }: WidgetProp) {
   const [isCollapsed, setCollapsed] = React.useState(false);
   const [isMoving, setMoving] = React.useState(false);
   const [isConfiguring, setConfiguring] = React.useState(false);
   const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
   const [wType, setWType] = React.useState(config.wType || "excerpt");
   const [color, setColor] = React.useState(config.color || "gray");
-  const [pag, setPag] = React.useState([undefined]);
-  const [rows, setRows] = React.useState([]);
+  const [pag, setPag] = React.useState<string[]>([""]);
+  const [rows, setRows] = React.useState<FeedContent[]>([]);
   const { unread } = feed;
   React.useEffect(() => {
-    if (!isCollapsed) {
-      freshRss.getContent(feed.id, sizeLimit, pag[pag.length - 1], false).then(setRows);
+    if (!isCollapsed && pag && pag.length > 0 && pag[pag.length - 1]) {
+      freshRss.getContent(feed.id, sizeLimit, pag[pag.length - 1] as string).then(setRows);
     }
   }, [feed, pag, sizeLimit, isCollapsed]);
-  const handleCommand = (name, data) => {
+  const handleCommand: HandleCommandType = (name: string, data?: string) => {
     if (name === "toggleCollapse") {
       setCollapsed(!isCollapsed);
     } else if (name === "toggleConfiguring") {
@@ -33,11 +42,15 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       setSizeLimit(config.sizeLimit || 10);
       setColor(config.color || "gray");
       setMoving(false);
-    } else if (name === "size") {
+    } else if (name === "size" && data) {
       setSizeLimit(parseInt(data, 10));
-    } else if (name === "wType") {
-      setWType(data);
-    } else if (name === "color") {
+    } else if (name === "wType" && data) {
+      switch (data) {
+        case "excerpt":
+        case "simple":
+          setWType(data);
+      }
+    } else if (name === "color" && data) {
       setColor(data);
     } else if (name === "reset") {
       setSizeLimit(config.sizeLimit || 10);
@@ -53,9 +66,9 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       });
       setConfiguring(false);
     } else if (name === "remove") {
-      updateConfig({ id: feed.id, remove: true });
+      updateConfig({ id: feed.id, color }, true);
       setConfiguring(false);
-    } else if (name === "move") {
+    } else if (name === "move" && data) {
       move(feed.id, data);
     } else if (name === "startMoving") {
       setConfiguring(false);
@@ -81,7 +94,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
       });
     }
   };
-  const setContinuation = (c) => {
+  const setContinuation = (c: string) => {
     const idx = pag.indexOf(c);
     if (idx > -1) {
       setPag(pag.splice(0, idx + 1));
@@ -91,7 +104,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move })
     newPag.push(c);
     setPag(newPag);
   };
-  const updateLink = (id) => {
+  const updateLink = (id: string) => {
     for (const row of rows) {
       if (row.id === id) {
         let idx = row.categories.indexOf("user/-/state/com.google/read");

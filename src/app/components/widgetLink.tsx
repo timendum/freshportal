@@ -1,13 +1,20 @@
 import React from "react";
 
-import freshRss from "../freshrss";
+import { FeedContent, freshRss, FullFeed } from "../freshrss";
+import { WidgetType, HandleCommandType } from "./interfaces";
 
-export default function WidgetLink({ row, wType, updateLink }) {
+interface WidgetLinkProp {
+  row: FeedContent;
+  wType: WidgetType["wType"];
+  updateLink(id: string): void;
+}
+
+export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
   const isRead = row.categories.indexOf("user/-/state/com.google/read") > -1;
   const parser = new DOMParser();
   const doc = parser.parseFromString(row.summary.content, "text/html");
-  let excerpt = doc.getElementsByTagName("body")[0].textContent.trim();
-  if (excerpt.length < 1) {
+  let excerpt = doc.getElementsByTagName("body")[0]?.textContent?.trim();
+  if (excerpt && excerpt.length < 1) {
     excerpt = "\u00A0";
   }
   const markRead = () => {

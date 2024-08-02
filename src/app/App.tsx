@@ -4,12 +4,11 @@ import Loading from "./components/loading";
 import MainLogin from "./components/mainLogin";
 import Main from "./components/main";
 
-import freshRss from "./freshrss";
+import { freshRss } from "./freshrss";
 import { darkPreference } from "./components/utils";
-import "./styles.css";
 
 export default function App() {
-  const [isLoggedIn, setLoggedIn] = React.useState(null);
+  const [isLoggedIn, setLoggedIn] = React.useState<boolean>(false);
   React.useEffect(() => {
     try {
       freshRss.session = localStorage.getItem("FRSession");
@@ -28,8 +27,10 @@ export default function App() {
     return <MainLogin handleLogin={setLoggedIn} />;
   }
   if (isLoggedIn === true) {
-    localStorage.setItem("FRSession", freshRss.session);
-    localStorage.setItem("FRHost", freshRss.base);
+    if (freshRss.session && freshRss.base) {
+      localStorage.setItem("FRSession", freshRss.session);
+      localStorage.setItem("FRHost", freshRss.base);
+    }
     return <Main handleLogin={setLoggedIn} />;
   }
   // loading screen

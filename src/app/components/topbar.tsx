@@ -1,15 +1,24 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSquarePlus,
   faFileExport,
-  faRightFromBracket,
   faMoon,
-  faSun
+  faRightFromBracket,
+  faSquarePlus,
+  faSun,
+  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
-import freshRss from "../freshrss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { freshRss } from "../freshrss";
+import { HandleStateChangeType } from "./interfaces";
 
-function Button({ onClick, icon, text, tooltip }) {
+interface CustomButtonProps {
+  onClick: React.MouseEventHandler<HTMLElement>;
+  icon: IconDefinition;
+  text: string;
+  tooltip: string;
+}
+
+function Button({ onClick, icon, text, tooltip }: CustomButtonProps) {
   return (
     <button
       type="button"
@@ -23,12 +32,31 @@ function Button({ onClick, icon, text, tooltip }) {
   );
 }
 
-export default function Topbar({ handleLogin, isLoggedIn, setAddWiget, setExpImp, toggleDark }) {
+interface TopbarProp {
+  handleLogin: HandleStateChangeType;
+  isLoggedIn: boolean;
+  setAddWiget: HandleStateChangeType;
+  setExpImp: HandleStateChangeType;
+  toggleDark: () => void;
+}
+
+export default function Topbar({
+  handleLogin,
+  isLoggedIn,
+  setAddWiget,
+  setExpImp,
+  toggleDark,
+}: TopbarProp) {
   return (
     <div className="flex bg-slate-700 px-2 py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
       <h1 className="grow align-text-bottom text-xl">
-        {!!isLoggedIn && (
-          <a href={freshRss.base.substring(0, freshRss.base.length - 16)} title="Open FreshRSS" target="_blank" rel="noreferrer">
+        {!!isLoggedIn && freshRss.base && (
+          <a
+            href={freshRss.base.substring(0, freshRss.base.length - 16)}
+            title="Open FreshRSS"
+            target="_blank"
+            rel="noreferrer"
+          >
             FreshRSS Portal
           </a>
         )}

@@ -1,6 +1,11 @@
 import React from "react";
+import { HandleCommandType } from "./interfaces";
 
-export default function WidgetMove({ handleCommand }) {
+interface WidgetMoveProp {
+  handleCommand: HandleCommandType;
+}
+
+export default function WidgetMove({ handleCommand }: WidgetMoveProp) {
   return (
     <form className="dark:boder-zinc-400 border-b border-slate-500 bg-zinc-800 p-3 dark:bg-black">
       <div className="grid grid-rows-2 justify-items-center gap-y-2 text-slate-200 lg:gap-y-3 ">

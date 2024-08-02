@@ -1,34 +1,56 @@
 import React from "react";
 
-export default function ExpImp({ open, doReset }) {
-  const ref = React.useRef();
+interface LocalStoragePerf {
+  widgets?: string;
+  session?: string;
+  base?: string;
+  theme?: string;
+}
+interface ExpImpProps {
+  open: boolean;
+  doReset(arg0: boolean): void;
+}
+
+export default function ExpImp({ open, doReset }: ExpImpProps) {
+  const ref = React.useRef<HTMLDivElement>(null);
   if (!open) {
     return null;
   }
-  const localData = {};
-  if (localStorage.getItem("FRWidgets")) {
-    localData.widgets = JSON.parse(localStorage.getItem("FRWidgets"));
+  const localData: LocalStoragePerf = {};
+  let ld = localStorage.getItem("FRWidgets");
+  if (ld) {
+    localData.widgets = JSON.parse(ld);
   }
-  if (localStorage.getItem("FRSession")) {
-    localData.session = localStorage.getItem("FRSession");
+  ld = localStorage.getItem("FRSession");
+  if (ld) {
+    localData.session = ld;
   }
-  if (localStorage.getItem("FRHost")) {
-    localData.base = localStorage.getItem("FRHost");
+  ld = localStorage.getItem("FRHost");
+  if (ld) {
+    localData.base = ld;
   }
-  if (localStorage.getItem("FRTheme")) {
-    localData.theme = localStorage.getItem("FRTheme");
+  ld = localStorage.getItem("FRTheme");
+  if (ld) {
+    localData.theme = ld;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const jsontxt = data.get("jsontxt");
     try {
+      // @ts-ignore
       const jsonv = JSON.parse(jsontxt);
-      if (Object.prototype.hasOwnProperty.call(jsonv, "widgets") && jsonv.widgets) {
+      if (
+        Object.prototype.hasOwnProperty.call(jsonv, "widgets") &&
+        jsonv.widgets
+      ) {
         localStorage.setItem("FRWidgets", JSON.stringify(jsonv.widgets));
       }
-      if (Object.prototype.hasOwnProperty.call(jsonv, "session") && jsonv.session) {
+      if (
+        Object.prototype.hasOwnProperty.call(jsonv, "session") &&
+        jsonv.session
+      ) {
         localStorage.setItem("FRSession", jsonv.session);
       }
       if (Object.prototype.hasOwnProperty.call(jsonv, "base") && jsonv.base) {
@@ -46,8 +68,12 @@ export default function ExpImp({ open, doReset }) {
   };
   return (
     <div
-      onClick={(event) => {
-        if (open && ref.current && !ref.current.contains(event.target)) {
+      onClick={(event: React.MouseEvent<HTMLElement>) => {
+        if (
+          open &&
+          ref.current &&
+          !ref.current.contains(event.target as Element)
+        ) {
           doReset(false);
         }
       }}

@@ -1,8 +1,15 @@
 import React from "react";
-import freshRss from "../freshrss";
+import { freshRss } from "../freshrss";
+import { HandleStateChangeType } from "./interfaces";
 
-export default function LoginForm({ handleLogin }) {
-  const [loginError, setloginError] = React.useState(null);
+interface LoginFormProps {
+  handleLogin: HandleStateChangeType;
+}
+
+export default function LoginForm({ handleLogin }: LoginFormProps) {
+  const [loginError, setloginError] = React.useState<string | undefined>(
+    undefined
+  );
   const [loading, setLoading] = React.useState(false);
   let defaultHost = localStorage.getItem("FRHost");
   if (defaultHost && defaultHost.startsWith("http")) {
@@ -10,16 +17,22 @@ export default function LoginForm({ handleLogin }) {
   } else {
     defaultHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;
   }
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     const data = new FormData(event.currentTarget);
     let apiLocation = data.get("location");
-    apiLocation = apiLocation.replace(/\/+$/, "");
+    let user = data.get("user");
+    let password = data.get("password");
+    if (!user || !apiLocation || !password) {
+      setloginError("Fill all fields");
+      return;
+    }
+    apiLocation = (apiLocation as string).replace(/\/+$/, "");
     freshRss.base = `${apiLocation}/api/greader.php/`;
-    setloginError();
+    setloginError(undefined);
     freshRss
-      .login(data.get("user"), data.get("password"))
+      .login((user as string).trim(), (password as string).trim())
       .then((result) => {
         console.debug("login", result);
         if (result) {
@@ -60,7 +73,6 @@ export default function LoginForm({ handleLogin }) {
                 className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
                 placeholder="FreshRSS URL"
                 name="location"
-                label="FreshRSS Base URL"
                 defaultValue={defaultHost}
               />
             </div>{" "}

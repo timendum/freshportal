@@ -1,12 +1,17 @@
 import React from "react";
 
-import Topbar from "./topbar";
-import LoginForm from "./login";
 import ExpImp from "./expimp";
+import { HandleStateChangeType } from "./interfaces";
+import LoginForm from "./login";
+import Topbar from "./topbar";
 import { darkPreference } from "./utils";
 
-export default function MainLogin({ handleLogin }) {
-  const [isExpImp, setExpImp] = React.useState(false);
+interface MainLoginProps {
+  handleLogin: HandleStateChangeType;
+}
+
+export default function MainLogin({ handleLogin }: MainLoginProps) {
+  const [isExpImp, setExpImp] = React.useState<boolean>(false);
   const [darkMode, setDarkMode] = React.useState(darkPreference());
 
   /* Change and persist theme */
@@ -19,9 +24,9 @@ export default function MainLogin({ handleLogin }) {
     }
     setDarkMode(!darkMode);
   };
-  const handleExpImp = (refresh) => {
+  const handleExpImp = (refresh: boolean) => {
     if (refresh) {
-      window.location.replace(window.location);
+      window.location.replace(window.location.href);
     } else {
       setExpImp(false);
     }

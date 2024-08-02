@@ -1,13 +1,22 @@
 import React from "react";
 
+import { WidgetType, HandleCommandType } from "./interfaces";
+
 import { colors } from "./utils";
 
-export default function WidgetConfig({ size, wType, color, handleCommand }) {
+interface WidgetConfigProp {
+  size: WidgetType["sizeLimit"];
+  wType: WidgetType["wType"];
+  color: WidgetType["color"];
+  handleCommand: HandleCommandType;
+}
+
+export default function WidgetConfig({ size, wType, color, handleCommand }: WidgetConfigProp) {
   const handleReset = () => {
     // event.preventDefault();
     handleCommand("reset");
   };
-  const handleSave = (event) => {
+  const handleSave = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     handleCommand("save");
   };

@@ -6,11 +6,15 @@ import Topbar from "./topbar";
 import Widget from "./widget";
 import AddWidget from "./addWidget";
 import ExpImp from "./expimp";
-import freshRss from "../freshrss";
+import { freshRss, FullFeed } from "../freshrss";
 
-function setWidgetsFromStorage(setWidgets) {
+import { WidgetType, HandleStateChangeType } from "./interfaces";
+
+type setWidgetsType = (widgets: WidgetType[]) => void;
+
+function setWidgetsFromStorage(setWidgets: setWidgetsType) {
   try {
-    const sWidgets = JSON.parse(localStorage.getItem("FRWidgets"));
+    const sWidgets = JSON.parse(localStorage.getItem("FRWidgets") as string);
     if (sWidgets && sWidgets.length > 0) {
       console.debug("from storage", sWidgets);
       setWidgets(sWidgets);
@@ -19,23 +23,32 @@ function setWidgetsFromStorage(setWidgets) {
     localStorage.removeItem("FRWidgets");
   }
 }
-const refreshUnread = (feeds, widgets) => {
+
+type RefreshUnreadType = (feeds: FullFeed[], widgets: WidgetType[]) => void;
+
+const refreshUnread: RefreshUnreadType = (feeds, widgets) => {
   // Update the faviconc according to the unread count.
   const ids = widgets.map((w) => w.id);
-  let c = feeds
+  let c: string | number = feeds
     .filter((e) => ids.indexOf(e.id) > -1)
     .map((e) => e.unread)
     .reduce((a, b) => a + b, 0);
-  const link = document.querySelector("link[type='image/x-icon']");
+  const link = document.querySelector("link[type='image/x-icon']") as HTMLLinkElement;
+  if (!link) {
+    return;
+  }
   if (!link.dataset.originalUrl) {
     link.dataset.originalUrl = link.href;
   }
   if (!link.dataset.blankicon) {
     // cache blank img
-    const canvas = document.getElementById("faviconc");
+    const canvas = document.getElementById("faviconc") as HTMLCanvasElement;
     canvas.width = 32;
     canvas.height = 32;
     const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
     const img = new Image();
     img.src = "./faviconblank.png";
     img.onload = () => {
@@ -55,10 +68,13 @@ const refreshUnread = (feeds, widgets) => {
   if (c > 99) {
     c = "\u221E";
   }
-  const canvas = document.getElementById("faviconc");
+  const canvas = document.getElementById("faviconc") as HTMLCanvasElement;
   canvas.width = 32;
   canvas.height = 32;
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return;
+  }
   const img = new Image();
   img.src = link.dataset.blankicon;
   img.onload = () => {
@@ -70,18 +86,22 @@ const refreshUnread = (feeds, widgets) => {
     ctx.strokeStyle = "#8B0000";
     ctx.font = "bold 21px sans-serif";
     ctx.lineWidth = 4;
-    ctx.strokeText(c, 16, 18);
-    ctx.fillText(c, 16, 18);
+    ctx.strokeText(String(c), 16, 18);
+    ctx.fillText(String(c), 16, 18);
 
     link.href = canvas.toDataURL("image/x-icon");
   };
 };
 
-export default function Main({ handleLogin }) {
+interface MainProp {
+  handleLogin: HandleStateChangeType;
+}
+
+export default function Main({ handleLogin }: MainProp) {
   const [isAddWidget, setAddWiget] = React.useState(false); // is Add widget modal open?
   const [isExpImp, setExpImp] = React.useState(false); // is Export import modal open?
-  const [widgets, setWidgets] = React.useState([]); // list of widgets
-  const [feeds, setFeeds] = React.useState(false); // list of feeds from FreshRSS
+  const [widgets, setWidgets] = React.useState<Widget[]>([]); // list of widgets
+  const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
@@ -98,7 +118,7 @@ export default function Main({ handleLogin }) {
     setWidgetsFromStorage(setWidgets);
   }, []);
   /* Util funct to generate widgets */
-  const makeWidget = (col) =>
+  const makeWidget = (col: number) =>
     widgets
       .filter((_, i) => i % 3 === col)
       .map((widget, i) => {
@@ -106,7 +126,7 @@ export default function Main({ handleLogin }) {
           return <div key={`index-${i}`} />;
         }
         let widgetFeed = null;
-        for (const feed of feeds) {
+        for (const feed of feeds || []) {
           if (feed.id === widget.id) {
             widgetFeed = feed;
             break;
@@ -141,14 +161,14 @@ export default function Main({ handleLogin }) {
     setDarkMode(!darkMode);
   };
   /* Add widget and persist widgets config */
-  const addWidget = (id) => {
+  const addWidget = (id: string | null) => {
     setAddWiget(false);
     if (id) {
       const currentColors = widgets.map((w) => w.color);
       const missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
       let newColor = colors[widgets.length % colors.length];
       if (missingColors.length > 0) {
-        newColor = missingColors.shift();
+        newColor = missingColors.shift() as string;
       }
       const newW = { id, color: newColor };
       const idx = widgets.findIndex(
@@ -166,7 +186,7 @@ export default function Main({ handleLogin }) {
       setWidgets(newArray);
     }
   };
-  const moveWidget = (id, direction) => {
+  const moveWidget = (id: string, direction: string) => {
     if (!id) {
       return;
     }
@@ -210,22 +230,22 @@ export default function Main({ handleLogin }) {
       setWidgets(newWidgets);
     }
   };
-  const handleExpImp = (refresh) => {
+  const handleExpImp = (refresh: boolean) => {
     if (refresh) {
-      window.location.replace(window.location);
+      window.location.replace(window.location.href);
     } else {
       setExpImp(false);
     }
   };
   /* Update and persist widgets config on change */
-  const updateConfig = (widget) => {
+  const updateConfig = (widget: WidgetType, remove?: boolean) => {
     const idx = widgets.findIndex((e) => e.id === widget.id);
     if (idx < 0) {
       console.log("updateConfig: widget not found", widget);
       return;
     }
     const newWidgets = [...widgets];
-    if (widget.remove === true) {
+    if (remove === true) {
       newWidgets.splice(idx, 1);
     } else {
       newWidgets[idx] = widget;
@@ -233,7 +253,10 @@ export default function Main({ handleLogin }) {
     localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
     setWidgets(newWidgets);
   };
-  const updateFeed = (feed) => {
+  const updateFeed = (feed: FullFeed) => {
+    if (feeds === false) {
+      return;
+    }
     // Update a single feed, usually triggered from within the Widget with the feed
     const newFeeds = [...feeds];
     const idx = newFeeds.findIndex((e) => e.id === feed.id);
@@ -246,8 +269,8 @@ export default function Main({ handleLogin }) {
   };
   /* Init feeds and setup refresh */
   React.useEffect(() => {
-    let intervalId;
-    let lastFeeds = [];
+    let intervalId: number | undefined;
+    let lastFeeds: FullFeed[] = [];
     freshRss.getFeedsFull().then((newFeeds) => {
       lastFeeds = newFeeds;
       setFeeds(newFeeds);
@@ -263,7 +286,7 @@ export default function Main({ handleLogin }) {
             const idx = newFeeds.findIndex((e) => e.id === feed.id);
             if (idx < 0) {
               // new feed!
-              newFeeds.append(feed);
+              newFeeds.push(feed);
               continue;
             }
             const oldFeed = newFeeds[idx];

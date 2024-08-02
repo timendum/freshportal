@@ -1,11 +1,19 @@
 import React from "react";
 
-export default function WidgetPagination({ pag, oldest, setContinuation }) {
-  function makeButton(newPage) {
+import { FeedContent } from "../freshrss";
+
+interface WidgetPaginationProp {
+  pag: string[];
+  oldest: FeedContent["timestampUsec"];
+  setContinuation(c: string): void;
+}
+
+export default function WidgetPagination({ pag, oldest, setContinuation }: WidgetPaginationProp) {
+  function makeButton(newPage: number | "-" | "+" | "…" | "-…") {
     let disabled = newPage === pag.length - 1;
-    let text = String(newPage + 1);
-    let tooltip = "Go to page " + text;
-    let target = undefined;
+    let text = "";
+    let tooltip: string | undefined = "Go to page " + text;
+    let target: string = pag[pag.length - 1];
     if (newPage === "-") {
       text = "<";
       tooltip = "Previous page";
@@ -22,13 +30,14 @@ export default function WidgetPagination({ pag, oldest, setContinuation }) {
       target = oldest;
     } else if (newPage === "…" || newPage === "-…") {
       text = "…";
-      tooltip = null;
+      tooltip = undefined;
       disabled = true;
     } else if (newPage < 0) {
       text = " ";
-      tooltip = null;
+      tooltip = undefined;
       disabled = true;
     } else {
+      text = String(newPage + 1);
       target = pag[newPage];
     }
     let classes = "md:px-1 xl:px-2 btn-primary mx-auto block";

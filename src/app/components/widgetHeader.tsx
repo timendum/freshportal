@@ -1,15 +1,29 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  //faArrowsRotate,
-  faGear,
-  faXmarkCircle,
-  faCaretUp,
   faCaretDown,
-  faUpDownLeftRight
+  faCaretUp,
+  faGear,
+  faUpDownLeftRight,
+  faXmarkCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 
-export default function WidgetHeader({ feed, unread, isCollapsed, handleCommand }) {
+import { FullFeed } from "../freshrss";
+import { HandleCommandType } from "./interfaces";
+
+interface WidgetHeaderProp {
+  feed: FullFeed;
+  unread: FullFeed["unread"];
+  isCollapsed: boolean;
+  handleCommand: HandleCommandType;
+}
+
+export default function WidgetHeader({
+  feed,
+  unread,
+  isCollapsed,
+  handleCommand,
+}: WidgetHeaderProp) {
   return (
     <div className="flex dark:text-zinc-300 md:px-1">
       <button
