@@ -1,7 +1,7 @@
 import React from "react";
 
-import { FeedContent, freshRss, FullFeed } from "../freshrss";
-import { WidgetType, HandleCommandType } from "./interfaces";
+import { FeedContent, freshRss } from "../freshrss";
+import { WidgetType } from "./interfaces";
 
 interface WidgetLinkProp {
   row: FeedContent;

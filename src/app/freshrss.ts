@@ -87,7 +87,7 @@ const freshRss: FreshRss = {
       .then((response) => response.text())
       .then((resp) => {
         const rows = resp.split("\n").map((r) => r.split("="));
-        for (let row of rows) {
+        for (const row of rows) {
           if (row[0] == "Auth") {
             freshRss.session = row[1];
             return true;
@@ -248,4 +248,4 @@ function request(
   });
 }
 
-export { freshRss, Feed, UnreadFeed, FullFeed, FeedContent };
+export { freshRss, type Feed, type UnreadFeed, type FullFeed, type FeedContent };

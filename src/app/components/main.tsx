@@ -100,13 +100,16 @@ interface MainProp {
 export default function Main({ handleLogin }: MainProp) {
   const [isAddWidget, setAddWiget] = React.useState(false); // is Add widget modal open?
   const [isExpImp, setExpImp] = React.useState(false); // is Export import modal open?
-  const [widgets, setWidgets] = React.useState<Widget[]>([]); // list of widgets
+  const [widgets, setWidgets] = React.useState<WidgetType[]>([]); // list of widgets
   const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
     if (feeds && widgets.length > 0) {
-      refreshUnread(feeds, widgets);
+      refreshUnread(
+        feeds,
+        widgets.filter((w) => w.id)
+      );
     }
     return () => {
       // on "unmount" set uncount = 0
@@ -122,7 +125,7 @@ export default function Main({ handleLogin }: MainProp) {
     widgets
       .filter((_, i) => i % 3 === col)
       .map((widget, i) => {
-        if (!Object.prototype.hasOwnProperty.call(widget, "id")) {
+        if (widget.id == "fake") {
           return <div key={`index-${i}`} />;
         }
         let widgetFeed = null;
@@ -223,7 +226,7 @@ export default function Main({ handleLogin }: MainProp) {
     if (newIdx !== undefined) {
       const newWidgets = [...widgets];
       if (newIdx >= newWidgets.length) {
-        newWidgets.push({});
+        newWidgets.push({ id: "fake", color: "fake" });
       }
       [newWidgets[idx], newWidgets[newIdx]] = [newWidgets[newIdx], newWidgets[idx]];
       localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
@@ -269,41 +272,44 @@ export default function Main({ handleLogin }: MainProp) {
   };
   /* Init feeds and setup refresh */
   React.useEffect(() => {
-    let intervalId: number | undefined;
+    let intervalId: ReturnType<typeof setTimeout> | undefined;
     let lastFeeds: FullFeed[] = [];
     freshRss.getFeedsFull().then((newFeeds) => {
       lastFeeds = newFeeds;
       setFeeds(newFeeds);
-      intervalId = setInterval(() => {
-        console.debug("Trigger refresh");
-        freshRss.getFeedsFull().then((updatedFeeds) => {
-          /* This function changes the feed objects in `feeds` ONLY
+      intervalId = setInterval(
+        () => {
+          console.debug("Trigger refresh");
+          freshRss.getFeedsFull().then((updatedFeeds) => {
+            /* This function changes the feed objects in `feeds` ONLY
             if the object is in a different state (ie: unread count or update timestamp).
             If the object is the same, React will not trigger the update and so the API call.
           */
-          const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
-          for (const feed of updatedFeeds) {
-            const idx = newFeeds.findIndex((e) => e.id === feed.id);
-            if (idx < 0) {
-              // new feed!
-              newFeeds.push(feed);
-              continue;
+            const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
+            for (const feed of updatedFeeds) {
+              const idx = newFeeds.findIndex((e) => e.id === feed.id);
+              if (idx < 0) {
+                // new feed!
+                newFeeds.push(feed);
+                continue;
+              }
+              const oldFeed = newFeeds[idx];
+              if (
+                feed.unread != oldFeed.unread ||
+                feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
+              ) {
+                // need refresh, so create use the new object
+                newFeeds[idx] = feed;
+                console.debug("Changed:", feed, oldFeed);
+              }
+              // else, keep the old one
             }
-            const oldFeed = newFeeds[idx];
-            if (
-              feed.unread != oldFeed.unread ||
-              feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
-            ) {
-              // need refresh, so create use the new object
-              newFeeds[idx] = feed;
-              console.debug("Changed:", feed, oldFeed);
-            }
-            // else, keep the old one
-          }
-          lastFeeds = newFeeds;
-          setFeeds(newFeeds);
-        });
-      }, 1000 * 60 * 10);
+            lastFeeds = newFeeds;
+            setFeeds(newFeeds);
+          });
+        },
+        1000 * 60 * 10
+      );
     });
     return () => {
       if (intervalId) {
@@ -332,12 +338,14 @@ export default function Main({ handleLogin }: MainProp) {
           <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(2)}</div>
         </div>
       )}
-      <AddWidget
-        feeds={feeds}
-        open={isAddWidget}
-        addWidget={addWidget}
-        skip={widgets.map((w) => w.id)}
-      />
+      {feeds !== false && (
+        <AddWidget
+          feeds={feeds}
+          open={isAddWidget}
+          addWidget={addWidget}
+          skip={widgets.map((w) => w.id)}
+        />
+      )}
       <ExpImp open={isExpImp} doReset={handleExpImp} />
     </div>
   );

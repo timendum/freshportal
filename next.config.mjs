@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
-export default const nextConfig = {
+const nextConfig = {
     output: "export",
     distDir: "build",
     productionBrowserSourceMaps: true,
 };
+
+export default nextConfig;

@@ -14,6 +14,11 @@
       "command": "npm run start",
       "runAtStart": true
     },
+    "dev": {
+      "name": "dev",
+      "command": "npm run dev",
+      "runAtStart": true
+    },
     "build": {
       "name": "build",
       "command": "npm run build",

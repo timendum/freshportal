@@ -1,7 +1,8 @@
 {
   "include": [
     "src/**/*",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "build/types/**/*.ts"
   ],
   "compilerOptions": {
     "strict": true,

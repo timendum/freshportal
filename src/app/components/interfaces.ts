@@ -18,4 +18,4 @@ interface WidgetType {
 
 type HandleCommandType = (name: string, data?: string) => void;
 
-export { HandleStateChangeType, WidgetType, HandleCommandType };
+export type { HandleStateChangeType, WidgetType, HandleCommandType };
