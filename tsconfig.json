@@ -1,0 +1,33 @@
+{
+  "include": [
+    "src/**/*",
+    ".next/types/**/*.ts"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "jsx": "preserve",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
+  "sourceMap": true /* Create source map files for emitted JavaScript files. */,
+  "exclude": [
+    "node_modules"
+  ]
+}

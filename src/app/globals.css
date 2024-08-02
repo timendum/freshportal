@@ -9,8 +9,15 @@ a {
 
 @layer base {
   html {
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial,
-      "Noto Sans", sans-serif;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      Roboto,
+      Arial,
+      "Noto Sans",
+      sans-serif;
   }
 }
 

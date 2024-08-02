@@ -9,6 +9,11 @@
 
   // These tasks can be run from CodeSandbox. Running one will open a log in the app.
   "tasks": {
+    "dev": {
+      "name": "dev",
+      "command": "npm run dev",
+      "runAtStart": true
+    },
     "start": {
       "name": "start",
       "command": "npm run start",
@@ -35,7 +40,7 @@
     },
     "eslint": {
       "name": "eslint",
-      "command": "npx eslint --ext .jsx --ext .js src"
+      "command": "npx eslint --ext .tsx --ext .ts src"
     }
   }
 }

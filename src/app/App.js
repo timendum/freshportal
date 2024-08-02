@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import Loading from "./components/loading";
@@ -6,7 +7,7 @@ import Main from "./components/main";
 
 import freshRss from "./freshrss";
 import { darkPreference } from "./components/utils";
-import "./styles.css";
+//import "./styles.css";
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = React.useState(null);

@@ -27,6 +27,9 @@ const refreshUnread = (feeds, widgets) => {
     .map((e) => e.unread)
     .reduce((a, b) => a + b, 0);
   const link = document.querySelector("link[type='image/x-icon']");
+  if (!link) {
+    return;
+  }
   if (!link.dataset.originalUrl) {
     link.dataset.originalUrl = link.href;
   }
@@ -251,36 +254,39 @@ export default function Main({ handleLogin }) {
     freshRss.getFeedsFull().then((newFeeds) => {
       lastFeeds = newFeeds;
       setFeeds(newFeeds);
-      intervalId = setInterval(() => {
-        console.debug("Trigger refresh");
-        freshRss.getFeedsFull().then((updatedFeeds) => {
-          /* This function changes the feed objects in `feeds` ONLY
+      intervalId = setInterval(
+        () => {
+          console.debug("Trigger refresh");
+          freshRss.getFeedsFull().then((updatedFeeds) => {
+            /* This function changes the feed objects in `feeds` ONLY
             if the object is in a different state (ie: unread count or update timestamp).
             If the object is the same, React will not trigger the update and so the API call.
           */
-          const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
-          for (const feed of updatedFeeds) {
-            const idx = newFeeds.findIndex((e) => e.id === feed.id);
-            if (idx < 0) {
-              // new feed!
-              newFeeds.append(feed);
-              continue;
+            const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
+            for (const feed of updatedFeeds) {
+              const idx = newFeeds.findIndex((e) => e.id === feed.id);
+              if (idx < 0) {
+                // new feed!
+                newFeeds.append(feed);
+                continue;
+              }
+              const oldFeed = newFeeds[idx];
+              if (
+                feed.unread != oldFeed.unread ||
+                feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
+              ) {
+                // need refresh, so create use the new object
+                newFeeds[idx] = feed;
+                console.debug("Changed:", feed, oldFeed);
+              }
+              // else, keep the old one
             }
-            const oldFeed = newFeeds[idx];
-            if (
-              feed.unread != oldFeed.unread ||
-              feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
-            ) {
-              // need refresh, so create use the new object
-              newFeeds[idx] = feed;
-              console.debug("Changed:", feed, oldFeed);
-            }
-            // else, keep the old one
-          }
-          lastFeeds = newFeeds;
-          setFeeds(newFeeds);
-        });
-      }, 1000 * 60 * 10);
+            lastFeeds = newFeeds;
+            setFeeds(newFeeds);
+          });
+        },
+        1000 * 60 * 10
+      );
     });
     return () => {
       if (intervalId) {
