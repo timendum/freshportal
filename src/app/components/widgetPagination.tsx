@@ -5,7 +5,7 @@ import { FeedContent } from "../freshrss";
 interface WidgetPaginationProp {
   pag: string[];
   oldest: FeedContent["timestampUsec"];
-  setContinuation(c: string): void;
+  setContinuation: (c: string) => void;
 }
 
 export default function WidgetPagination({ pag, oldest, setContinuation }: WidgetPaginationProp) {

@@ -4,7 +4,7 @@ import {
   faRightFromBracket,
   faSquarePlus,
   faSun,
-  IconDefinition,
+  IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -45,7 +45,7 @@ export default function Topbar({
   isLoggedIn,
   setAddWiget,
   setExpImp,
-  toggleDark,
+  toggleDark
 }: TopbarProp) {
   return (
     <div className="flex bg-slate-700 px-2 py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
@@ -88,11 +88,16 @@ export default function Topbar({
       {!!isLoggedIn && (
         <Button
           onClick={() => {
-            freshRss.logout().then((resp) => {
-              if (resp) {
-                handleLogin(false);
-              }
-            });
+            freshRss
+              .logout()
+              .then((resp) => {
+                if (resp) {
+                  handleLogin(false);
+                }
+              })
+              .catch((error) => {
+                console.error("logout error", error);
+              });
           }}
           icon={faRightFromBracket}
           tooltip="Logout"

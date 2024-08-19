@@ -3,7 +3,7 @@ import {
   faCaretUp,
   faGear,
   faUpDownLeftRight,
-  faXmarkCircle,
+  faXmarkCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -22,7 +22,7 @@ export default function WidgetHeader({
   feed,
   unread,
   isCollapsed,
-  handleCommand,
+  handleCommand
 }: WidgetHeaderProp) {
   return (
     <div className="flex dark:text-zinc-300 md:px-1">
