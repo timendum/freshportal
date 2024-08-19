@@ -1,3 +1,4 @@
+"use client";
 const colors = ["red", "amber", "green", "indigo", "fuchsia", "gray"];
 
 const darkPreference = () => {

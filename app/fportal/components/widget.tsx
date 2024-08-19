@@ -28,9 +28,13 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const [rows, setRows] = React.useState<FeedContent[]>([]);
   const { unread } = feed;
   React.useEffect(() => {
-    if (!isCollapsed && pag && pag.length > 0 && pag[pag.length - 1]) {
+    if (!isCollapsed) {
+      let c = "";
+      if (pag.length > 0) {
+        c = pag[pag.length - 1];
+      }
       freshRss
-        .getContent(feed.id, sizeLimit, pag[pag.length - 1])
+        .getContent(feed.id, sizeLimit, c)
         .then(setRows)
         .catch((error) => {
           console.error("getContent error", error);

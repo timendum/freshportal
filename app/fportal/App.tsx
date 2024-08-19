@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import Loading from "./components/loading";
@@ -8,7 +9,7 @@ import { freshRss } from "./freshrss";
 import { darkPreference } from "./components/utils";
 
 export default function App() {
-  const [isLoggedIn, setLoggedIn] = React.useState<boolean>(false);
+  const [isLoggedIn, setLoggedIn] = React.useState<boolean | undefined>(undefined);
   React.useEffect(() => {
     try {
       freshRss.session = localStorage.getItem("FRSession");
