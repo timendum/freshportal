@@ -8,7 +8,7 @@ interface LocalStoragePerf {
 }
 interface ExpImpProps {
   open: boolean;
-  doReset(arg0: boolean): void;
+  doReset: (arg0: boolean) => void;
 }
 
 export default function ExpImp({ open, doReset }: ExpImpProps) {
@@ -19,6 +19,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
   const localData: LocalStoragePerf = {};
   let ld = localStorage.getItem("FRWidgets");
   if (ld) {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
     localData.widgets = JSON.parse(ld);
   }
   ld = localStorage.getItem("FRSession");
@@ -39,18 +40,16 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
     const data = new FormData(event.currentTarget);
     const jsontxt = data.get("jsontxt");
     try {
-      // @ts-ignore
+      /* eslint-disable
+        @typescript-eslint/no-unsafe-assignment,
+        @typescript-eslint/no-unsafe-member-access,
+        @typescript-eslint/no-unsafe-argument */
+      // @ts-expect-error For invalid JSON in the form
       const jsonv = JSON.parse(jsontxt);
-      if (
-        Object.prototype.hasOwnProperty.call(jsonv, "widgets") &&
-        jsonv.widgets
-      ) {
+      if (Object.prototype.hasOwnProperty.call(jsonv, "widgets") && jsonv.widgets) {
         localStorage.setItem("FRWidgets", JSON.stringify(jsonv.widgets));
       }
-      if (
-        Object.prototype.hasOwnProperty.call(jsonv, "session") &&
-        jsonv.session
-      ) {
+      if (Object.prototype.hasOwnProperty.call(jsonv, "session") && jsonv.session) {
         localStorage.setItem("FRSession", jsonv.session);
       }
       if (Object.prototype.hasOwnProperty.call(jsonv, "base") && jsonv.base) {
@@ -60,6 +59,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
         localStorage.setItem("FRTheme", jsonv.theme);
       }
       doReset(true);
+      /* eslint-enable */
     } catch (e) {
       if (e instanceof SyntaxError) {
         alert("Invalid JSON");
@@ -69,11 +69,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
   return (
     <div
       onClick={(event: React.MouseEvent<HTMLElement>) => {
-        if (
-          open &&
-          ref.current &&
-          !ref.current.contains(event.target as Element)
-        ) {
+        if (open && ref.current && !ref.current.contains(event.target as Element)) {
           doReset(false);
         }
       }}

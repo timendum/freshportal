@@ -14,12 +14,13 @@ type setWidgetsType = (widgets: WidgetType[]) => void;
 
 function setWidgetsFromStorage(setWidgets: setWidgetsType) {
   try {
-    const sWidgets = JSON.parse(localStorage.getItem("FRWidgets") as string);
+    const sWidgets = JSON.parse(localStorage.getItem("FRWidgets") as string) as WidgetType[];
     if (sWidgets && sWidgets.length > 0) {
       console.debug("from storage", sWidgets);
       setWidgets(sWidgets);
     }
   } catch (e) {
+    console.log("Weird storage reset", e);
     localStorage.removeItem("FRWidgets");
   }
 }
@@ -274,43 +275,53 @@ export default function Main({ handleLogin }: MainProp) {
   React.useEffect(() => {
     let intervalId: ReturnType<typeof setTimeout> | undefined;
     let lastFeeds: FullFeed[] = [];
-    freshRss.getFeedsFull().then((newFeeds) => {
-      lastFeeds = newFeeds;
-      setFeeds(newFeeds);
-      intervalId = setInterval(
-        () => {
-          console.debug("Trigger refresh");
-          freshRss.getFeedsFull().then((updatedFeeds) => {
-            /* This function changes the feed objects in `feeds` ONLY
+    freshRss
+      .getFeedsFull()
+      .then((newFeeds) => {
+        lastFeeds = newFeeds;
+        setFeeds(newFeeds);
+        intervalId = setInterval(
+          () => {
+            console.debug("Trigger refresh");
+            freshRss
+              .getFeedsFull()
+              .then((updatedFeeds) => {
+                /* This function changes the feed objects in `feeds` ONLY
             if the object is in a different state (ie: unread count or update timestamp).
             If the object is the same, React will not trigger the update and so the API call.
           */
-            const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
-            for (const feed of updatedFeeds) {
-              const idx = newFeeds.findIndex((e) => e.id === feed.id);
-              if (idx < 0) {
-                // new feed!
-                newFeeds.push(feed);
-                continue;
-              }
-              const oldFeed = newFeeds[idx];
-              if (
-                feed.unread != oldFeed.unread ||
-                feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
-              ) {
-                // need refresh, so create use the new object
-                newFeeds[idx] = feed;
-                console.debug("Changed:", feed, oldFeed);
-              }
-              // else, keep the old one
-            }
-            lastFeeds = newFeeds;
-            setFeeds(newFeeds);
-          });
-        },
-        1000 * 60 * 10
-      );
-    });
+                const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
+                for (const feed of updatedFeeds) {
+                  const idx = newFeeds.findIndex((e) => e.id === feed.id);
+                  if (idx < 0) {
+                    // new feed!
+                    newFeeds.push(feed);
+                    continue;
+                  }
+                  const oldFeed = newFeeds[idx];
+                  if (
+                    feed.unread != oldFeed.unread ||
+                    feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
+                  ) {
+                    // need refresh, so create use the new object
+                    newFeeds[idx] = feed;
+                    console.debug("Changed:", feed, oldFeed);
+                  }
+                  // else, keep the old one
+                }
+                lastFeeds = newFeeds;
+                setFeeds(newFeeds);
+              })
+              .catch((error) => {
+                console.error("getFeedsFull error", error);
+              });
+          },
+          1000 * 60 * 10
+        );
+      })
+      .catch((error) => {
+        console.error("getFeedsFull error", error);
+      });
     return () => {
       if (intervalId) {
         clearInterval(intervalId);

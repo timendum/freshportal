@@ -6,7 +6,7 @@ import { WidgetType } from "./interfaces";
 interface WidgetLinkProp {
   row: FeedContent;
   wType: WidgetType["wType"];
-  updateLink(id: string): void;
+  updateLink: (id: string) => void;
 }
 
 export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
@@ -18,9 +18,14 @@ export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
     excerpt = "\u00A0";
   }
   const markRead = () => {
-    freshRss.markReadItems([row.id]).then(() => {
-      updateLink(row.id);
-    });
+    freshRss
+      .markReadItems([row.id])
+      .then(() => {
+        updateLink(row.id);
+      })
+      .catch((error) => {
+        console.error("markRead error", error);
+      });
   };
 
   return (

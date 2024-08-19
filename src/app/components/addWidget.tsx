@@ -4,16 +4,11 @@ import { FullFeed } from "../freshrss";
 interface AddWidgetProp {
   feeds: FullFeed[];
   open: boolean;
-  addWidget(id: string | null): void;
+  addWidget: (id: string | null) => void;
   skip: string[];
 }
 
-export default function AddWidget({
-  feeds,
-  open,
-  addWidget,
-  skip,
-}: AddWidgetProp) {
+export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetProp) {
   const ref = React.useRef<HTMLDivElement>(null);
   if (!open) {
     return null;
@@ -33,11 +28,7 @@ export default function AddWidget({
   return (
     <div
       onClick={(event) => {
-        if (
-          open &&
-          ref.current &&
-          !ref.current.contains(event.target as Element)
-        ) {
+        if (open && ref.current && !ref.current.contains(event.target as Element)) {
           addWidget(null);
         }
       }}
@@ -49,10 +40,7 @@ export default function AddWidget({
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <h4 className="text-lg dark:text-gray-200">Feed to be added:</h4>
-          <select
-            name="feedId"
-            className="input-primary block w-full px-3 py-1.5"
-          >
+          <select name="feedId" className="input-primary block w-full px-3 py-1.5">
             {feeds.map((feed) => (
               <option key={feed.id} value={feed.id}>
                 {feed.title}

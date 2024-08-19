@@ -7,9 +7,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ handleLogin }: LoginFormProps) {
-  const [loginError, setloginError] = React.useState<string | undefined>(
-    undefined
-  );
+  const [loginError, setloginError] = React.useState<string | undefined>(undefined);
   const [loading, setLoading] = React.useState(false);
   let defaultHost = localStorage.getItem("FRHost");
   if (defaultHost && defaultHost.startsWith("http")) {
@@ -22,8 +20,8 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
     setLoading(true);
     const data = new FormData(event.currentTarget);
     let apiLocation = data.get("location");
-    let user = data.get("user");
-    let password = data.get("password");
+    const user = data.get("user");
+    const password = data.get("password");
     if (!user || !apiLocation || !password) {
       setloginError("Fill all fields");
       return;

@@ -13,8 +13,8 @@ export default function App() {
     try {
       freshRss.session = localStorage.getItem("FRSession");
       freshRss.base = localStorage.getItem("FRHost");
-    } catch (_) {
-      // pass
+    } catch (err) {
+      console.log(err);
     }
     freshRss.isLoggedIn().then(setLoggedIn).catch(console.log);
   }, []);

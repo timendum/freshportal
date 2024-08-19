@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-unsafe-member-access: "off", @typescript-eslint/no-unsafe-assignment: "off", @typescript-eslint/no-explicit-any: "off" */
+
 interface Feed {
   id: string;
   title: string;
@@ -34,7 +36,7 @@ interface FeedContent {
 interface FreshRss {
   base: string | null;
   session: string | null;
-  token: null | null;
+  token: string | null;
   isLoggedIn(): Promise<boolean>;
   login(user: string, pass: string): Promise<boolean>;
   logout(): Promise<boolean>;
@@ -109,8 +111,8 @@ const freshRss: FreshRss = {
       request("reader/api/0/subscription/list"),
       request("reader/api/0/tag/list")
     ]).then((values) => {
-      const subs = values[0]["subscriptions"];
-      for (const tag of values[1]["tags"]) {
+      const subs: Feed[] = values[0]["subscriptions"];
+      for (const tag of values[1]["tags"] as Feed[]) {
         if (Object.keys(tag).indexOf("type") > -1) {
           const splitted = tag.id.split("/");
           subs.push({
@@ -126,7 +128,7 @@ const freshRss: FreshRss = {
     return request("reader/api/0/stream/contents/" + id, {
       n: limit,
       c
-    }).then((resp) => resp["items"]);
+    }).then((resp) => resp["items"] as FeedContent[]);
   },
   markReadItems: function (ids) {
     return request(
@@ -148,7 +150,7 @@ const freshRss: FreshRss = {
   },
   getUnreads: function () {
     return request("reader/api/0/unread-count").then((resp) => {
-      return resp["unreadcounts"];
+      return resp["unreadcounts"] as UnreadFeed[];
     });
   },
   getFeedsFull: function () {
@@ -218,20 +220,28 @@ function request(
   for (const [key, value] of Object.entries(params)) {
     if (value instanceof Array) {
       for (const v of value) {
-        url.searchParams.append(key, v);
+        if (typeof v === "string") {
+          url.searchParams.append(key, v);
+        }
       }
     } else {
-      url.searchParams.append(key, value);
+      if (typeof value === "string") {
+        url.searchParams.append(key, value);
+      }
     }
   }
   const formData = new URLSearchParams();
   for (const [key, value] of Object.entries(data)) {
     if (value instanceof Array) {
       for (const v of value) {
-        formData.append(key, v);
+        if (typeof v === "string") {
+          formData.append(key, v);
+        }
       }
     } else {
-      formData.append(key, value);
+      if (typeof value === "string") {
+        formData.append(key, value);
+      }
     }
   }
 
