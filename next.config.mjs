@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
+  basePath: "/freshportal",
   distDir: "build",
+  output: "export",
   productionBrowserSourceMaps: true
 };
 
