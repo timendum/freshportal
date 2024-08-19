@@ -1,6 +1,6 @@
 {
   "include": [
-    "src/**/*",
+    "app/**/*",
     ".next/types/**/*.ts",
     "build/types/**/*.ts"
   ],

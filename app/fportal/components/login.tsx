@@ -9,12 +9,17 @@ interface LoginFormProps {
 export default function LoginForm({ handleLogin }: LoginFormProps) {
   const [loginError, setloginError] = React.useState<string | undefined>(undefined);
   const [loading, setLoading] = React.useState(false);
-  let defaultHost = localStorage.getItem("FRHost");
-  if (defaultHost && defaultHost.startsWith("http")) {
-    defaultHost = defaultHost.replace(/\/api.+$/, "/");
-  } else {
-    defaultHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;
-  }
+  const [defaultHost, setDefaultHost] = React.useState("");
+
+  React.useEffect(() => {
+    let newHost = localStorage.getItem("FRHost");
+    if (newHost && newHost.startsWith("http")) {
+      newHost = newHost.replace(/\/api.+$/, "/");
+    } else {
+      newHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;
+    }
+    setDefaultHost(newHost);
+  });
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);

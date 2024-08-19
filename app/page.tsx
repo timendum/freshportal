@@ -1,4 +1,4 @@
-import App from "./app/App";
+import App from "./fportal/App";
 
 export default function Home() {
   return (

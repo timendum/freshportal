@@ -1,14 +1,15 @@
 import React from "react";
+import Head from "next/head";
 
-import { colors, darkPreference } from "./utils";
-import Loading from "./loading";
-import Topbar from "./topbar";
-import Widget from "./widget";
+import { FullFeed, freshRss } from "../freshrss";
 import AddWidget from "./addWidget";
 import ExpImp from "./expimp";
-import { freshRss, FullFeed } from "../freshrss";
+import Loading from "./loading";
+import Topbar from "./topbar";
+import { colors, darkPreference } from "./utils";
+import Widget from "./widget";
 
-import { WidgetType, HandleStateChangeType } from "./interfaces";
+import { HandleStateChangeType, WidgetType } from "./interfaces";
 
 type setWidgetsType = (widgets: WidgetType[]) => void;
 
@@ -330,6 +331,9 @@ export default function Main({ handleLogin }: MainProp) {
   }, []);
   return (
     <div className="min-h-screen dark:bg-black">
+      <Head>
+        <link rel="shortcut icon" href="favicon.png" type="image/x-icon" key="icon" />
+      </Head>
       <Topbar
         handleLogin={handleLogin}
         setAddWiget={setAddWiget}

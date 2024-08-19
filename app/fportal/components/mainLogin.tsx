@@ -12,7 +12,11 @@ interface MainLoginProps {
 
 export default function MainLogin({ handleLogin }: MainLoginProps) {
   const [isExpImp, setExpImp] = React.useState<boolean>(false);
-  const [darkMode, setDarkMode] = React.useState(darkPreference());
+  const [darkMode, setDarkMode] = React.useState(false);
+
+  React.useEffect(() => {
+    setDarkMode(darkPreference());
+  });
 
   /* Change and persist theme */
   const changeTheme = () => {
