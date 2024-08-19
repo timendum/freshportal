@@ -10,7 +10,8 @@ Installation
 
 Just unzip the latest release (or build it by yourself) and put it somewhere, the only back-end needed is [FreshRSS](https://freshrss.github.io) itself.
 
-1. Put the build files in a directory on the same web-server of FreshRSS
+1. Create a "`freshportal`" direcotry on the same web-server of FreshRSS
+1. Put the build files in the directory
 1. On the FreshRSS instance enable the API access.
 1. The go to index.html.
 
