@@ -2,11 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: "class",
-  content: [
-    "./app/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/fportal/**/*.{js,ts,jsx,tsx,mdx}"
-  ],
+  content: ["./index.html", "./app/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       fontSize: {
@@ -16,4 +12,5 @@ const config: Config = {
   },
   plugins: []
 };
+
 export default config;

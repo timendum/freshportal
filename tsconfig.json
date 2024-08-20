@@ -1,7 +1,6 @@
 {
   "include": [
     "app/**/*",
-    ".next/types/**/*.ts",
     "build/types/**/*.ts"
   ],
   "compilerOptions": {

@@ -1,5 +1,4 @@
 import React from "react";
-import Head from "next/head";
 
 import { FullFeed, freshRss } from "../freshrss";
 import AddWidget from "./addWidget";
@@ -331,9 +330,6 @@ export default function Main({ handleLogin }: MainProp) {
   }, []);
   return (
     <div className="min-h-screen dark:bg-black">
-      <Head>
-        <link rel="shortcut icon" href="favicon.png" type="image/x-icon" key="icon" />
-      </Head>
       <Topbar
         handleLogin={handleLogin}
         setAddWiget={setAddWiget}
