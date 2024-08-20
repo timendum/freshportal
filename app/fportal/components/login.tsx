@@ -19,7 +19,7 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
       newHost = `${document.location.protocol}//${document.location.hostname}:${document.location.port}/`;
     }
     setDefaultHost(newHost);
-  });
+  }, []);
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);

@@ -16,7 +16,7 @@ export default function MainLogin({ handleLogin }: MainLoginProps) {
 
   React.useEffect(() => {
     setDarkMode(darkPreference());
-  });
+  }, []);
 
   /* Change and persist theme */
   const changeTheme = () => {

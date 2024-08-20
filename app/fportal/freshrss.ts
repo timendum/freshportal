@@ -95,7 +95,7 @@ const freshRss: FreshRss = {
             return true;
           }
         }
-        return true;
+        return false;
       })
       .catch(() => false);
   },

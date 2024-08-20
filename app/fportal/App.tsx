@@ -1,12 +1,11 @@
-"use client";
 import React from "react";
 
 import Loading from "./components/loading";
-import MainLogin from "./components/mainLogin";
 import Main from "./components/main";
+import MainLogin from "./components/mainLogin";
 
-import { freshRss } from "./freshrss";
 import { darkPreference } from "./components/utils";
+import { freshRss } from "./freshrss";
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = React.useState<boolean | undefined>(undefined);
