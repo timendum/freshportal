@@ -74,30 +74,34 @@ const freshRss: FreshRss = {
       .catch(() => false);
   },
   login: function (user, pass) {
-    if (!freshRss.base) {
-      throw new Error("Set freshRss.base");
-    }
-    freshRss.session = null;
-    const url = new URL("accounts/ClientLogin", freshRss.base);
-    url.searchParams.append("Email", user);
-    url.searchParams.append("Passwd", pass);
-    return fetch(url, {
-      method: "POST",
-      cache: "no-cache",
-      mode: "cors"
-    })
-      .then((response) => response.text())
-      .then((resp) => {
-        const rows = resp.split("\n").map((r) => r.split("="));
-        for (const row of rows) {
-          if (row[0] == "Auth") {
-            freshRss.session = row[1];
-            return true;
-          }
-        }
-        return false;
-      })
-      .catch(() => false);
+    return new Promise((resolve) => {
+      if (!freshRss.base) {
+        throw new Error("Set freshRss.base");
+      }
+      freshRss.session = null;
+      const url = new URL("accounts/ClientLogin", freshRss.base);
+      url.searchParams.append("Email", user);
+      url.searchParams.append("Passwd", pass);
+      resolve(
+        fetch(url, {
+          method: "POST",
+          cache: "no-cache",
+          mode: "cors"
+        })
+          .then((response) => response.text())
+          .then((resp) => {
+            const rows = resp.split("\n").map((r) => r.split("="));
+            for (const row of rows) {
+              if (row[0] == "Auth") {
+                freshRss.session = row[1];
+                return true;
+              }
+            }
+            return false;
+          })
+          .catch(() => false)
+      );
+    });
   },
   logout: function () {
     freshRss.session = null;
@@ -180,13 +184,13 @@ async function getToken(): Promise<string> {
   }
   const resp = await request("reader/api/0/token", { output: "text" });
   if (!resp) {
-    throw new Error("Response null");
+    return Promise.reject("Response null");
   }
   freshRss.token = resp;
   if (!freshRss.token) {
-    throw new Error("Response without token");
+    return Promise.reject("Response without token");
   }
-  return freshRss.token;
+  return Promise.resolve(freshRss.token);
 }
 
 function request(
@@ -210,7 +214,7 @@ function request(
     headers.append("Authorization", "GoogleLogin auth=" + freshRss.session);
   }
   if (!freshRss.base) {
-    throw new Error("Set freshRss.base");
+    return Promise.reject("Set freshRss.base");
   }
   const url = new URL(path, freshRss.base);
   params = params || {};

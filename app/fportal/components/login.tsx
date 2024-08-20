@@ -45,7 +45,11 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
           setLoading(false);
         }
       })
-      .catch(console.log);
+      .catch((error) => {
+        setloginError("Error during login, check console.");
+        console.log(error);
+        setLoading(false);
+      });
   };
   return (
     <div className="min-h-screen p-6 dark:bg-black">
