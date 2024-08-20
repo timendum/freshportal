@@ -9,11 +9,6 @@
 
   // These tasks can be run from CodeSandbox. Running one will open a log in the app.
   "tasks": {
-    "start": {
-      "name": "start",
-      "command": "npm run start",
-      "runAtStart": true
-    },
     "dev": {
       "name": "dev",
       "command": "npm run dev",
@@ -24,19 +19,13 @@
       "command": "npm run build",
       "runAtStart": false
     },
-    "test": {
-      "name": "test",
-      "command": "npm run test",
-      "runAtStart": false
-    },
-    "eject": {
-      "name": "eject",
-      "command": "npm run eject",
-      "runAtStart": false
-    },
     "prettier write": {
       "name": "prettier write",
       "command": "npx prettier -w app"
+    },
+    "lint": {
+      "name": "lint",
+      "command": "npm run lint"
     }
   }
 }
