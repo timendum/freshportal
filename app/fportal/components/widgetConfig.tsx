@@ -1,6 +1,6 @@
 import React from "react";
 
-import { WidgetType, HandleCommandType } from "./interfaces";
+import type { WidgetType, HandleCommandType } from "./interfaces";
 
 import { colors } from "./utils";
 

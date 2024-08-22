@@ -1,7 +1,7 @@
 import React from "react";
 
 import ExpImp from "./expimp";
-import { HandleStateChangeType } from "./interfaces";
+import type { HandleStateChangeType } from "./interfaces";
 import LoginForm from "./login";
 import Topbar from "./topbar";
 import { darkPreference } from "./utils";
@@ -11,7 +11,7 @@ interface MainLoginProps {
 }
 
 export default function MainLogin({ handleLogin }: MainLoginProps) {
-  const [isExpImp, setExpImp] = React.useState<boolean>(false);
+  const [isExpImp, setExpImp] = React.useState(false);
   const [darkMode, setDarkMode] = React.useState(false);
 
   React.useEffect(() => {

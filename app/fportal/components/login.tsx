@@ -1,6 +1,6 @@
 import React from "react";
 import { freshRss } from "../freshrss";
-import { HandleStateChangeType } from "./interfaces";
+import { type HandleStateChangeType } from "./interfaces";
 
 interface LoginFormProps {
   handleLogin: HandleStateChangeType;

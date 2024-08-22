@@ -8,8 +8,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
-import { FullFeed } from "../freshrss";
-import { HandleCommandType } from "./interfaces";
+import type { FullFeed } from "../freshrss";
+import type { HandleCommandType } from "./interfaces";
 
 interface WidgetHeaderProp {
   feed: FullFeed;

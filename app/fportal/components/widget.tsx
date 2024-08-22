@@ -1,6 +1,6 @@
 import React from "react";
 import { FeedContent, freshRss, FullFeed } from "../freshrss";
-import { WidgetType, HandleCommandType } from "./interfaces";
+import type { WidgetType, HandleCommandType } from "./interfaces";
 
 import Loading from "./loading";
 import WidgetConfig from "./widgetConfig";
@@ -24,7 +24,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
   const [wType, setWType] = React.useState(config.wType || "excerpt");
   const [color, setColor] = React.useState(config.color || "gray");
-  const [pag, setPag] = React.useState<string[]>([""]);
+  const [pag, setPag] = React.useState([""]);
   const [rows, setRows] = React.useState<FeedContent[]>([]);
   const { unread } = feed;
   React.useEffect(() => {

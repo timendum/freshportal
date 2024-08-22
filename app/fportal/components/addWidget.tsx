@@ -1,5 +1,5 @@
 import React from "react";
-import { FullFeed } from "../freshrss";
+import { type FullFeed } from "../freshrss";
 
 interface AddWidgetProp {
   feeds: FullFeed[];

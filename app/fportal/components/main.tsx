@@ -1,6 +1,6 @@
 import React from "react";
 
-import { FullFeed, freshRss } from "../freshrss";
+import { type FullFeed, freshRss } from "../freshrss";
 import AddWidget from "./addWidget";
 import ExpImp from "./expimp";
 import Loading from "./loading";
@@ -8,7 +8,7 @@ import Topbar from "./topbar";
 import { colors, darkPreference } from "./utils";
 import Widget from "./widget";
 
-import { HandleStateChangeType, WidgetType } from "./interfaces";
+import type { HandleStateChangeType, WidgetType } from "./interfaces";
 
 type setWidgetsType = (widgets: WidgetType[]) => void;
 
@@ -25,9 +25,7 @@ function setWidgetsFromStorage(setWidgets: setWidgetsType) {
   }
 }
 
-type RefreshUnreadType = (feeds: FullFeed[], widgets: WidgetType[]) => void;
-
-const refreshUnread: RefreshUnreadType = (feeds, widgets) => {
+const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
   // Update the faviconc according to the unread count.
   const ids = widgets.map((w) => w.id);
   let c: string | number = feeds

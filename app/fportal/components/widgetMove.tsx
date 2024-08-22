@@ -1,5 +1,5 @@
 import React from "react";
-import { HandleCommandType } from "./interfaces";
+import type { HandleCommandType } from "./interfaces";
 
 interface WidgetMoveProp {
   handleCommand: HandleCommandType;

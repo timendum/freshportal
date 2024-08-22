@@ -9,7 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { freshRss } from "../freshrss";
-import { HandleStateChangeType } from "./interfaces";
+import type { HandleStateChangeType } from "./interfaces";
 
 interface CustomButtonProps {
   onClick: React.MouseEventHandler<HTMLElement>;

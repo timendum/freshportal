@@ -1,6 +1,6 @@
 import React from "react";
 
-import { FeedContent } from "../freshrss";
+import type { FeedContent } from "../freshrss";
 
 interface WidgetPaginationProp {
   pag: string[];
