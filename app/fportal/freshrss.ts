@@ -184,11 +184,11 @@ async function getToken(): Promise<string> {
   }
   const resp = await request("reader/api/0/token", { output: "text" });
   if (!resp) {
-    return Promise.reject("Response null");
+    return Promise.reject(new Error("Response null"));
   }
   freshRss.token = resp;
   if (!freshRss.token) {
-    return Promise.reject("Response without token");
+    return Promise.reject(new Error("Response without token"));
   }
   return Promise.resolve(freshRss.token);
 }
@@ -214,7 +214,7 @@ function request(
     headers.append("Authorization", "GoogleLogin auth=" + freshRss.session);
   }
   if (!freshRss.base) {
-    return Promise.reject("Set freshRss.base");
+    return Promise.reject(new Error("Set freshRss.base"));
   }
   const url = new URL(path, freshRss.base);
   params = params || {};
