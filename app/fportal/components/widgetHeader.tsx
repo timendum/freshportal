@@ -56,6 +56,13 @@ export default function WidgetHeader({
               </a>
             );
           }
+          if (feed.feeds?.length == 1) {
+            return (
+              <a href={feed.feeds[0].htmlUrl} target="feed_{feed.id}">
+                {feed.title}
+              </a>
+            );
+          }
 
           return feed.title;
         })()}

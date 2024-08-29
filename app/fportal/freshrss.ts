@@ -4,6 +4,7 @@ interface Feed {
   id: string;
   title: string;
   htmlUrl?: string;
+  feeds?: Feed[];
 }
 
 interface UnreadFeed {
@@ -115,19 +116,41 @@ const freshRss: FreshRss = {
     return Promise.all([
       request("reader/api/0/subscription/list"),
       request("reader/api/0/tag/list")
-    ]).then((values) => {
-      const subs: Feed[] = values[0]["subscriptions"];
-      for (const tag of values[1]["tags"] as Feed[]) {
-        if (Object.keys(tag).indexOf("type") > -1) {
-          const splitted = tag.id.split("/");
-          subs.push({
-            id: tag.id,
-            title: splitted[splitted.length - 1]
-          });
+    ]).then(
+      (
+        values: [
+          {
+            subscriptions: {
+              id: string;
+              title: string;
+              htmlUrl: string;
+              url: string;
+              categories: {
+                id: string;
+                label: string;
+              }[];
+            }[];
+          },
+          { tags: { id: string; type?: string }[] }
+        ]
+      ) => {
+        const subs: Feed[] = values[0]["subscriptions"];
+        const only_feeds = values[0]["subscriptions"];
+        for (const tag of values[1]["tags"]) {
+          if (Object.keys(tag).indexOf("type") > -1) {
+            const splitted = tag.id.split("/");
+            subs.push({
+              id: tag.id,
+              title: splitted[splitted.length - 1],
+              feeds: only_feeds.filter((feed: { categories: { id: string }[] }) =>
+                feed["categories"]?.find((cat: { id: string }) => cat.id == tag.id)
+              )
+            });
+          }
         }
+        return subs;
       }
-      return subs;
-    });
+    );
   },
   getContent: function (id, limit, c) {
     return request("reader/api/0/stream/contents/" + id, {
