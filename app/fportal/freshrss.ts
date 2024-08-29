@@ -3,6 +3,7 @@
 interface Feed {
   id: string;
   title: string;
+  htmlUrl?: string;
 }
 
 interface UnreadFeed {
