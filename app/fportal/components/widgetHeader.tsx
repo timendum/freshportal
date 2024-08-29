@@ -47,7 +47,19 @@ export default function WidgetHeader({
       >
         {unread}
       </button>
-      <h4 className="grow text-lg md:px-0.5">{feed.title}</h4>
+      <h4 className="grow text-lg md:px-0.5">
+        {(() => {
+          if (feed.htmlUrl) {
+            return (
+              <a href={feed.htmlUrl} target="feed_{feed.id}">
+                {feed.title}
+              </a>
+            );
+          }
+
+          return feed.title;
+        })()}
+      </h4>
       {/* <button
         type="button"
         className="btn-primary md:px-1"
