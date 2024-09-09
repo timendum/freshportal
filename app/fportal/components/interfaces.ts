@@ -1,12 +1,26 @@
 type HandleStateChangeType = (state: boolean) => void;
 
+const wTypes = ["simple", "excerpt"] as const;
+
 interface WidgetType {
   id: string;
   color: string;
   sizeLimit?: number;
-  wType?: "simple" | "excerpt";
+  wType?: (typeof wTypes)[number];
 }
 
-type HandleCommandType = (name: string, data?: string) => void;
+type HandleCommandType = {
+  (name: "toggleCollapse"): void;
+  (name: "toggleConfiguring"): void;
+  (name: "size", data: string): void;
+  (name: "wType", data: string): void;
+  (name: "color", data: WidgetType["color"]): void;
+  (name: "reset"): void;
+  (name: "save"): void;
+  (name: "remove"): void;
+  (name: "move", data: string): void;
+  (name: "startMoving"): void;
+  (name: "readAll", data?: string): void;
+};
 
-export type { HandleStateChangeType, WidgetType, HandleCommandType };
+export { wTypes, type HandleStateChangeType, type WidgetType, type HandleCommandType };

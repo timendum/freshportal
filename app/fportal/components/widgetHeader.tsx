@@ -39,8 +39,8 @@ export default function WidgetHeader({
       <button
         type="button"
         disabled={unread < 1}
-        onClick={() => {
-          handleCommand("readAll");
+        onClick={(e) => {
+          handleCommand("readAll", e.ctrlKey ? "current" : undefined);
         }}
         className="btn-primary text-[1.1rem] md:px-0.5 lg:px-1"
         title={unread > 0 ? "Mark all as read" : ""}

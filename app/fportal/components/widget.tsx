@@ -1,6 +1,6 @@
 import React from "react";
 import { FeedContent, freshRss, FullFeed } from "../freshrss";
-import type { WidgetType, HandleCommandType } from "./interfaces";
+import { wTypes, type WidgetType, type HandleCommandType } from "./interfaces";
 
 import Loading from "./loading";
 import WidgetConfig from "./widgetConfig";
@@ -41,76 +41,100 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         });
     }
   }, [feed, pag, sizeLimit, isCollapsed]);
-  const handleCommand: HandleCommandType = (name: string, data?: string) => {
-    if (name === "toggleCollapse") {
-      setCollapsed(!isCollapsed);
-    } else if (name === "toggleConfiguring") {
-      setConfiguring(!isConfiguring);
-      setSizeLimit(config.sizeLimit || 10);
-      setWType(config.wType || "excerpt");
-      setSizeLimit(config.sizeLimit || 10);
-      setColor(config.color || "gray");
-      setMoving(false);
-    } else if (name === "size" && data) {
-      setSizeLimit(parseInt(data, 10));
-    } else if (name === "wType" && data) {
-      switch (data) {
-        case "excerpt":
-        case "simple":
-          setWType(data);
+  const handleCommand: HandleCommandType = (
+    name: HandleCommandType["name"],
+    data?: string | number
+  ) => {
+    switch (name) {
+      case "toggleCollapse":
+        setCollapsed(!isCollapsed);
+        break;
+      case "toggleConfiguring":
+        setConfiguring(!isConfiguring);
+        setSizeLimit(config.sizeLimit || 10);
+        setWType(config.wType || "excerpt");
+        setSizeLimit(config.sizeLimit || 10);
+        setColor(config.color || "gray");
+        setMoving(false);
+        break;
+      case "size":
+        if (typeof data === "string") {
+          setSizeLimit(parseInt(data, 10));
+        }
+        break;
+      case "wType": {
+        const awType = wTypes.find((validName) => validName === data);
+        if (awType) {
+          setWType(awType);
+        }
+        break;
       }
-    } else if (name === "color" && data) {
-      setColor(data);
-    } else if (name === "reset") {
-      setSizeLimit(config.sizeLimit || 10);
-      setWType(config.wType || "excerpt");
-      setSizeLimit(config.sizeLimit || 10);
-      setColor(config.color || "gray");
-    } else if (name === "save") {
-      updateConfig({
-        id: feed.id,
-        sizeLimit,
-        wType,
-        color
-      });
-      setConfiguring(false);
-    } else if (name === "remove") {
-      updateConfig({ id: feed.id, color }, true);
-      setConfiguring(false);
-    } else if (name === "move" && data) {
-      move(feed.id, data);
-    } else if (name === "startMoving") {
-      setConfiguring(false);
-      setMoving(!isMoving);
-    } else if (name === "readAll") {
-      const unreadRows = rows.filter(
-        (e) => e.categories.indexOf("user/-/state/com.google/read") === -1
-      );
-      let markAction = () =>
-        freshRss.markReadFeed(feed.id).catch((error) => {
-          console.error("markReadFeed error", error);
+      case "color":
+        if (typeof data === "string") {
+          setColor(data);
+        }
+        break;
+      case "reset":
+        setSizeLimit(config.sizeLimit || 10);
+        setWType(config.wType || "excerpt");
+        setColor(config.color || "gray");
+        break;
+      case "save":
+        updateConfig({
+          id: feed.id,
+          sizeLimit,
+          wType,
+          color
         });
-      if (unreadRows.length === unread) {
-        markAction = () =>
-          freshRss.markReadItems(unreadRows.map((e) => e.id)).catch((error) => {
-            console.error("markReadItems error", error);
-          });
-      }
-      markAction()
-        .then(() => {
-          const newRows = [...rows];
-          newRows.forEach((row) => {
-            if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
-              row.categories.push("user/-/state/com.google/read");
-            }
-          });
-          feed.unread = 0;
-          updateFeed(feed);
-          setRows(newRows);
-        })
-        .catch((error) => {
-          console.error("markAction error", error);
-        });
+        setConfiguring(false);
+        break;
+      case "remove":
+        updateConfig({ id: feed.id, color }, true);
+        setConfiguring(false);
+        break;
+      case "move":
+        if (typeof data === "string") {
+          move(feed.id, data);
+        }
+        break;
+      case "startMoving":
+        setConfiguring(false);
+        setMoving(!isMoving);
+        break;
+      case "readAll":
+        {
+          const unreadRows = rows
+            .slice(0, sizeLimit)
+            .filter((e) => e.categories.indexOf("user/-/state/com.google/read") === -1);
+          let markAction = () =>
+            freshRss.markReadFeed(feed.id).catch((error) => {
+              console.error("markReadFeed error", error);
+            });
+          if (unreadRows.length === unread || data == "current") {
+            markAction = () =>
+              freshRss.markReadItems(unreadRows.map((e) => e.id)).catch((error) => {
+                console.error("markReadItems error", error);
+              });
+          }
+          markAction()
+            .then(() => {
+              const newRows = [...rows];
+              let marked = 0;
+              newRows.forEach((row) => {
+                if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
+                  marked += 1;
+                  row.categories.push("user/-/state/com.google/read");
+                }
+              });
+              feed.unread = Math.max(0, feed.unread - marked);
+              updateFeed(feed);
+              setRows(newRows);
+            })
+            .catch((error) => {
+              console.error("markAction error", error);
+            });
+        }
+        break;
     }
   };
   const setContinuation = (c: string) => {
