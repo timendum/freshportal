@@ -153,19 +153,15 @@ const freshRss: FreshRss = {
     );
   },
   getContent: function (id, limit, c) {
-    return request("reader/api/0/stream/contents/" + id, {
-      n: limit,
-      c
-    }).then((resp) => resp["items"] as FeedContent[]);
+    return request("reader/api/0/stream/contents/" + id, { n: limit, c }).then(
+      (resp) => resp["items"] as FeedContent[]
+    );
   },
   markReadItems: function (ids) {
     return request(
       "reader/api/0/edit-tag",
       { output: "text" },
-      {
-        i: ids,
-        a: "user/-/state/com.google/read"
-      },
+      { i: ids, a: "user/-/state/com.google/read" },
       true
     )
       .then((resp) => resp === "OK")
@@ -248,14 +244,10 @@ function request(
   for (const [key, value] of Object.entries(params)) {
     if (value instanceof Array) {
       for (const v of value) {
-        if (typeof v === "string") {
-          url.searchParams.append(key, v);
-        }
+        url.searchParams.append(key, String(v));
       }
     } else {
-      if (typeof value === "string") {
-        url.searchParams.append(key, value);
-      }
+      url.searchParams.append(key, String(value));
     }
   }
   const formData = new URLSearchParams();
