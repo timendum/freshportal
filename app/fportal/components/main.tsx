@@ -102,6 +102,32 @@ export default function Main({ handleLogin }: MainProp) {
   const [widgets, setWidgets] = React.useState<WidgetType[]>([]); // list of widgets
   const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
+  const saveWidgets: setWidgetsType = (widgets: WidgetType[]) => {
+    const newWidgets: WidgetType[] = [];
+    let fakenum = 0;
+    for (const widget of widgets) {
+      if (widget.id == "fake") {
+        fakenum += 1;
+      } else {
+        fakenum = 0;
+      }
+      if (fakenum >= 3) {
+        // a row of fakes, delete it
+        newWidgets.pop();
+        newWidgets.pop();
+        fakenum = 0;
+      } else {
+        newWidgets.push(widget);
+      }
+    }
+    while (fakenum > 0) {
+      // remove fake on tail
+      newWidgets.pop();
+      fakenum -= 1;
+    }
+    localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
+    setWidgets(newWidgets);
+  };
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
     if (feeds && widgets.length > 0) {
@@ -117,7 +143,7 @@ export default function Main({ handleLogin }: MainProp) {
   }, [widgets, feeds]);
   React.useEffect(() => {
     // only on "mount", check if localStorage and restore from it
-    setWidgetsFromStorage(setWidgets);
+    setWidgetsFromStorage(saveWidgets);
   }, []);
   /* Util funct to generate widgets */
   const makeWidget = (col: number) =>
@@ -125,7 +151,7 @@ export default function Main({ handleLogin }: MainProp) {
       .filter((_, i) => i % 3 === col)
       .map((widget, i) => {
         if (widget.id == "fake") {
-          return <div key={`index-${i}`} />;
+          return <span key={i} style={{ display: "none" }} />;
         }
         let widgetFeed = null;
         for (const feed of feeds || []) {
@@ -136,8 +162,9 @@ export default function Main({ handleLogin }: MainProp) {
         }
         if (!widgetFeed) {
           return (
-            <div key={widget.id}>
-              <div>Feed not found</div>
+            <div key={widget.id} className="rounded-md border-2 border-red-500 md:px-0.5 lg:px-1">
+              {" "}
+              <div className="dark:text-zinc-300">Feed {widget.id} not found</div>
             </div>
           );
         }
@@ -176,16 +203,14 @@ export default function Main({ handleLogin }: MainProp) {
       const idx = widgets.findIndex(
         (e) => Object.prototype.hasOwnProperty.call(e, "id") && e.id == id
       );
-      let newArray = [...widgets];
       if (idx > -1) {
         // widget update
-        newArray[idx] = newW;
+        widgets[idx] = newW;
       } else {
         // new widget
-        newArray = newArray.concat([newW]);
+        widgets.push(newW);
       }
-      localStorage.setItem("FRWidgets", JSON.stringify(newArray));
-      setWidgets(newArray);
+      saveWidgets(widgets);
     }
   };
   const moveWidget = (id: string, direction: string) => {
@@ -223,13 +248,11 @@ export default function Main({ handleLogin }: MainProp) {
         console.log("moveWidget: direction unhandled", direction, id);
     }
     if (newIdx !== undefined) {
-      const newWidgets = [...widgets];
-      if (newIdx >= newWidgets.length) {
-        newWidgets.push({ id: "fake", color: "fake" });
+      if (newIdx >= widgets.length) {
+        widgets.push({ id: "fake", color: "fake" });
       }
-      [newWidgets[idx], newWidgets[newIdx]] = [newWidgets[newIdx], newWidgets[idx]];
-      localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
-      setWidgets(newWidgets);
+      [widgets[idx], widgets[newIdx]] = [widgets[newIdx], widgets[idx]];
+      saveWidgets(widgets);
     }
   };
   const handleExpImp = (refresh: boolean) => {
@@ -246,14 +269,12 @@ export default function Main({ handleLogin }: MainProp) {
       console.log("updateConfig: widget not found", widget);
       return;
     }
-    const newWidgets = [...widgets];
     if (remove === true) {
-      newWidgets.splice(idx, 1);
+      widgets[idx] = { id: "fake", color: "fake" };
     } else {
-      newWidgets[idx] = widget;
+      widgets[idx] = widget;
     }
-    localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
-    setWidgets(newWidgets);
+    saveWidgets(widgets);
   };
   const updateFeed = (feed: FullFeed) => {
     if (feeds === false) {
