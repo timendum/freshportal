@@ -20,6 +20,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
       if (pag.length > 1) {
         target = pag[pag.length - 2];
       } else {
+        tooltip = undefined;
         disabled = true;
       }
     } else if (newPage === "+") {
@@ -50,7 +51,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
         " bg-teal-500 dark:text-gray-600 dark:border-teal-400 dark:bg-teal-400 disabled:hover:bg-teal-500 disabled:hover:dark:bg-teal-400";
     }
     return (
-      <li key={text + String(newPage)} className="basis-[12.5%]">
+      <li key={text + String(newPage)} className="flex-1">
         <button
           type="button"
           title={tooltip}
