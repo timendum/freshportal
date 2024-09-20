@@ -13,7 +13,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
     let disabled = newPage === pag.length - 1;
     let text = "";
     let tooltip: string | undefined = "Go to page " + text;
-    let target: string = pag[pag.length - 1];
+    let target = pag[pag.length - 1];
     if (newPage === "-") {
       text = "<";
       tooltip = "Previous page";
@@ -26,8 +26,6 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
       text = ">";
       tooltip = "Next page";
       target = oldest;
-    } else if (newPage === pag.length) {
-      target = oldest;
     } else if (newPage === "…" || newPage === "-…") {
       text = "…";
       tooltip = undefined;
@@ -39,6 +37,12 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
     } else {
       text = String(newPage + 1);
       target = pag[newPage];
+      tooltip = "Go to page " + text;
+      if (newPage === pag.length) {
+        target = oldest;
+      } else if (newPage > pag.length) {
+        throw new Error("Page too big");
+      }
     }
     let classes = "md:px-1 xl:px-2 btn-primary mx-auto block";
     if (newPage === pag.length - 1) {
@@ -52,6 +56,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
           title={tooltip}
           className={classes}
           disabled={disabled}
+          about={String(newPage)}
           onClick={() => setContinuation(target)}
         >
           {text}
@@ -65,12 +70,11 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
         {makeButton("-")}
         {pag.length > 4 && makeButton(0)}
         {pag.length > 4 && makeButton("-…")}
-        {(pag.length > 4 ? [1, 0] : [3, 2, 1, 0])
+        {(pag.length > 4 ? [2, 1, 0, -1] : [4, 3, 2, 1, 0, -1])
           .filter((e) => e < pag.length)
           .map((e) => makeButton(pag.length - e - 1))}
-        {makeButton(pag.length)}
         {makeButton("…")}
-        {[4, 3, 2, 1].filter((e) => e > pag.length).map((e) => makeButton(-e))}
+        {[5, 4, 3, 2, 1].filter((e) => e > pag.length).map((e) => makeButton(-e))}
         {makeButton("+")}
       </ul>
     </nav>
