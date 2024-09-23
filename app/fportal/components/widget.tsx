@@ -120,14 +120,13 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
             .then(() => {
               const newRows = [...rows];
               let marked = 0;
-              if (data == "current") {
-                newRows.forEach((row) => {
-                  if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
-                    marked += 1;
-                    row.categories.push("user/-/state/com.google/read");
-                  }
-                });
-              } else {
+              newRows.forEach((row) => {
+                if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
+                  marked += 1;
+                  row.categories.push("user/-/state/com.google/read");
+                }
+              });
+              if (data != "current") {
                 marked = feed.unread;
               }
               feed.unread = Math.max(0, feed.unread - marked);
