@@ -20,8 +20,10 @@ export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
   const markRead = () => {
     freshRss
       .markReadItems([row.id])
-      .then(() => {
-        updateLink(row.id);
+      .then((ret) => {
+        if (ret) {
+          updateLink(row.id);
+        }
       })
       .catch((error) => {
         console.error("markRead error", error);
