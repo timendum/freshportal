@@ -109,15 +109,20 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
           let markAction = () =>
             freshRss.markReadFeed(feed.id).catch((error) => {
               console.error("markReadFeed error", error);
+              return false;
             });
           if (unreadRows.length === unread || data == "current") {
             markAction = () =>
               freshRss.markReadItems(unreadRows.map((e) => e.id)).catch((error) => {
                 console.error("markReadItems error", error);
+                return false;
               });
           }
           markAction()
-            .then(() => {
+            .then((ret) => {
+              if (!ret) {
+                return;
+              }
               const newRows = [...rows];
               let marked = 0;
               newRows.forEach((row) => {
