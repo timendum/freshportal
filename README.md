@@ -1,12 +1,10 @@
-FreshRSS Portal - React edition
-========
+# FreshRSS Portal - React edition
 
 FreshRSS Portal is a Javascript portal, composed by feed widgets, similar to the old iGoogle or Netvibes.
 
 Any help is appreciated, on everything, I'm not a front-end developer.
 
-Installation
--------------
+## Installation
 
 Just unzip the latest release (or build it by yourself) and put it somewhere, the only back-end needed is [FreshRSS](https://freshrss.github.io) itself.
 
@@ -15,18 +13,18 @@ Just unzip the latest release (or build it by yourself) and put it somewhere, th
 1. On the FreshRSS instance enable the API access.
 1. The go to index.html.
 
-Details
--------------
+## Details
+
 This is a re-implementation of [the original ttportal](https://github.com/timendum/ttportal), but this time in React and for FreshRSS.
 
+### Dependencies
 
-### Dependencies ###
-* [React](https://reactjs.org/)
-* [FontAwesome](https://fontawesome.com/) for the icons
-* [Tailwind CSS](https://tailwindcss.com/) for styling utility classes
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/) for styling utility classes
 
-Screenshots
------------
+Icons from Font Awesome Solid - CC BY 4.0
+
+## Screenshots
 
 At 1920x1080, dark mode:
 

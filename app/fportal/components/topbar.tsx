@@ -1,17 +1,11 @@
-import {
-  faFileExport,
-  faRightFromBracket,
-  faSquarePlus,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { freshRss } from "../freshrss";
 import type { HandleStateChangeType } from "./interfaces";
+import { faSun, faMoon, faFileExport, faSquarePlus, faRightFromBracket } from "./icons";
 
 interface CustomButtonProps {
   onClick: React.MouseEventHandler<HTMLElement>;
-  icon: IconDefinition;
+  icon: React.JSX.Element;
   text: string;
   tooltip: string;
 }
@@ -24,7 +18,7 @@ function Button({ onClick, icon, text, tooltip }: CustomButtonProps) {
       title={tooltip}
       className="btn-primary inline-block px-2 text-xs font-medium leading-tight lg:px-5"
     >
-      <FontAwesomeIcon icon={icon} className="pr-1 lg:pr-2" />
+      <div className="pr-1 lg:pr-2 faIcon">{icon}</div>
       {text}
     </button>
   );
@@ -66,24 +60,8 @@ export default function Topbar({
         onClick={toggleDark}
         className="btn-primary px-2 leading-tight lg:px-5"
       >
-        <div className="dark:hidden">
-          {/* baseline-dark-mode */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em">
-            <path
-              fill="currentColor"
-              d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26a5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1"
-            />
-          </svg>
-        </div>
-        <div className="hidden dark:inline-block">
-          {/* baseline-wb-sunny */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em">
-            <path
-              fill="currentColor"
-              d="m6.76 4.84l-1.8-1.79l-1.41 1.41l1.79 1.79zM4 10.5H1v2h3zm9-9.95h-2V3.5h2zm7.45 3.91l-1.41-1.41l-1.79 1.79l1.41 1.41zm-3.21 13.7l1.79 1.8l1.41-1.41l-1.8-1.79zM20 10.5v2h3v-2zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6m-1 16.95h2V19.5h-2zm-7.45-3.91l1.41 1.41l1.79-1.8l-1.41-1.41z"
-            />
-          </svg>
-        </div>
+        <div className="dark:hidden">{faMoon}</div>
+        <div className="hidden dark:inline-block">{faSun}</div>
       </button>
       {!!isLoggedIn && (
         <Button
