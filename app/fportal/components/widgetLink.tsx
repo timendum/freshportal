@@ -32,7 +32,7 @@ export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
 
   return (
     <li
-      className={`truncate${!isRead ? " dark:text-zinc-200" : " text-slate-400 dark:text-zinc-400"}`}
+      className={`whitespace-nowrap truncate${!isRead ? " dark:text-zinc-200" : " text-slate-400 dark:text-zinc-400"}`}
     >
       <a
         href={row.canonical[0].href}
@@ -45,7 +45,7 @@ export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
         {row.title}
       </a>
       {wType === "excerpt" ? (
-        <div className="text-clip pl-1 text-sm" title={excerpt}>
+        <div className=" pl-1 text-sm" title={excerpt}>
           {excerpt || <>&nbsp;</>}
         </div>
       ) : undefined}

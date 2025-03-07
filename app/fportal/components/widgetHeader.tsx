@@ -1,15 +1,8 @@
-import {
-  faCaretDown,
-  faCaretUp,
-  faGear,
-  faUpDownLeftRight,
-  faXmarkCircle
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
 import type { FullFeed } from "../freshrss";
 import type { HandleCommandType } from "./interfaces";
+import { faCaretDown, faCaretUp, faCircleXmark, faGear, faUpDownLeftRight } from "./icons";
 
 interface WidgetHeaderProp {
   feed: FullFeed;
@@ -34,7 +27,7 @@ export default function WidgetHeader({
           handleCommand("toggleCollapse");
         }}
       >
-        <FontAwesomeIcon icon={isCollapsed ? faCaretUp : faCaretDown} />
+        {isCollapsed ? faCaretUp : faCaretDown}
       </button>
       <button
         type="button"
@@ -79,33 +72,33 @@ export default function WidgetHeader({
       </button> */}
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-0.5 lg:px-1 text-xs"
         title="Move this widget"
         onClick={() => {
           handleCommand("startMoving");
         }}
       >
-        <FontAwesomeIcon icon={faUpDownLeftRight} size="xs" />
+        {faUpDownLeftRight}
       </button>
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-0.5 lg:px-1 text-xs"
         title="Configure this widget"
         onClick={() => {
           handleCommand("toggleConfiguring");
         }}
       >
-        <FontAwesomeIcon icon={faGear} size="xs" />
+        {faGear}
       </button>
       <button
         type="button"
         title="Remove this widget"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-0.5 lg:px-1 text-xs"
         onClick={() => {
           handleCommand("remove");
         }}
       >
-        <FontAwesomeIcon icon={faXmarkCircle} size="xs" />
+        {faCircleXmark}
       </button>
     </div>
   );

@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -68,4 +68,8 @@
 }
 .widget-fuchsia {
   @apply border-fuchsia-500 bg-fuchsia-500 shadow-fuchsia-500 dark:border-fuchsia-800 dark:bg-fuchsia-800 dark:shadow-fuchsia-800;
+}
+
+.faIcon {
+  @apply box-content inline-block overflow-visible;
 }
