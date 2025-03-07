@@ -32,7 +32,7 @@ export default function WidgetLink({ row, wType, updateLink }: WidgetLinkProp) {
 
   return (
     <li
-      className={`whitespace-nowrap truncate${!isRead ? " dark:text-zinc-200" : " text-slate-400 dark:text-zinc-400"}`}
+      className={`overflow-hidden whitespace-nowrap text-ellipsis ${!isRead ? "dark:text-zinc-200" : "text-slate-400 dark:text-zinc-400"}`}
     >
       <a
         href={row.canonical[0].href}
