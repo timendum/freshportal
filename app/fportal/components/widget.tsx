@@ -184,7 +184,10 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       )}
       {isMoving && <WidgetMove handleCommand={handleCommand} />}
       <div className="bg-zinc-100 dark:bg-zinc-800">
-        <div className={isCollapsed ? "hidden" : "box"}>
+        <div
+          className={`transition-all motion-reduce:transition-none duration-400 ease-in-out overflow-hidden 
+          ${isCollapsed ? "max-h-0 overflow-hidden" : "max-h-screen"}`}
+        >
           {rows.length < 1 && <Loading />}
           {rows.length > 0 && (
             <ul className="px-1 lg:space-y-1 xl:p-2 xl:px-3">
