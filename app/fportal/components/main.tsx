@@ -6,6 +6,7 @@ import ExpImp from "./expimp";
 import Loading from "./loading";
 import Topbar from "./topbar";
 import { colors, darkPreference } from "./utils";
+import DropZone from "./dropZone";
 import Widget from "./widget";
 
 import type { HandleStateChangeType, WidgetType } from "./interfaces";
@@ -169,14 +170,16 @@ export default function Main({ handleLogin }: MainProp) {
           );
         }
         return (
-          <Widget
-            key={widget.id}
-            feed={widgetFeed}
-            config={widget}
-            updateConfig={updateConfig}
-            updateFeed={updateFeed}
-            move={moveWidget}
-          />
+          <div>
+            <DropZone key={i} updateConfig={updateConfig} />
+            <Widget
+              key={widget.id}
+              feed={widgetFeed}
+              config={widget}
+              updateConfig={updateConfig}
+              updateFeed={updateFeed}
+            />
+          </div>
         );
       });
   /* Change and persist theme */

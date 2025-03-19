@@ -18,8 +18,6 @@ type HandleCommandType = {
   (name: "reset"): void;
   (name: "save"): void;
   (name: "remove"): void;
-  (name: "move", data: string): void;
-  (name: "startMoving"): void;
   (name: "readAll", data?: string): void;
 };
 

@@ -3,19 +3,22 @@ import React from "react";
 import type { FullFeed } from "../freshrss";
 import type { HandleCommandType } from "./interfaces";
 import { faCaretDown, faCaretUp, faCircleXmark, faGear, faUpDownLeftRight } from "./icons";
+import type { ConnectDragSource } from "react-dnd";
 
 interface WidgetHeaderProp {
   feed: FullFeed;
   unread: FullFeed["unread"];
   isCollapsed: boolean;
   handleCommand: HandleCommandType;
+  drag: ConnectDragSource;
 }
 
 export default function WidgetHeader({
   feed,
   unread,
   isCollapsed,
-  handleCommand
+  handleCommand,
+  drag
 }: WidgetHeaderProp) {
   return (
     <div className="flex dark:text-zinc-300 md:px-1">
@@ -72,11 +75,11 @@ export default function WidgetHeader({
       </button> */}
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1 text-xs"
-        title="Move this widget"
-        onClick={() => {
-          handleCommand("startMoving");
+        ref={(el) => {
+          drag(el);
         }}
+        className="btn-primary md:px-0.5 lg:px-1 text-xs cursor-move"
+        title="Drag to move this widget"
       >
         {faUpDownLeftRight}
       </button>

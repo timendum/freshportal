@@ -1,5 +1,7 @@
 const colors = ["red", "amber", "green", "indigo", "fuchsia", "gray"];
 
+const DnDWidgetType = "WIDGET";
+
 const darkPreference = () => {
   if (
     localStorage.FRTheme === "dark" ||
@@ -10,4 +12,4 @@ const darkPreference = () => {
   return false;
 };
 
-export { colors, darkPreference };
+export { colors, darkPreference, DnDWidgetType };
