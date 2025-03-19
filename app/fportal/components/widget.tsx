@@ -1,23 +1,32 @@
 import React from "react";
+import type { Identifier } from "dnd-core";
+import { useDrag, useDrop, type XYCoord } from "react-dnd";
+
 import { FeedContent, freshRss, FullFeed } from "../freshrss";
-import { wTypes, type WidgetType, type HandleCommandType } from "./interfaces";
-import { DnDWidgetType } from "./utils";
+import { wTypes, type HandleCommandType, type WidgetType } from "./interfaces";
 
 import Loading from "./loading";
+import { DnDWidgetType } from "./utils";
 import WidgetConfig from "./widgetConfig";
 import WidgetHeader from "./widgetHeader";
 import WidgetLink from "./widgetLink";
 import WidgetPagination from "./widgetPagination";
-import { useDrag } from "react-dnd";
 
 interface WidgetProp {
   feed: FullFeed;
   config: WidgetType;
   updateConfig: (widget: WidgetType, remove?: boolean) => void;
   updateFeed: (feed: FullFeed) => void;
+  move: (id: FullFeed["id"], to: FullFeed["id"], top: boolean) => void;
 }
 
-export default function Widget({ feed, config, updateConfig, updateFeed }: WidgetProp) {
+interface DragItem {
+  id: FullFeed["id"];
+  type: string;
+}
+
+export default function Widget({ feed, config, updateConfig, updateFeed, move }: WidgetProp) {
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isCollapsed, setCollapsed] = React.useState(false);
   const [isConfiguring, setConfiguring] = React.useState(false);
   const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
@@ -26,12 +35,56 @@ export default function Widget({ feed, config, updateConfig, updateFeed }: Widge
   const [pag, setPag] = React.useState([""]);
   const [rows, setRows] = React.useState<FeedContent[]>([]);
   const { unread } = feed;
-  const [{ opacity }, drag, preview] = useDrag(() => ({
-    type: DnDWidgetType,
-    collect: (monitor) => ({
-      opacity: monitor.isDragging() ? 0.4 : 1
+  const [{ isDragging }, drag, preview] = useDrag<DragItem, string, { isDragging: boolean }>(
+    () => ({
+      type: DnDWidgetType,
+      item: () => {
+        return { id: feed.id, type: DnDWidgetType };
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging()
+      })
     })
-  }));
+  );
+  const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+    accept: DnDWidgetType,
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId()
+      };
+    },
+    hover(item: DragItem, monitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.id;
+      const hoverIndex = feed.id;
+
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      // Get vertical middle
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+
+      // Get pixels to the top
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      let top = true;
+      // Dragging second half
+      if (hoverClientY > hoverMiddleY) {
+        top = false;
+      }
+      move(dragIndex, hoverIndex, top);
+    }
+  });
   React.useEffect(() => {
     if (!isCollapsed) {
       let c = "";
@@ -166,13 +219,12 @@ export default function Widget({ feed, config, updateConfig, updateFeed }: Widge
     }
   };
 
+  preview(drop(ref));
   return (
     <div
-      ref={(el) => {
-        preview(el);
-      }}
-      style={{ opacity }}
-      className={`block rounded-lg border widget-${color} shadow-md lg:border-2`}
+      ref={ref}
+      data-handler-id={handlerId}
+      className={`block rounded-lg border widget-${color} shadow-md lg:border-2 ${isDragging ? "opacity-70" : ""}`}
     >
       <WidgetHeader
         feed={feed}

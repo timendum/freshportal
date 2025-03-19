@@ -6,7 +6,6 @@ import ExpImp from "./expimp";
 import Loading from "./loading";
 import Topbar from "./topbar";
 import { colors, darkPreference } from "./utils";
-import DropZone from "./dropZone";
 import Widget from "./widget";
 
 import type { HandleStateChangeType, WidgetType } from "./interfaces";
@@ -171,13 +170,14 @@ export default function Main({ handleLogin }: MainProp) {
         }
         return (
           <div>
-            <DropZone key={i} updateConfig={updateConfig} />
+            {/* <DropZone key={i} updateConfig={updateConfig} /> */}
             <Widget
               key={widget.id}
               feed={widgetFeed}
               config={widget}
               updateConfig={updateConfig}
               updateFeed={updateFeed}
+              move={moveWidget}
             />
           </div>
         );
@@ -216,8 +216,12 @@ export default function Main({ handleLogin }: MainProp) {
       saveWidgets(widgets);
     }
   };
-  const moveWidget = (id: string, direction: string) => {
-    if (!id) {
+  const moveWidget = (
+    id: string,
+    to: string,
+    top: Parameters<Parameters<typeof Widget>[0]["move"]>[2]
+  ) => {
+    if (!id || !to) {
       return;
     }
     const idx = widgets.findIndex((e) => e.id === id);
@@ -225,38 +229,7 @@ export default function Main({ handleLogin }: MainProp) {
       console.log("moveWidget: widget not found", id);
       return;
     }
-    let newIdx;
-    switch (direction) {
-      case "up":
-        if (idx >= 3) {
-          newIdx = idx - 3;
-        }
-        break;
-      case "down":
-        if (idx + 3 < widgets.length) {
-          newIdx = idx + 3;
-        }
-        break;
-      case "left":
-        if (idx >= 1) {
-          newIdx = idx - 1;
-        }
-        break;
-      case "right":
-        if (idx % 3 !== 2) {
-          newIdx = idx + 1;
-        }
-        break;
-      default:
-        console.log("moveWidget: direction unhandled", direction, id);
-    }
-    if (newIdx !== undefined) {
-      if (newIdx >= widgets.length) {
-        widgets.push({ id: "fake", color: "fake" });
-      }
-      [widgets[idx], widgets[newIdx]] = [widgets[newIdx], widgets[idx]];
-      saveWidgets(widgets);
-    }
+    console.log(id, "to", to, top);
   };
   const handleExpImp = (refresh: boolean) => {
     if (refresh) {
