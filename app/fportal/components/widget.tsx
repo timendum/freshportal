@@ -1,9 +1,14 @@
 import React from "react";
-import type { Identifier } from "dnd-core";
 import { useDrag, useDrop, type XYCoord } from "react-dnd";
 
-import { FeedContent, freshRss, FullFeed } from "../freshrss";
-import { wTypes, type HandleCommandType, type WidgetType } from "./interfaces";
+import { type FeedContent, freshRss, type FullFeed } from "../freshrss";
+import {
+  wTypes,
+  type HandleCommandType,
+  type WidgetType,
+  type DragItem,
+  type MoveWidgetType
+} from "./interfaces";
 
 import Loading from "./loading";
 import { DnDWidgetType } from "./utils";
@@ -17,12 +22,7 @@ interface WidgetProp {
   config: WidgetType;
   updateConfig: (widget: WidgetType, remove?: boolean) => void;
   updateFeed: (feed: FullFeed) => void;
-  move: (id: FullFeed["id"], to: FullFeed["id"], top: boolean) => void;
-}
-
-interface DragItem {
-  id: FullFeed["id"];
-  type: string;
+  move: MoveWidgetType;
 }
 
 export default function Widget({ feed, config, updateConfig, updateFeed, move }: WidgetProp) {
@@ -46,13 +46,8 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       })
     })
   );
-  const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+  const [, drop] = useDrop<DragItem, void, void>({
     accept: DnDWidgetType,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId()
-      };
-    },
     hover(item: DragItem, monitor) {
       if (!ref.current) {
         return;
@@ -223,7 +218,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   return (
     <div
       ref={ref}
-      data-handler-id={handlerId}
       className={`block rounded-lg border widget-${color} shadow-md lg:border-2 ${isDragging ? "opacity-70" : ""}`}
     >
       <WidgetHeader
