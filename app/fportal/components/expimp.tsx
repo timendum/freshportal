@@ -2,7 +2,7 @@ import React from "react";
 import { WidgetList } from "./interfaces";
 
 interface LocalStoragePerf {
-  widgets?: string;
+  widgets?: WidgetList;
   session?: string;
   base?: string;
   theme?: string;
