@@ -1,4 +1,5 @@
 import React from "react";
+import { WidgetList } from "./interfaces";
 
 interface LocalStoragePerf {
   widgets?: string;
@@ -19,7 +20,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
   const localData: LocalStoragePerf = {};
   let ld = localStorage.getItem("FRWidgets");
   if (ld) {
-    localData.widgets = ld;
+    localData.widgets = JSON.parse(ld) as WidgetList;
   }
   ld = localStorage.getItem("FRSession");
   if (ld) {
