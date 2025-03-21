@@ -24,7 +24,7 @@ export default function WidgetHeader({
     <div className="flex dark:text-zinc-300 md:px-1">
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-1 lg:px-1"
         title={isCollapsed ? "Expand" : "Collapse"}
         onClick={() => {
           handleCommand("toggleCollapse");
@@ -38,12 +38,12 @@ export default function WidgetHeader({
         onClick={(e) => {
           handleCommand("readAll", e.ctrlKey ? "current" : undefined);
         }}
-        className="btn-primary text-[1.1rem] md:px-0.5 lg:px-1"
+        className="btn-primary text-[1.1rem] md:px-1 lg:px-1"
         title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
       </button>
-      <h4 className="grow text-lg md:px-0.5">
+      <h4 className="grow text-lg md:px-1">
         {(() => {
           if (feed.htmlUrl) {
             return (
@@ -78,14 +78,14 @@ export default function WidgetHeader({
         ref={(el) => {
           drag(el);
         }}
-        className="btn-primary md:px-0.5 lg:px-1 text-xs cursor-move"
+        className="btn-primary md:px-1 lg:px-1.5 text-xs cursor-move"
         title="Drag to move this widget"
       >
         {faUpDownLeftRight}
       </button>
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1 text-xs"
+        className="btn-primary md:px-1 lg:px-1.5 text-xs"
         title="Configure this widget"
         onClick={() => {
           handleCommand("toggleConfiguring");
@@ -96,7 +96,7 @@ export default function WidgetHeader({
       <button
         type="button"
         title="Remove this widget"
-        className="btn-primary md:px-0.5 lg:px-1 text-xs"
+        className="btn-primary md:px-1 lg:px-1.5 text-xs"
         onClick={() => {
           handleCommand("remove");
         }}
