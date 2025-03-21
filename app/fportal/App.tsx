@@ -6,6 +6,8 @@ import MainLogin from "./components/mainLogin";
 
 import { darkPreference } from "./components/utils";
 import { freshRss } from "./freshrss";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = React.useState<boolean | undefined>(undefined);
@@ -31,7 +33,11 @@ export default function App() {
       localStorage.setItem("FRSession", freshRss.session);
       localStorage.setItem("FRHost", freshRss.base);
     }
-    return <Main handleLogin={setLoggedIn} />;
+    return (
+      <DndProvider backend={HTML5Backend}>
+        <Main handleLogin={setLoggedIn} />
+      </DndProvider>
+    );
   }
   // loading screen
   return (

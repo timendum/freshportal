@@ -1,12 +1,20 @@
 import React from "react";
-import { FeedContent, freshRss, FullFeed } from "../freshrss";
-import { wTypes, type WidgetType, type HandleCommandType } from "./interfaces";
+import { useDrag, useDrop, type XYCoord } from "react-dnd";
+
+import { type FeedContent, freshRss, type FullFeed } from "../freshrss";
+import {
+  wTypes,
+  type HandleCommandType,
+  type WidgetType,
+  type DragItem,
+  type MoveWidgetType
+} from "./interfaces";
 
 import Loading from "./loading";
+import { DnDWidgetType } from "./utils";
 import WidgetConfig from "./widgetConfig";
 import WidgetHeader from "./widgetHeader";
 import WidgetLink from "./widgetLink";
-import WidgetMove from "./widgetMove";
 import WidgetPagination from "./widgetPagination";
 
 interface WidgetProp {
@@ -14,12 +22,12 @@ interface WidgetProp {
   config: WidgetType;
   updateConfig: (widget: WidgetType, remove?: boolean) => void;
   updateFeed: (feed: FullFeed) => void;
-  move: (id: string, direction: string) => void;
+  move: MoveWidgetType;
 }
 
 export default function Widget({ feed, config, updateConfig, updateFeed, move }: WidgetProp) {
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isCollapsed, setCollapsed] = React.useState(false);
-  const [isMoving, setMoving] = React.useState(false);
   const [isConfiguring, setConfiguring] = React.useState(false);
   const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
   const [wType, setWType] = React.useState(config.wType || "excerpt");
@@ -27,6 +35,51 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const [pag, setPag] = React.useState([""]);
   const [rows, setRows] = React.useState<FeedContent[]>([]);
   const { unread } = feed;
+  const [{ isDragging }, drag, preview] = useDrag<DragItem, string, { isDragging: boolean }>(
+    () => ({
+      type: DnDWidgetType,
+      item: () => {
+        return { id: feed.id, type: DnDWidgetType };
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging()
+      })
+    })
+  );
+  const [, drop] = useDrop<DragItem, void, void>({
+    accept: DnDWidgetType,
+    hover(item: DragItem, monitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.id;
+      const hoverIndex = feed.id;
+
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      // Get vertical middle
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+
+      // Get pixels to the top
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      let top = true;
+      // Dragging second half
+      if (hoverClientY > hoverMiddleY) {
+        top = false;
+      }
+      move(dragIndex, hoverIndex, top);
+    }
+  });
   React.useEffect(() => {
     if (!isCollapsed) {
       let c = "";
@@ -55,7 +108,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         setWType(config.wType || "excerpt");
         setSizeLimit(config.sizeLimit || 10);
         setColor(config.color || "gray");
-        setMoving(false);
         break;
       case "size":
         if (typeof data === "string") {
@@ -91,15 +143,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       case "remove":
         updateConfig({ id: feed.id, color }, true);
         setConfiguring(false);
-        break;
-      case "move":
-        if (typeof data === "string") {
-          move(feed.id, data);
-        }
-        break;
-      case "startMoving":
-        setConfiguring(false);
-        setMoving(!isMoving);
         break;
       case "readAll":
         {
@@ -171,18 +214,22 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     }
   };
 
+  preview(drop(ref));
   return (
-    <div className={`block rounded-lg border widget-${color} shadow-md lg:border-2`}>
+    <div
+      ref={ref}
+      className={`block rounded-lg border widget-${color} shadow-md lg:border-2 ${isDragging ? "opacity-70" : ""}`}
+    >
       <WidgetHeader
         feed={feed}
         unread={unread}
         isCollapsed={isCollapsed}
         handleCommand={handleCommand}
+        drag={drag}
       />
       {isConfiguring && (
         <WidgetConfig size={sizeLimit} wType={wType} color={color} handleCommand={handleCommand} />
       )}
-      {isMoving && <WidgetMove handleCommand={handleCommand} />}
       <div className="bg-zinc-100 dark:bg-zinc-800">
         <div
           className={`transition-all motion-reduce:transition-none duration-400 ease-in-out overflow-hidden 

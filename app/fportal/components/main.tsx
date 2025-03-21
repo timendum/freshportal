@@ -8,20 +8,31 @@ import Topbar from "./topbar";
 import { colors, darkPreference } from "./utils";
 import Widget from "./widget";
 
-import type { HandleStateChangeType, WidgetType } from "./interfaces";
+import {
+  isWidgetList,
+  type HandleStateChangeType,
+  type WidgetList,
+  type WidgetType
+} from "./interfaces";
+import DropWidget from "./dropWidget";
 
-type setWidgetsType = (widgets: WidgetType[]) => void;
+type setWidgetsType = (widgets: WidgetList) => void;
 
 function setWidgetsFromStorage(setWidgets: setWidgetsType) {
-  try {
-    const sWidgets = JSON.parse(localStorage.getItem("FRWidgets") as string) as WidgetType[];
-    if (sWidgets && sWidgets.length > 0) {
-      console.debug("from storage", sWidgets);
-      setWidgets(sWidgets);
-    }
-  } catch (e) {
-    console.log("Weird storage reset", e);
+  const sFRWidgets = localStorage.getItem("FRWidgets");
+  if (!sFRWidgets) {
     localStorage.removeItem("FRWidgets");
+    return;
+  }
+  const sWidgets = JSON.parse(sFRWidgets) as unknown;
+  if (!isWidgetList(sWidgets)) {
+    console.log("Invalid FRWidgets", sWidgets);
+    localStorage.removeItem("FRWidgets");
+    return;
+  }
+  if (sWidgets && sWidgets.length > 0) {
+    console.debug("from storage", sWidgets);
+    setWidgets(sWidgets);
   }
 }
 
@@ -99,32 +110,12 @@ interface MainProp {
 export default function Main({ handleLogin }: MainProp) {
   const [isAddWidget, setAddWiget] = React.useState(false); // is Add widget modal open?
   const [isExpImp, setExpImp] = React.useState(false); // is Export import modal open?
-  const [widgets, setWidgets] = React.useState<WidgetType[]>([]); // list of widgets
+  const [widgets, setWidgets] = React.useState<WidgetList>([[], [], []]); // list of widgets
   const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
-  const saveWidgets: setWidgetsType = (widgets: WidgetType[]) => {
-    const newWidgets: WidgetType[] = [];
-    let fakenum = 0;
-    for (const widget of widgets) {
-      if (widget.id == "fake") {
-        fakenum += 1;
-      } else {
-        fakenum = 0;
-      }
-      if (fakenum >= 3) {
-        // a row of fakes, delete it
-        newWidgets.pop();
-        newWidgets.pop();
-        fakenum = 0;
-      } else {
-        newWidgets.push(widget);
-      }
-    }
-    while (fakenum > 0) {
-      // remove fake on tail
-      newWidgets.pop();
-      fakenum -= 1;
-    }
+  const saveWidgets: setWidgetsType = (widgets) => {
+    // Generate a new array, to update the state
+    const newWidgets: WidgetList = [...widgets];
     localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
     setWidgets(newWidgets);
   };
@@ -133,7 +124,7 @@ export default function Main({ handleLogin }: MainProp) {
     if (feeds && widgets.length > 0) {
       refreshUnread(
         feeds,
-        widgets.filter((w) => w.id)
+        widgets.flatMap((w) => w)
       );
     }
     return () => {
@@ -143,32 +134,43 @@ export default function Main({ handleLogin }: MainProp) {
   }, [widgets, feeds]);
   React.useEffect(() => {
     // only on "mount", check if localStorage and restore from it
-    setWidgetsFromStorage(saveWidgets);
+    setWidgetsFromStorage(setWidgets);
   }, []);
+  /** Utility function to find a widget index by id in widgets. */
+  type findWidgetType = (id: string) => [number, number];
+  const findWidget: findWidgetType = (id) => {
+    let idx = -1;
+    for (const col of widgets) {
+      idx = col.findIndex((w) => w.id === id);
+      if (idx > -1) {
+        return [widgets.indexOf(col), idx];
+      }
+    }
+    return [-1, -1];
+  };
   /* Util funct to generate widgets */
-  const makeWidget = (col: number) =>
-    widgets
-      .filter((_, i) => i % 3 === col)
-      .map((widget, i) => {
-        if (widget.id == "fake") {
-          return <span key={i} style={{ display: "none" }} />;
+  const makeWidget = (col: number) => {
+    if (widgets[col].length < 1) {
+      return <DropWidget id={`empty-${col}`} move={moveWidget} />;
+    }
+    return widgets[col].map((widget) => {
+      let widgetFeed = null;
+      for (const feed of feeds || []) {
+        if (feed.id === widget.id) {
+          widgetFeed = feed;
+          break;
         }
-        let widgetFeed = null;
-        for (const feed of feeds || []) {
-          if (feed.id === widget.id) {
-            widgetFeed = feed;
-            break;
-          }
-        }
-        if (!widgetFeed) {
-          return (
-            <div key={widget.id} className="rounded-md border-2 border-red-500 md:px-0.5 lg:px-1">
-              {" "}
-              <div className="dark:text-zinc-300">Feed {widget.id} not found</div>
-            </div>
-          );
-        }
+      }
+      if (!widgetFeed) {
         return (
+          <div key={widget.id} className="rounded-md border-2 border-red-500 md:px-0.5 lg:px-1">
+            {" "}
+            <div className="dark:text-zinc-300">Feed {widget.id} not found</div>
+          </div>
+        );
+      }
+      return (
+        <div>
           <Widget
             key={widget.id}
             feed={widgetFeed}
@@ -177,8 +179,10 @@ export default function Main({ handleLogin }: MainProp) {
             updateFeed={updateFeed}
             move={moveWidget}
           />
-        );
-      });
+        </div>
+      );
+    });
+  };
   /* Change and persist theme */
   const changeTheme = () => {
     localStorage.setItem("FRTheme", !darkMode ? "dark" : "light");
@@ -193,67 +197,62 @@ export default function Main({ handleLogin }: MainProp) {
   const addWidget = (id: string | null) => {
     setAddWiget(false);
     if (id) {
-      const currentColors = widgets.map((w) => w.color);
+      const currentColors = widgets.flatMap((w) => w).map((w) => w.color);
       const missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
-      let newColor = colors[widgets.length % colors.length];
-      if (missingColors.length > 0) {
-        newColor = missingColors.shift() as string;
-      }
-      const newW = { id, color: newColor };
-      const idx = widgets.findIndex(
-        (e) => Object.prototype.hasOwnProperty.call(e, "id") && e.id == id
-      );
-      if (idx > -1) {
+      const newColor = missingColors.shift() || colors[widgets.length % colors.length];
+      const newW: WidgetType = { id, color: newColor };
+      const [c, idx] = findWidget(id);
+      if (c > -1) {
         // widget update
-        widgets[idx] = newW;
+        widgets[c][idx] = newW;
       } else {
         // new widget
-        widgets.push(newW);
+        let toC = 0;
+        // check if other columns have less widgets
+        if (widgets[2].length < widgets[1].length && widgets[2].length < widgets[0].length) {
+          toC = 2;
+        } else if (widgets[1].length < widgets[0].length) {
+          toC = 1;
+        }
+        const newCol = [...widgets[toC]];
+        newCol.push(newW);
+        widgets[toC] = newCol;
       }
       saveWidgets(widgets);
     }
   };
-  const moveWidget = (id: string, direction: string) => {
-    if (!id) {
-      return;
-    }
-    const idx = widgets.findIndex((e) => e.id === id);
+  const moveWidget = (
+    id: WidgetType["id"],
+    to: WidgetType["id"],
+    top: Parameters<Parameters<typeof Widget>[0]["move"]>[2]
+  ) => {
+    const [ic, idx] = findWidget(id);
     if (idx < 0) {
       console.log("moveWidget: widget not found", id);
       return;
     }
-    let newIdx;
-    switch (direction) {
-      case "up":
-        if (idx >= 3) {
-          newIdx = idx - 3;
-        }
-        break;
-      case "down":
-        if (idx + 3 < widgets.length) {
-          newIdx = idx + 3;
-        }
-        break;
-      case "left":
-        if (idx >= 1) {
-          newIdx = idx - 1;
-        }
-        break;
-      case "right":
-        if (idx % 3 !== 2) {
-          newIdx = idx + 1;
-        }
-        break;
-      default:
-        console.log("moveWidget: direction unhandled", direction, id);
-    }
-    if (newIdx !== undefined) {
-      if (newIdx >= widgets.length) {
-        widgets.push({ id: "fake", color: "fake" });
-      }
-      [widgets[idx], widgets[newIdx]] = [widgets[newIdx], widgets[idx]];
+    const w = widgets[ic][idx];
+    if (to.startsWith("empty-")) {
+      widgets[ic] = widgets[ic].filter((_, i) => i != idx);
+      const tc = parseInt(to[to.length - 1], 10);
+      const newCol = [...widgets[tc]];
+      newCol.push(w);
+      widgets[tc] = newCol;
       saveWidgets(widgets);
+      return;
     }
+    const [tc, tdx] = findWidget(to);
+    if (tdx < 0) {
+      console.log("moveWidget: widget not found", to);
+      return;
+    }
+    widgets[ic] = widgets[ic].filter((_, i) => i != idx);
+    const position = top ? tdx : tdx + 1;
+    const newCol = [...widgets[tc]];
+    newCol.splice(position, 0, w);
+    widgets[tc] = newCol;
+    // console.log(id, "to", to, top);
+    saveWidgets(widgets);
   };
   const handleExpImp = (refresh: boolean) => {
     if (refresh) {
@@ -264,15 +263,15 @@ export default function Main({ handleLogin }: MainProp) {
   };
   /* Update and persist widgets config on change */
   const updateConfig = (widget: WidgetType, remove?: boolean) => {
-    const idx = widgets.findIndex((e) => e.id === widget.id);
+    const [c, idx] = findWidget(widget.id);
     if (idx < 0) {
       console.log("updateConfig: widget not found", widget);
       return;
     }
     if (remove === true) {
-      widgets[idx] = { id: "fake", color: "fake" };
+      widgets[c] = widgets[c].filter((_, i) => i != idx);
     } else {
-      widgets[idx] = widget;
+      widgets[c][idx] = widget;
     }
     saveWidgets(widgets);
   };
@@ -373,7 +372,7 @@ export default function Main({ handleLogin }: MainProp) {
           feeds={feeds}
           open={isAddWidget}
           addWidget={addWidget}
-          skip={widgets.map((w) => w.id)}
+          skip={widgets.flatMap((w) => w).map((w) => w.id)}
         />
       )}
       <ExpImp open={isExpImp} doReset={handleExpImp} />

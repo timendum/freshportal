@@ -19,8 +19,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
   const localData: LocalStoragePerf = {};
   let ld = localStorage.getItem("FRWidgets");
   if (ld) {
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-    localData.widgets = JSON.parse(ld);
+    localData.widgets = ld;
   }
   ld = localStorage.getItem("FRSession");
   if (ld) {
@@ -41,8 +40,8 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
     const jsontxt = data.get("jsontxt");
     try {
       /* eslint-disable
-        @typescript-eslint/no-unsafe-assignment,
         @typescript-eslint/no-unsafe-member-access,
+        @typescript-eslint/no-unsafe-assignment,
         @typescript-eslint/no-unsafe-argument */
       // @ts-expect-error For invalid JSON in the form
       const jsonv = JSON.parse(jsontxt);
