@@ -126,6 +126,7 @@ const faCaretUp: IconType = (
 
 const faCaretDown: IconType = (
   <svg
+    style={{ marginLeft: "-1px" }}
     aria-hidden="true"
     focusable="false"
     className="faIcon align-[-0.125em]"
@@ -144,6 +145,7 @@ const faCaretDown: IconType = (
 
 const faUpDownLeftRight: IconType = (
   <svg
+    style={{ marginLeft: "-5px" }}
     aria-hidden="true"
     focusable="false"
     className="faIcon align-[-0.125em]"
@@ -161,6 +163,7 @@ const faUpDownLeftRight: IconType = (
 );
 const faGear: IconType = (
   <svg
+    style={{ marginLeft: "-5px" }}
     aria-hidden="true"
     focusable="false"
     className="faIcon align-[-0.125em]"
@@ -178,6 +181,7 @@ const faGear: IconType = (
 );
 const faCircleXmark: IconType = (
   <svg
+    style={{ marginLeft: "-5px" }}
     aria-hidden="true"
     focusable="false"
     className="faIcon align-[-0.125em]"
