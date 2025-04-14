@@ -36,6 +36,8 @@ function setWidgetsFromStorage(setWidgets: setWidgetsType) {
   }
 }
 
+const cachedImage = localStorage.getItem("cachedImage");
+
 const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
   // Update the faviconc according to the unread count.
   const ids = widgets.map((w) => w.id);
@@ -60,6 +62,29 @@ const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
       return;
     }
     const img = new Image();
+    const cachedImage = localStorage.getItem("cachedImage");
+    if (cachedImage) {
+      img.src = cachedImage;
+    } else {
+      img.src = "./faviconblank.png";
+    }
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+  
+      canvas.width = img.width;
+      canvas.height = img.height;
+  
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+  
+      const dataURL = canvas.toDataURL("image/x-icon");
+      localStorage.setItem("cachedImage", dataURL);
+  
+      link.dataset.blankicon = link.href = dataURL;
+      refreshUnread(feeds, widgets);
+    }
+
     img.src = "./faviconblank.png";
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
