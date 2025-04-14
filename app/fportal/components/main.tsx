@@ -68,10 +68,7 @@ const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
     } else {
       img.src = "./faviconblank.png";
     }
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-  
+    img.onload = () => {  
       canvas.width = img.width;
       canvas.height = img.height;
   
