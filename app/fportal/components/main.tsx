@@ -36,8 +36,6 @@ function setWidgetsFromStorage(setWidgets: setWidgetsType) {
   }
 }
 
-const cachedImage = localStorage.getItem("cachedImage");
-
 const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
   // Update the faviconc according to the unread count.
   const ids = widgets.map((w) => w.id);
