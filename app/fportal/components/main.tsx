@@ -66,19 +66,19 @@ const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
     } else {
       img.src = "./faviconblank.png";
     }
-    img.onload = () => {  
+    img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
-  
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
-  
+
       const dataURL = canvas.toDataURL("image/x-icon");
       localStorage.setItem("cachedImage", dataURL);
-  
+
       link.dataset.blankicon = link.href = dataURL;
       refreshUnread(feeds, widgets);
-    }
+    };
 
     img.src = "./faviconblank.png";
     img.onload = () => {

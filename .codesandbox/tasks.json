@@ -21,7 +21,7 @@
     },
     "prettier write": {
       "name": "prettier write",
-      "command": "npx prettier -w app"
+      "command": "npm run prettier"
     },
     "lint": {
       "name": "lint",
