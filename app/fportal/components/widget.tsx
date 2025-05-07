@@ -232,7 +232,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       )}
       <div className="bg-zinc-100 dark:bg-zinc-800">
         <div
-          className={`transition-all motion-reduce:transition-none duration-400 ease-in-out overflow-hidden 
+          className={`transition-all motion-reduce:transition-none duration-400 ease-in-out 
           ${isCollapsed ? "max-h-0 overflow-hidden" : "max-h-screen"}`}
         >
           {rows.length < 1 && <Loading />}
