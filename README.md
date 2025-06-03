@@ -10,7 +10,7 @@ Just unzip the latest release (or build it by yourself) and put it somewhere, th
 
 1. Create a "`freshportal`" direcotry on the same web-server of FreshRSS
 1. Put the build files in the directory
-1. On the FreshRSS instance enable the API access.
+1. On the FreshRSS instance enable the API access, see [official documentation](https://freshrss.github.io/FreshRSS/en/users/06_Mobile_access.html#enable-the-api-in-freshrss).
 1. The go to index.html.
 
 ## Details
