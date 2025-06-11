@@ -32,7 +32,7 @@ export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetPro
           addWidget(null);
         }
       }}
-      className="fade fixed left-0 top-0 h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-400/50 outline-none"
+      className="fade fixed left-0 top-0 h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-400/50 outline-hidden"
     >
       <div
         ref={ref}

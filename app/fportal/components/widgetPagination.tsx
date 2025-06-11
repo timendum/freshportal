@@ -48,7 +48,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
     let classes = "md:px-1 xl:px-2 btn-primary mx-auto block";
     if (newPage === pag.length - 1) {
       classes +=
-        " bg-teal-500 dark:text-gray-600 dark:border-teal-400 dark:bg-teal-400 disabled:hover:bg-teal-500 disabled:hover:dark:bg-teal-400";
+        " disabled:bg-teal-500 dark:disabled:text-gray-600 dark:disabled:border-teal-400 dark:disabled:bg-teal-400 disabled:disabled:hover:bg-teal-500";
     }
     return (
       <li key={text + String(newPage)} className="flex-1">
@@ -66,7 +66,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
     );
   }
   return (
-    <nav className="dark:boder-zinc-400 overflow-hidden border-t border-slate-500 dark:text-zinc-400">
+    <nav className="dark:boder-zinc-400 border-t border-slate-500 dark:text-zinc-400">
       <ul className="mx-auto flex flex-row md:px-1 md:py-1 lg:px-2">
         {makeButton("-")}
         {pag.length > 4 && makeButton(0)}

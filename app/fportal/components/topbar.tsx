@@ -1,19 +1,11 @@
-import {
-  faFileExport,
-  faMoon,
-  faRightFromBracket,
-  faSquarePlus,
-  faSun,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { freshRss } from "../freshrss";
 import type { HandleStateChangeType } from "./interfaces";
+import { faSun, faMoon, faFileExport, faSquarePlus, faRightFromBracket } from "./icons";
 
 interface CustomButtonProps {
   onClick: React.MouseEventHandler<HTMLElement>;
-  icon: IconDefinition;
+  icon: React.JSX.Element;
   text: string;
   tooltip: string;
 }
@@ -26,7 +18,7 @@ function Button({ onClick, icon, text, tooltip }: CustomButtonProps) {
       title={tooltip}
       className="btn-primary inline-block px-2 text-xs font-medium leading-tight lg:px-5"
     >
-      <FontAwesomeIcon icon={icon} className="pr-1 lg:pr-2" />
+      <div className="pr-1 lg:pr-2 faIcon">{icon}</div>
       {text}
     </button>
   );
@@ -48,7 +40,7 @@ export default function Topbar({
   toggleDark
 }: TopbarProp) {
   return (
-    <div className="flex bg-slate-700 px-2 py-1 text-white shadow-sm dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
+    <div className="flex bg-slate-700 px-2 py-1 text-white shadow-xs dark:text-gray-200 dark:shadow-slate-700 lg:px-4 lg:py-2">
       <h1 className="grow align-text-bottom text-xl">
         {!!isLoggedIn && freshRss.base && (
           <a
@@ -66,10 +58,10 @@ export default function Topbar({
         type="button"
         title="Toggle Dark mode"
         onClick={toggleDark}
-        className="btn-primary inline-block px-2 text-xs leading-tight lg:px-5"
+        className="btn-primary px-2 leading-tight lg:px-5"
       >
-        <FontAwesomeIcon icon={faMoon} className="dark:hidden" />
-        <FontAwesomeIcon icon={faSun} className="hidden dark:inline-block" />
+        <div className="dark:hidden">{faMoon}</div>
+        <div className="hidden dark:inline-block">{faSun}</div>
       </button>
       {!!isLoggedIn && (
         <Button

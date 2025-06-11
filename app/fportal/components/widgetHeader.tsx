@@ -1,30 +1,25 @@
-import {
-  faCaretDown,
-  faCaretUp,
-  faGear,
-  faUpDownLeftRight,
-  faXmarkCircle
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import type { HoverContextType } from "../HoverContext";
 import { HoverContext } from "../HoverProvider";
 import type { FullFeed } from "../freshrss";
 import type { HandleCommandType } from "./interfaces";
+import { faCaretDown, faCaretUp, faCircleXmark, faGear, faUpDownLeftRight } from "./icons";
+import type { ConnectDragSource } from "react-dnd";
 
 interface WidgetHeaderProp {
   feed: FullFeed;
   unread: FullFeed["unread"];
   isCollapsed: boolean;
   handleCommand: HandleCommandType;
-  ref?: React.ElementType;
+  drag: ConnectDragSource;
 }
 
 export default function WidgetHeader({
   feed,
   unread,
   isCollapsed,
-  handleCommand
+  handleCommand,
+  drag
 }: WidgetHeaderProp) {
   const hoverContextRef = React.useContext<HoverContextType>(HoverContext);
 
@@ -47,13 +42,13 @@ export default function WidgetHeader({
     >
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-1 lg:px-1"
         title={isCollapsed ? "Expand" : "Collapse"}
         onClick={() => {
           handleCommand("toggleCollapse");
         }}
       >
-        <FontAwesomeIcon icon={isCollapsed ? faCaretUp : faCaretDown} />
+        {isCollapsed ? faCaretUp : faCaretDown}
       </button>
       <button
         type="button"
@@ -61,12 +56,12 @@ export default function WidgetHeader({
         onClick={(e) => {
           handleCommand("readAll", e.ctrlKey ? "current" : undefined);
         }}
-        className="btn-primary text-[1.1rem] md:px-0.5 lg:px-1"
+        className="btn-primary text-[1.1rem] md:px-1 lg:px-1"
         title={unread > 0 ? "Mark all as read" : ""}
       >
         {unread}
       </button>
-      <h4 className="grow text-lg md:px-0.5">
+      <h4 className="grow text-lg md:px-1">
         {(() => {
           if (feed.htmlUrl) {
             return (
@@ -98,33 +93,33 @@ export default function WidgetHeader({
       </button> */}
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1"
-        title="Move this widget"
-        onClick={() => {
-          handleCommand("startMoving");
+        ref={(el) => {
+          drag(el);
         }}
+        className="btn-primary md:px-1 lg:px-1.5 text-xs cursor-move"
+        title="Drag to move this widget"
       >
-        <FontAwesomeIcon icon={faUpDownLeftRight} size="xs" />
+        {faUpDownLeftRight}
       </button>
       <button
         type="button"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-1 lg:px-1.5 text-xs"
         title="Configure this widget"
         onClick={() => {
           handleCommand("toggleConfiguring");
         }}
       >
-        <FontAwesomeIcon icon={faGear} size="xs" />
+        {faGear}
       </button>
       <button
         type="button"
         title="Remove this widget"
-        className="btn-primary md:px-0.5 lg:px-1"
+        className="btn-primary md:px-1 lg:px-1.5 text-xs"
         onClick={() => {
           handleCommand("remove");
         }}
       >
-        <FontAwesomeIcon icon={faXmarkCircle} size="xs" />
+        {faCircleXmark}
       </button>
     </div>
   );

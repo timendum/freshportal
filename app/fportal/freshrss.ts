@@ -181,7 +181,7 @@ const freshRss: FreshRss = {
   },
   markReadFeed: function (id) {
     return request("reader/api/0/mark-all-as-read", { output: "text" }, { s: id }, true)
-      .then((data) => data.status === "OK")
+      .then((data) => data === "OK")
       .catch(() => false);
   },
   getUnreads: function () {

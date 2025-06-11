@@ -1,7 +1,8 @@
 import React from "react";
+import { WidgetList } from "./interfaces";
 
 interface LocalStoragePerf {
-  widgets?: string;
+  widgets?: WidgetList;
   session?: string;
   base?: string;
   theme?: string;
@@ -19,8 +20,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
   const localData: LocalStoragePerf = {};
   let ld = localStorage.getItem("FRWidgets");
   if (ld) {
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-    localData.widgets = JSON.parse(ld);
+    localData.widgets = JSON.parse(ld) as WidgetList;
   }
   ld = localStorage.getItem("FRSession");
   if (ld) {
@@ -41,8 +41,8 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
     const jsontxt = data.get("jsontxt");
     try {
       /* eslint-disable
-        @typescript-eslint/no-unsafe-assignment,
         @typescript-eslint/no-unsafe-member-access,
+        @typescript-eslint/no-unsafe-assignment,
         @typescript-eslint/no-unsafe-argument */
       // @ts-expect-error For invalid JSON in the form
       const jsonv = JSON.parse(jsontxt);
@@ -73,7 +73,7 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
           doReset(false);
         }
       }}
-      className="fade fixed left-0 top-0 h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-400/50 outline-none"
+      className="fade fixed left-0 top-0 h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-400/50 outline-hidden"
     >
       <div
         ref={ref}
