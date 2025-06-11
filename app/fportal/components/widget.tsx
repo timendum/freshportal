@@ -150,16 +150,20 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     newPag.push(c);
     setPag(newPag);
   };
-  const updateLink = (id: string) => {
+  const updateLink = (id: string, state: "read" | "unread") => {
     for (const row of rows) {
       if (row.id === id) {
         const idx = row.categories.indexOf("user/-/state/com.google/read");
-        if (idx === -1) {
+        if (idx === -1 && state === "read") {
           row.categories.push("user/-/state/com.google/read");
           feed.unread = unread - 1;
           updateFeed(feed);
           setRows(rows);
-          break;
+        } else if (idx != -1 && state === "unread") {
+          row.categories.splice(idx, 1);
+          feed.unread = unread + 1;
+          updateFeed(feed);
+          setRows(rows);
         }
         return;
       }

@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-
+import type { HoverContextType } from "../HoverContext";
+import { HoverContext } from "../HoverProvider";
 import type { FullFeed } from "../freshrss";
 import type { HandleCommandType } from "./interfaces";
 
@@ -16,6 +17,7 @@ interface WidgetHeaderProp {
   unread: FullFeed["unread"];
   isCollapsed: boolean;
   handleCommand: HandleCommandType;
+  ref?: React.ElementType;
 }
 
 export default function WidgetHeader({
@@ -24,8 +26,25 @@ export default function WidgetHeader({
   isCollapsed,
   handleCommand
 }: WidgetHeaderProp) {
+  const hoverContextRef = React.useContext<HoverContextType>(HoverContext);
+
+  const handleKeyboard = {
+    handleKeyboardEvent: (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() == "r") {
+        handleCommand("readAll", event.shiftKey ? undefined : "current");
+      } else if (event.key.toLowerCase() == "c") {
+        handleCommand("toggleCollapse");
+      }
+    }
+  };
   return (
-    <div className="flex dark:text-zinc-300 md:px-1">
+    <div
+      className="flex dark:text-zinc-300 md:px-1"
+      onMouseEnter={() => {
+        hoverContextRef.setHoveredComponent(handleKeyboard);
+      }}
+      onMouseLeave={() => hoverContextRef.setHoveredComponent(null)}
+    >
       <button
         type="button"
         className="btn-primary md:px-0.5 lg:px-1"
