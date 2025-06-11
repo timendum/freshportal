@@ -1,15 +1,14 @@
 import React from "react";
 import { useDrag, useDrop, type XYCoord } from "react-dnd";
 
-import { type FeedContent, freshRss, type FullFeed } from "../freshrss";
+import { freshRss, type FeedContent, type FullFeed } from "../freshrss";
 import {
   wTypes,
-  type HandleCommandType,
-  type WidgetType,
   type DragItem,
-  type MoveWidgetType
+  type HandleCommandType,
+  type MoveWidgetType,
+  type WidgetType
 } from "./interfaces";
-
 import Loading from "./loading";
 import { DnDWidgetType } from "./utils";
 import WidgetConfig from "./widgetConfig";
@@ -34,7 +33,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const [color, setColor] = React.useState(config.color || "gray");
   const [pag, setPag] = React.useState([""]);
   const [rows, setRows] = React.useState<FeedContent[]>([]);
-  const { unread } = feed;
   const [{ isDragging }, drag, preview] = useDrag<DragItem, string, { isDragging: boolean }>(
     () => ({
       type: DnDWidgetType,
@@ -154,7 +152,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
               console.error("markReadFeed error", error);
               return false;
             });
-          if (unreadRows.length === unread || data == "current") {
+          if (unreadRows.length === feed.unread || data == "current") {
             markAction = () =>
               freshRss.markReadItems(unreadRows.map((e) => e.id)).catch((error) => {
                 console.error("markReadItems error", error);
@@ -198,20 +196,34 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     newPag.push(c);
     setPag(newPag);
   };
-  const updateLink = (id: string, state: "read" | "unread") => {
+  const toggleReadLink = (id: string) => {
     for (const row of rows) {
       if (row.id === id) {
         const idx = row.categories.indexOf("user/-/state/com.google/read");
-        if (idx === -1 && state === "read") {
-          row.categories.push("user/-/state/com.google/read");
-          feed.unread = unread - 1;
-          updateFeed(feed);
-          setRows(rows);
-        } else if (idx != -1 && state === "unread") {
-          row.categories.splice(idx, 1);
-          feed.unread = unread + 1;
-          updateFeed(feed);
-          setRows(rows);
+        if (idx === -1) {
+          freshRss
+            .markReadItems([row.id])
+            .then(() => {
+              row.categories.push("user/-/state/com.google/read");
+              feed.unread = feed.unread - 1;
+              updateFeed(feed);
+              setRows(rows);
+            })
+            .catch((error) => {
+              console.error("markRead error", error);
+            });
+        } else {
+          freshRss
+            .markUnreadItems([row.id])
+            .then(() => {
+              row.categories.splice(idx, 1);
+              feed.unread = feed.unread + 1;
+              updateFeed(feed);
+              setRows(rows);
+            })
+            .catch((error) => {
+              console.error("markRead error", error);
+            });
         }
         return;
       }
@@ -226,7 +238,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     >
       <WidgetHeader
         feed={feed}
-        unread={unread}
+        unread={feed.unread}
         isCollapsed={isCollapsed}
         handleCommand={handleCommand}
         drag={drag}
@@ -243,7 +255,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
           {rows.length > 0 && (
             <ul className="px-1 lg:space-y-1 xl:p-2 xl:px-3">
               {rows.slice(0, sizeLimit).map((row) => (
-                <WidgetLink key={row.id} row={row} wType={wType} updateLink={updateLink} />
+                <WidgetLink key={row.id} row={row} wType={wType} toggleReadLink={toggleReadLink} />
               ))}
             </ul>
           )}

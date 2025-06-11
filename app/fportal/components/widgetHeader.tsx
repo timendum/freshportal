@@ -23,11 +23,12 @@ export default function WidgetHeader({
 }: WidgetHeaderProp) {
   const hoverContextRef = React.useContext<HoverContextType>(HoverContext);
 
-  const handleKeyboard = {
+  const hoverableComponent = {
     handleKeyboardEvent: (event: KeyboardEvent) => {
       if (event.key.toLowerCase() == "r") {
         handleCommand("readAll", event.shiftKey ? undefined : "current");
       } else if (event.key.toLowerCase() == "c") {
+        console.log(event, drag, feed.id);
         handleCommand("toggleCollapse");
       }
     }
@@ -36,7 +37,7 @@ export default function WidgetHeader({
     <div
       className="flex dark:text-zinc-300 md:px-1"
       onMouseEnter={() => {
-        hoverContextRef.setHoveredComponent(handleKeyboard);
+        hoverContextRef.setHoveredComponent(hoverableComponent);
       }}
       onMouseLeave={() => hoverContextRef.setHoveredComponent(null)}
     >

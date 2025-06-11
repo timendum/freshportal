@@ -4,21 +4,19 @@ import { HoverableComponent } from "../HoverContext";
 import { HoverContext } from "../HoverProvider";
 import { freshRss, type FullFeed } from "../freshrss";
 import AddWidget from "./addWidget";
+import DropWidget from "./dropWidget";
 import ExpImp from "./expimp";
 import { refreshUnread } from "./iconHandler";
-import type { HandleStateChangeType, WidgetType } from "./interfaces";
-import Loading from "./loading";
-import Topbar from "./topbar";
-import { colors, darkPreference } from "./utils";
-import Widget from "./widget";
-
 import {
   isWidgetList,
   type HandleStateChangeType,
   type WidgetList,
   type WidgetType
 } from "./interfaces";
-import DropWidget from "./dropWidget";
+import Loading from "./loading";
+import Topbar from "./topbar";
+import { colors, darkPreference } from "./utils";
+import Widget from "./widget";
 
 type setWidgetsType = (widgets: WidgetList) => void;
 
@@ -50,7 +48,7 @@ export default function Main({ handleLogin }: MainProp) {
   const [widgets, setWidgets] = React.useState<WidgetList>([[], [], []]); // list of widgets
   const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
-  const [hoveredComponent, setHoveredComponent] = React.useState<HoverableComponent | null>(null); // element under the mouse
+  const [hoveredComponent, setHoveredComponent] = React.useState<HoverableComponent | null>(null); // handler from element under the mouse
   const saveWidgets: setWidgetsType = (widgets) => {
     // Generate a new array, to update the state
     const newWidgets: WidgetList = [...widgets];
