@@ -21,25 +21,35 @@ export default function WidgetHeader({
   handleCommand,
   drag
 }: WidgetHeaderProp) {
-  const hoverContextRef = React.useContext<HoverContextType>(HoverContext);
-
+  const { setHoveredComponent } = React.useContext<HoverContextType>(HoverContext);
+  const ref = React.useRef<HTMLDivElement>(null);
   const hoverableComponent = {
     handleKeyboardEvent: (event: KeyboardEvent) => {
       if (event.key.toLowerCase() == "r") {
         handleCommand("readAll", event.shiftKey ? undefined : "current");
       } else if (event.key.toLowerCase() == "c") {
-        console.log(event, drag, feed.id);
         handleCommand("toggleCollapse");
       }
     }
   };
+
+  React.useEffect(() => {
+    if (ref.current?.matches(":hover")) {
+      setHoveredComponent(hoverableComponent);
+    }
+    return () => {
+      setHoveredComponent(null);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCollapsed]); // setHoveredComponent and hoveredComponent make no sense here
   return (
     <div
       className="flex dark:text-zinc-300 md:px-1"
+      ref={ref}
       onMouseEnter={() => {
-        hoverContextRef.setHoveredComponent(hoverableComponent);
+        setHoveredComponent(hoverableComponent);
       }}
-      onMouseLeave={() => hoverContextRef.setHoveredComponent(null)}
+      onMouseLeave={() => setHoveredComponent(null)}
     >
       <button
         type="button"

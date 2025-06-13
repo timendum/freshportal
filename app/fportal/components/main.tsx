@@ -17,6 +17,7 @@ import Loading from "./loading";
 import Topbar from "./topbar";
 import { colors, darkPreference } from "./utils";
 import Widget from "./widget";
+import ShortcutsHelp from "./shortcutsHelp";
 
 type setWidgetsType = (widgets: WidgetList) => void;
 
@@ -45,6 +46,7 @@ interface MainProp {
 export default function Main({ handleLogin }: MainProp) {
   const [isAddWidget, setAddWiget] = React.useState(false); // is Add widget modal open?
   const [isExpImp, setExpImp] = React.useState(false); // is Export import modal open?
+  const [isShortcutsHelpOpen, setShortcutsHelpOpen] = React.useState(false); // is ShortcutsHelpOpen modal open?
   const [widgets, setWidgets] = React.useState<WidgetList>([[], [], []]); // list of widgets
   const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
@@ -75,11 +77,15 @@ export default function Main({ handleLogin }: MainProp) {
   // Capture and handle keyboard events
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key == "?") {
+        setShortcutsHelpOpen(!isShortcutsHelpOpen);
+        return;
+      }
       hoveredComponent?.handleKeyboardEvent(e);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredComponent]);
+  }, [hoveredComponent, isShortcutsHelpOpen]);
   /** Utility function to find a widget index by id in widgets. */
   type findWidgetType = (id: string) => [number, number];
   const findWidget: findWidgetType = (id) => {
@@ -321,6 +327,12 @@ export default function Main({ handleLogin }: MainProp) {
           />
         )}
         <ExpImp open={isExpImp} doReset={handleExpImp} />
+        <ShortcutsHelp
+          isOpen={isShortcutsHelpOpen}
+          doClose={() => {
+            setShortcutsHelpOpen(false);
+          }}
+        />
       </div>
     </HoverContext>
   );
