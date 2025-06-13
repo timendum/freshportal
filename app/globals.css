@@ -73,3 +73,7 @@
 .faIcon {
   @apply box-content inline-block overflow-visible;
 }
+
+.keyboardKey {
+  @apply px-2 py-0.5 text-sm font-mono text-gray-800 bg-gray-100 border border-gray-300 rounded shadow-sm;
+}

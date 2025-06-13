@@ -45,6 +45,7 @@ interface FreshRss {
   getFeeds(): Promise<Feed[]>;
   markReadFeed(id: string): Promise<boolean>;
   markReadItems(ids: string[]): Promise<boolean>;
+  markUnreadItems(ids: string[]): Promise<boolean>;
   getContent(id: string, limit: string | number, c: string): Promise<FeedContent[]>;
   getUnreads(): Promise<UnreadFeed[]>;
   getFeedsFull(): Promise<FullFeed[]>;
@@ -60,6 +61,7 @@ interface RequestData {
   T?: string;
   i?: string[];
   a?: string;
+  r?: string;
   s?: string;
 }
 
@@ -162,6 +164,16 @@ const freshRss: FreshRss = {
       "reader/api/0/edit-tag",
       { output: "text" },
       { i: ids, a: "user/-/state/com.google/read" },
+      true
+    )
+      .then((resp) => resp === "OK")
+      .catch(() => false);
+  },
+  markUnreadItems: function (ids) {
+    return request(
+      "reader/api/0/edit-tag",
+      { output: "text" },
+      { i: ids, r: "user/-/state/com.google/read" },
       true
     )
       .then((resp) => resp === "OK")

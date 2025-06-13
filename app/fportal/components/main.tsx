@@ -1,20 +1,23 @@
 import React from "react";
 
-import { type FullFeed, freshRss } from "../freshrss";
+import { HoverableComponent } from "../HoverContext";
+import { HoverContext } from "../HoverProvider";
+import { freshRss, type FullFeed } from "../freshrss";
 import AddWidget from "./addWidget";
+import DropWidget from "./dropWidget";
 import ExpImp from "./expimp";
-import Loading from "./loading";
-import Topbar from "./topbar";
-import { colors, darkPreference } from "./utils";
-import Widget from "./widget";
-
+import { refreshUnread } from "./iconHandler";
 import {
   isWidgetList,
   type HandleStateChangeType,
   type WidgetList,
   type WidgetType
 } from "./interfaces";
-import DropWidget from "./dropWidget";
+import Loading from "./loading";
+import Topbar from "./topbar";
+import { colors, darkPreference } from "./utils";
+import Widget from "./widget";
+import ShortcutsHelp from "./shortcutsHelp";
 
 type setWidgetsType = (widgets: WidgetList) => void;
 
@@ -36,93 +39,6 @@ function setWidgetsFromStorage(setWidgets: setWidgetsType) {
   }
 }
 
-const refreshUnread = (feeds: FullFeed[], widgets: WidgetType[]) => {
-  // Update the faviconc according to the unread count.
-  const ids = widgets.map((w) => w.id);
-  let c: string | number = feeds
-    .filter((e) => ids.indexOf(e.id) > -1)
-    .map((e) => e.unread)
-    .reduce((a, b) => a + b, 0);
-  const link = document.querySelector("link[type='image/x-icon']") as HTMLLinkElement;
-  if (!link) {
-    return;
-  }
-  if (!link.dataset.originalUrl) {
-    link.dataset.originalUrl = link.href;
-  }
-  if (!link.dataset.blankicon) {
-    // cache blank img
-    const canvas = document.getElementById("faviconc") as HTMLCanvasElement;
-    canvas.width = 32;
-    canvas.height = 32;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-    const img = new Image();
-    const cachedImage = localStorage.getItem("cachedImage");
-    if (cachedImage) {
-      img.src = cachedImage;
-    } else {
-      img.src = "./faviconblank.png";
-    }
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-
-      const dataURL = canvas.toDataURL("image/x-icon");
-      localStorage.setItem("cachedImage", dataURL);
-
-      link.dataset.blankicon = link.href = dataURL;
-      refreshUnread(feeds, widgets);
-    };
-
-    img.src = "./faviconblank.png";
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-      link.dataset.blankicon = link.href = canvas.toDataURL("image/x-icon");
-      refreshUnread(feeds, widgets);
-    };
-    return;
-  }
-  if (c < 1) {
-    link.href = link.dataset.originalUrl;
-    document.title = "FreshRSS Portal";
-    return;
-  }
-  document.title = `FreshRSS Portal (${c})`;
-  if (c > 99) {
-    c = "\u221E";
-  }
-  const canvas = document.getElementById("faviconc") as HTMLCanvasElement;
-  canvas.width = 32;
-  canvas.height = 32;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    return;
-  }
-  const img = new Image();
-  img.src = link.dataset.blankicon;
-  img.onload = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0);
-    ctx.fillStyle = "#FFF";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.strokeStyle = "#8B0000";
-    ctx.font = "bold 21px sans-serif";
-    ctx.lineWidth = 4;
-    ctx.strokeText(String(c), 16, 18);
-    ctx.fillText(String(c), 16, 18);
-
-    link.href = canvas.toDataURL("image/x-icon");
-  };
-};
-
 interface MainProp {
   handleLogin: HandleStateChangeType;
 }
@@ -130,9 +46,11 @@ interface MainProp {
 export default function Main({ handleLogin }: MainProp) {
   const [isAddWidget, setAddWiget] = React.useState(false); // is Add widget modal open?
   const [isExpImp, setExpImp] = React.useState(false); // is Export import modal open?
+  const [isShortcutsHelpOpen, setShortcutsHelpOpen] = React.useState(false); // is ShortcutsHelpOpen modal open?
   const [widgets, setWidgets] = React.useState<WidgetList>([[], [], []]); // list of widgets
   const [feeds, setFeeds] = React.useState<FullFeed[] | false>(false); // list of feeds from FreshRSS
   const [darkMode, setDarkMode] = React.useState(darkPreference());
+  const [hoveredComponent, setHoveredComponent] = React.useState<HoverableComponent | null>(null); // handler from element under the mouse
   const saveWidgets: setWidgetsType = (widgets) => {
     // Generate a new array, to update the state
     const newWidgets: WidgetList = [...widgets];
@@ -156,6 +74,18 @@ export default function Main({ handleLogin }: MainProp) {
     // only on "mount", check if localStorage and restore from it
     setWidgetsFromStorage(setWidgets);
   }, []);
+  // Capture and handle keyboard events
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key == "?") {
+        setShortcutsHelpOpen(!isShortcutsHelpOpen);
+        return;
+      }
+      hoveredComponent?.handleKeyboardEvent(e);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hoveredComponent, isShortcutsHelpOpen]);
   /** Utility function to find a widget index by id in widgets. */
   type findWidgetType = (id: string) => [number, number];
   const findWidget: findWidgetType = (id) => {
@@ -367,35 +297,43 @@ export default function Main({ handleLogin }: MainProp) {
     };
   }, []);
   return (
-    <div className="min-h-screen dark:bg-black">
-      <Topbar
-        handleLogin={handleLogin}
-        setAddWiget={setAddWiget}
-        isLoggedIn
-        setExpImp={setExpImp}
-        toggleDark={changeTheme}
-      />
-      {feeds === false && (
-        <div className="py-5">
-          <Loading />
-        </div>
-      )}
-      {feeds !== false && (
-        <div className="flex flex-row px-1 py-1 xl:py-3">
-          <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(0)}</div>
-          <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(1)}</div>
-          <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(2)}</div>
-        </div>
-      )}
-      {feeds !== false && (
-        <AddWidget
-          feeds={feeds}
-          open={isAddWidget}
-          addWidget={addWidget}
-          skip={widgets.flatMap((w) => w).map((w) => w.id)}
+    <HoverContext value={{ setHoveredComponent }}>
+      <div className="min-h-screen dark:bg-black">
+        <Topbar
+          handleLogin={handleLogin}
+          setAddWiget={setAddWiget}
+          isLoggedIn
+          setExpImp={setExpImp}
+          toggleDark={changeTheme}
         />
-      )}
-      <ExpImp open={isExpImp} doReset={handleExpImp} />
-    </div>
+        {feeds === false && (
+          <div className="py-5">
+            <Loading />
+          </div>
+        )}
+        {feeds !== false && (
+          <div className="flex flex-row px-1 py-1 xl:py-3">
+            <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(0)}</div>
+            <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(1)}</div>
+            <div className="flex w-1/3 flex-col gap-1 px-1 xl:gap-3 xl:px-2">{makeWidget(2)}</div>
+          </div>
+        )}
+        {feeds !== false && (
+          <AddWidget
+            feeds={feeds}
+            open={isAddWidget}
+            addWidget={addWidget}
+            skip={widgets.flatMap((w) => w).map((w) => w.id)}
+          />
+        )}
+        <ExpImp open={isExpImp} doReset={handleExpImp} />
+        <ShortcutsHelp
+          isOpen={isShortcutsHelpOpen}
+          doClose={() => {
+            setShortcutsHelpOpen(false);
+          }}
+        />
+      </div>
+    </HoverContext>
   );
 }
