@@ -215,7 +215,10 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         } else {
           freshRss
             .markUnreadItems([row.id])
-            .then(() => {
+            .then((ret) => {
+              if (!ret) {
+                return;
+              }
               row.categories.splice(idx, 1);
               feed.unread = feed.unread + 1;
               updateFeed(feed);
