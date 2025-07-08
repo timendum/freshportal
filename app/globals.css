@@ -46,7 +46,7 @@
 }
 
 .btn-primary {
-  @apply rounded-sm uppercase transition duration-300 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:shadow-lg focus:outline-hidden focus:ring-0 active:bg-blue-800 active:shadow-lg disabled:bg-inherit disabled:hover:bg-inherit;
+  @apply rounded-sm uppercase transition duration-300 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:shadow-lg focus:outline-hidden focus:ring-0 active:bg-blue-800 active:shadow-lg disabled:hover:bg-inherit disabled:hover:shadow-none;
 }
 .input-primary {
   @apply rounded-sm border border-solid border-gray-300 bg-slate-100 text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:bg-white focus:outline-hidden focus:outline-hidden dark:bg-slate-200 dark:text-black dark:focus:bg-white;
