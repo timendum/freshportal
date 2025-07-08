@@ -81,6 +81,11 @@ export default function Main({ handleLogin }: MainProp) {
         setShortcutsHelpOpen(!isShortcutsHelpOpen);
         return;
       }
+      if (e.key == "Escape") {
+        setExpImp(false);
+        setShortcutsHelpOpen(false);
+        setAddWiget(false);
+      }
       hoveredComponent?.handleKeyboardEvent(e);
     };
     window.addEventListener("keydown", handleKeyDown);
