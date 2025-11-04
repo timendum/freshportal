@@ -53,9 +53,9 @@ export default function Main({ handleLogin }: MainProp) {
   const [hoveredComponent, setHoveredComponent] = React.useState<HoverableComponent | null>(null); // handler from element under the mouse
   const saveWidgets: setWidgetsType = (widgets) => {
     // Generate a new array, to update the state
-    const newWidgets: WidgetList = [...widgets];
-    localStorage.setItem("FRWidgets", JSON.stringify(newWidgets));
-    setWidgets(newWidgets);
+    // const newWidgets: WidgetList = [...widgets];
+    localStorage.setItem("FRWidgets", JSON.stringify(widgets));
+    setWidgets(widgets);
   };
   /* Init code for theme and widgets from configuration */
   React.useEffect(() => {
@@ -125,9 +125,8 @@ export default function Main({ handleLogin }: MainProp) {
         );
       }
       return (
-        <div>
+        <div key={widget.id}>
           <Widget
-            key={widget.id}
             feed={widgetFeed}
             config={widget}
             updateConfig={updateConfig}
@@ -157,9 +156,10 @@ export default function Main({ handleLogin }: MainProp) {
       const newColor = missingColors.shift() || colors[widgets.length % colors.length];
       const newW: WidgetType = { id, color: newColor };
       const [c, idx] = findWidget(id);
+      const newWidgets: WidgetList = [...widgets];
       if (c > -1) {
         // widget update
-        widgets[c][idx] = newW;
+        newWidgets[c][idx] = newW;
       } else {
         // new widget
         let toC = 0;
@@ -171,9 +171,9 @@ export default function Main({ handleLogin }: MainProp) {
         }
         const newCol = [...widgets[toC]];
         newCol.push(newW);
-        widgets[toC] = newCol;
+        newWidgets[toC] = newCol;
       }
-      saveWidgets(widgets);
+      saveWidgets(newWidgets);
     }
   };
   const moveWidget = (
@@ -188,12 +188,13 @@ export default function Main({ handleLogin }: MainProp) {
     }
     const w = widgets[ic][idx];
     if (to.startsWith("empty-")) {
-      widgets[ic] = widgets[ic].filter((_, i) => i != idx);
+      const newWidgets: WidgetList = [...widgets];
+      newWidgets[ic] = newWidgets[ic].filter((_, i) => i != idx);
       const tc = parseInt(to[to.length - 1], 10);
-      const newCol = [...widgets[tc]];
+      const newCol = [...newWidgets[tc]];
       newCol.push(w);
-      widgets[tc] = newCol;
-      saveWidgets(widgets);
+      newWidgets[tc] = newCol;
+      saveWidgets(newWidgets);
       return;
     }
     const [tc, tdx] = findWidget(to);
@@ -201,13 +202,14 @@ export default function Main({ handleLogin }: MainProp) {
       console.log("moveWidget: widget not found", to);
       return;
     }
-    widgets[ic] = widgets[ic].filter((_, i) => i != idx);
+    const newWidgets: WidgetList = [...widgets];
+    newWidgets[ic] = newWidgets[ic].filter((_, i) => i != idx);
     const position = top ? tdx : tdx + 1;
-    const newCol = [...widgets[tc]];
+    const newCol = [...newWidgets[tc]];
     newCol.splice(position, 0, w);
-    widgets[tc] = newCol;
+    newWidgets[tc] = newCol;
     // console.log(id, "to", to, top);
-    saveWidgets(widgets);
+    saveWidgets(newWidgets);
   };
   const handleExpImp = (refresh: boolean) => {
     if (refresh) {
@@ -223,12 +225,13 @@ export default function Main({ handleLogin }: MainProp) {
       console.log("updateConfig: widget not found", widget);
       return;
     }
+    const newWidgets: WidgetList = [...widgets];
     if (remove === true) {
-      widgets[c] = widgets[c].filter((_, i) => i != idx);
+      newWidgets[c] = newWidgets[c].filter((_, i) => i != idx);
     } else {
-      widgets[c][idx] = widget;
+      newWidgets[c][idx] = newWidgets;
     }
-    saveWidgets(widgets);
+    saveWidgets(newWidgets);
   };
   const updateFeed = (feed: FullFeed) => {
     if (feeds === false) {

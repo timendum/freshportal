@@ -19,6 +19,6 @@ export default function DropWidget({ id, move }: DropWidgetProp) {
     }
   });
 
-  drop(ref);
+  drop(ref); // eslint-disable-line react-hooks/refs
   return <div ref={ref} className="block min-h-full"></div>;
 }

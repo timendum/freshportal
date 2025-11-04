@@ -233,7 +233,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     }
   };
 
-  preview(drop(ref));
+  preview(drop(ref)); // eslint-disable-line react-hooks/refs
   return (
     <div
       ref={ref}
