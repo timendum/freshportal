@@ -229,7 +229,7 @@ export default function Main({ handleLogin }: MainProp) {
     if (remove === true) {
       newWidgets[c] = newWidgets[c].filter((_, i) => i != idx);
     } else {
-      newWidgets[c][idx] = newWidgets;
+      newWidgets[c][idx] = widget;
     }
     saveWidgets(newWidgets);
   };
