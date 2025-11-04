@@ -6,7 +6,14 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react({
+      babel: {
+        plugins: ["babel-plugin-react-compiler"]
+      }
+    }),
+    tailwindcss()
+  ],
   base: "/freshportal/",
   build: {
     outDir: "build",
