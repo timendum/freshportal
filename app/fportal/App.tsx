@@ -12,6 +12,9 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 export default function App() {
   const [isLoggedIn, setLoggedIn] = React.useState<boolean | undefined>(undefined);
   React.useEffect(() => {
+    if (darkPreference()) {
+      document.body.classList.add("dark");
+    }
     try {
       freshRss.session = localStorage.getItem("FRSession");
       freshRss.base = localStorage.getItem("FRHost");
@@ -21,18 +24,19 @@ export default function App() {
     freshRss.isLoggedIn().then(setLoggedIn).catch(console.log);
   }, []);
   React.useEffect(() => {
-    if (darkPreference()) {
-      document.body.classList.add("dark");
+    if (isLoggedIn && freshRss.session && freshRss.base) {
+      try {
+        localStorage.setItem("FRSession", freshRss.session);
+        localStorage.setItem("FRHost", freshRss.base);
+      } catch (err) {
+        console.warn(err);
+      }
     }
-  }, []);
+  }, [isLoggedIn]);
   if (isLoggedIn === false) {
     return <MainLogin handleLogin={setLoggedIn} />;
   }
   if (isLoggedIn === true) {
-    if (freshRss.session && freshRss.base) {
-      localStorage.setItem("FRSession", freshRss.session);
-      localStorage.setItem("FRHost", freshRss.base);
-    }
     return (
       <DndProvider backend={HTML5Backend}>
         <Main handleLogin={setLoggedIn} />
