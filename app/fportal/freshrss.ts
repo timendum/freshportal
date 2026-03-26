@@ -71,40 +71,44 @@ const freshRss: FreshRss = {
   base: null,
   session: null,
   token: null,
-  isLoggedIn: function () {
+  isLoggedIn: async function () {
     if (freshRss.base === null || freshRss.session === null) {
-      return Promise.resolve(false);
+      return false;
     }
-    return request("reader/api/0/user-info")
-      .then((data) => "userId" in data)
-      .catch(() => false);
+    try {
+      const data = await request("reader/api/0/user-info");
+      return "userId" in data;
+    } catch {
+      return false;
+    }
   },
-  login: function (user, pass) {
+  login: async function (user, pass) {
     if (!freshRss.base) {
-      return Promise.reject(new Error("Set freshRss.base"));
+      throw new Error("Set freshRss.base");
     }
     freshRss.session = null;
     const url = new URL("accounts/ClientLogin", freshRss.base);
     url.searchParams.append("Email", user);
     url.searchParams.append("Passwd", pass);
-    return fetch(url, {
-      method: "POST",
-      cache: "no-cache",
-      mode: "cors",
-      signal: AbortSignal.timeout(FETCH_TIMEOUT)
-    })
-      .then((response) => response.text())
-      .then((resp) => {
-        const rows = resp.split("\n").map((r) => r.split("="));
-        for (const row of rows) {
-          if (row[0] === "Auth") {
-            freshRss.session = row[1];
-            return true;
-          }
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        cache: "no-cache",
+        mode: "cors",
+        signal: AbortSignal.timeout(FETCH_TIMEOUT)
+      });
+      const resp = await response.text();
+      const rows = resp.split("\n").map((r) => r.split("="));
+      for (const row of rows) {
+        if (row[0] === "Auth") {
+          freshRss.session = row[1];
+          return true;
         }
-        return false;
-      })
-      .catch(() => false);
+      }
+      return false;
+    } catch {
+      return false;
+    }
   },
   logout: function () {
     freshRss.session = null;
@@ -113,136 +117,128 @@ const freshRss: FreshRss = {
     localStorage.removeItem("FRHost");
     return Promise.resolve(true);
   },
-  getFeeds: function () {
-    return Promise.all([
+  getFeeds: async function () {
+    const [subData, tagData]: [
+      {
+        subscriptions: {
+          id: string;
+          title: string;
+          htmlUrl: string;
+          url: string;
+          categories: { id: string; label: string }[];
+        }[];
+      },
+      { tags: { id: string; type?: string }[] }
+    ] = await Promise.all([
       request("reader/api/0/subscription/list"),
       request("reader/api/0/tag/list")
-    ]).then(
-      (
-        values: [
-          {
-            subscriptions: {
-              id: string;
-              title: string;
-              htmlUrl: string;
-              url: string;
-              categories: {
-                id: string;
-                label: string;
-              }[];
-            }[];
-          },
-          { tags: { id: string; type?: string }[] }
-        ]
-      ) => {
-        const subs: Feed[] = values[0]["subscriptions"];
-        const only_feeds = values[0]["subscriptions"];
-        for (const tag of values[1]["tags"]) {
-          if ("type" in tag) {
-            const splitted = tag.id.split("/");
-            subs.push({
-              id: tag.id,
-              title: splitted[splitted.length - 1],
-              feeds: only_feeds.filter((feed: { categories: { id: string }[] }) =>
-                feed["categories"]?.find((cat: { id: string }) => cat.id === tag.id)
-              )
-            });
-          }
-        }
-        return subs;
+    ]);
+    const subs: Feed[] = subData["subscriptions"];
+    const only_feeds = subData["subscriptions"];
+    for (const tag of tagData["tags"]) {
+      if ("type" in tag) {
+        const splitted = tag.id.split("/");
+        subs.push({
+          id: tag.id,
+          title: splitted[splitted.length - 1],
+          feeds: only_feeds.filter((feed: { categories: { id: string }[] }) =>
+            feed["categories"]?.find((cat: { id: string }) => cat.id === tag.id)
+          )
+        });
       }
-    );
+    }
+    return subs;
   },
-  getContent: function (id, limit, c) {
-    return request("reader/api/0/stream/contents/" + id, { n: limit, c }).then(
-      (resp) => resp["items"] as FeedContent[]
-    );
+  getContent: async function (id, limit, c) {
+    const resp = await request("reader/api/0/stream/contents/" + id, { n: limit, c });
+    return resp["items"] as FeedContent[];
   },
-  markReadItems: function (ids) {
-    return request(
-      "reader/api/0/edit-tag",
-      { output: "text" },
-      { i: ids, a: "user/-/state/com.google/read" },
-      true
-    )
-      .then((resp) => resp === "OK")
-      .catch(() => false);
+  markReadItems: async function (ids) {
+    try {
+      const resp = await request(
+        "reader/api/0/edit-tag",
+        { output: "text" },
+        { i: ids, a: "user/-/state/com.google/read" },
+        true
+      );
+      return resp === "OK";
+    } catch {
+      return false;
+    }
   },
-  markUnreadItems: function (ids) {
-    return request(
-      "reader/api/0/edit-tag",
-      { output: "text" },
-      { i: ids, r: "user/-/state/com.google/read" },
-      true
-    )
-      .then((resp) => resp === "OK")
-      .catch(() => false);
+  markUnreadItems: async function (ids) {
+    try {
+      const resp = await request(
+        "reader/api/0/edit-tag",
+        { output: "text" },
+        { i: ids, r: "user/-/state/com.google/read" },
+        true
+      );
+      return resp === "OK";
+    } catch {
+      return false;
+    }
   },
-  markReadFeed: function (id) {
-    return request("reader/api/0/mark-all-as-read", { output: "text" }, { s: id }, true)
-      .then((data) => data === "OK")
-      .catch(() => false);
+  markReadFeed: async function (id) {
+    try {
+      const data = await request("reader/api/0/mark-all-as-read", { output: "text" }, { s: id }, true);
+      return data === "OK";
+    } catch {
+      return false;
+    }
   },
-  getUnreads: function () {
-    return request("reader/api/0/unread-count").then((resp) => {
-      return resp["unreadcounts"] as UnreadFeed[];
-    });
+  getUnreads: async function () {
+    const resp = await request("reader/api/0/unread-count");
+    return resp["unreadcounts"] as UnreadFeed[];
   },
-  getFeedsFull: function () {
-    return Promise.all([freshRss.getFeeds(), freshRss.getUnreads()]).then((values) => {
-      const feeds = values[0] as FullFeed[];
-      const unreadMap = new Map(values[1].map((u) => [u.id, u]));
-      for (const feed of feeds) {
-        const unread = unreadMap.get(feed.id);
-        if (unread) {
-          feed.unread = unread.count;
-          feed.newestItemTimestampUsec = unread.newestItemTimestampUsec;
-        } else {
-          console.error("Unread not found for ", feed.id);
-        }
+  getFeedsFull: async function () {
+    const [feedList, unreadList] = await Promise.all([freshRss.getFeeds(), freshRss.getUnreads()]);
+    const feeds = feedList as FullFeed[];
+    const unreadMap = new Map(unreadList.map((u) => [u.id, u]));
+    for (const feed of feeds) {
+      const unread = unreadMap.get(feed.id);
+      if (unread) {
+        feed.unread = unread.count;
+        feed.newestItemTimestampUsec = unread.newestItemTimestampUsec;
+      } else {
+        console.error("Unread not found for ", feed.id);
       }
-      return feeds;
-    });
+    }
+    return feeds;
   }
 };
 
 async function getToken(): Promise<string> {
   if (freshRss.token) {
-    return Promise.resolve(freshRss.token);
+    return freshRss.token;
   }
   const resp = await request("reader/api/0/token", { output: "text" });
   if (!resp) {
-    return Promise.reject(new Error("Response null"));
+    throw new Error("Response null");
   }
   freshRss.token = resp;
   if (!freshRss.token) {
-    return Promise.reject(new Error("Response without token"));
+    throw new Error("Response without token");
   }
-  return Promise.resolve(freshRss.token);
+  return freshRss.token;
 }
 
-function request(
+async function request(
   path: string | URL,
   params?: Params,
   data?: RequestData,
   token?: boolean
 ): Promise<any> {
-  token = token || false;
   data = data || {};
   if (token) {
-    return getToken().then((token) => {
-      data = data || {};
-      const nData = data;
-      nData["T"] = token;
-      return request(path, params, nData, false);
-    });
+    data["T"] = await getToken();
   }
   const headers = new Headers();
   if (freshRss.session) {
     headers.append("Authorization", "GoogleLogin auth=" + freshRss.session);
   }
   if (!freshRss.base) {
-    return Promise.reject(new Error("Set freshRss.base"));
+    throw new Error("Set freshRss.base");
   }
   const url = new URL(path, freshRss.base);
   params = params || {};
@@ -273,18 +269,15 @@ function request(
     }
   }
 
-  return fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     cache: "no-cache",
     body: formData,
     mode: "cors",
     headers: headers,
     signal: AbortSignal.timeout(FETCH_TIMEOUT)
-  }).then((response) => {
-    params = params || {};
-    if (params["output"] === "json") return response.json();
-    else return response.text();
   });
+  return params["output"] === "json" ? response.json() : response.text();
 }
 
 export { freshRss, type Feed, type UnreadFeed, type FullFeed, type FeedContent };
