@@ -27,7 +27,7 @@ function Button({ onClick, icon, text, tooltip }: CustomButtonProps) {
 interface TopbarProp {
   handleLogin: HandleStateChangeType;
   isLoggedIn: boolean;
-  setAddWiget: HandleStateChangeType;
+  setAddWidget: HandleStateChangeType;
   setExpImp: HandleStateChangeType;
   toggleDark: () => void;
 }
@@ -35,7 +35,7 @@ interface TopbarProp {
 export default function Topbar({
   handleLogin,
   isLoggedIn,
-  setAddWiget,
+  setAddWidget,
   setExpImp,
   toggleDark
 }: TopbarProp) {
@@ -65,7 +65,7 @@ export default function Topbar({
       </button>
       {!!isLoggedIn && (
         <Button
-          onClick={() => setAddWiget(true)}
+          onClick={() => setAddWidget(true)}
           icon={faSquarePlus}
           text="Add Widget"
           tooltip="Create a new widget"

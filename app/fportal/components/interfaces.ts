@@ -29,7 +29,7 @@ type HandleCommandType = {
   (name: "readAll", data?: string): void;
 };
 
-type WidgetList = [WidgetType[] | [], WidgetType[] | [], WidgetType[] | []];
+type WidgetList = [WidgetType[], WidgetType[], WidgetType[]];
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function isWidgetList(obj: any): obj is WidgetList {
