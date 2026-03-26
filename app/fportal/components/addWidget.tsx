@@ -9,22 +9,21 @@ interface AddWidgetProp {
 }
 
 export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetProp) {
-  const ref = React.useRef<HTMLDivElement>(null);
   if (!open) {
     return null;
   }
+  const ref = React.useRef<HTMLDivElement>(null);
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const id = data.get("feedId");
-    if (!id) {
+    if (typeof id !== "string" || !id) {
       return;
     }
-    addWidget(id as string);
+    addWidget(id);
   };
-  feeds = feeds.filter((feed) => skip.indexOf(feed.id) === -1);
-  feeds.sort((a, b) => a.title.localeCompare(b.title));
+  const filteredFeeds = feeds.filter((f) => !skip.includes(f.id)).sort((a, b) => a.title.localeCompare(b.title));
   return (
     <div
       onClick={(event) => {
@@ -41,7 +40,7 @@ export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetPro
         <form onSubmit={handleSubmit} className="space-y-4">
           <h4 className="text-lg dark:text-gray-200">Feed to be added:</h4>
           <select name="feedId" className="input-primary block w-full px-3 py-1.5">
-            {feeds.map((feed) => (
+            {filteredFeeds.map((feed) => (
               <option key={feed.id} value={feed.id}>
                 {feed.title}
               </option>
@@ -50,7 +49,7 @@ export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetPro
           <button
             className="btn-primary w-full bg-blue-800 px-7 py-3 text-sm leading-snug text-slate-200"
             type="submit"
-            disabled={feeds.length < 1}
+            disabled={filteredFeeds.length < 1}
           >
             Add
           </button>
