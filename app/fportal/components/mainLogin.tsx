@@ -39,7 +39,7 @@ export default function MainLogin({ handleLogin }: MainLoginProps) {
     <div className="min-h-screen dark:bg-black">
       <Topbar
         handleLogin={handleLogin}
-        setAddWiget={() => {}}
+        setAddWidget={() => {}}
         setExpImp={setExpImp}
         isLoggedIn={false}
         toggleDark={changeTheme}
