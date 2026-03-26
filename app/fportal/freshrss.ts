@@ -65,6 +65,8 @@ interface RequestData {
   s?: string;
 }
 
+const FETCH_TIMEOUT = 5000;
+
 const freshRss: FreshRss = {
   base: null,
   session: null,
@@ -88,7 +90,8 @@ const freshRss: FreshRss = {
     return fetch(url, {
       method: "POST",
       cache: "no-cache",
-      mode: "cors"
+      mode: "cors",
+      signal: AbortSignal.timeout(FETCH_TIMEOUT)
     })
       .then((response) => response.text())
       .then((resp) => {
@@ -275,7 +278,8 @@ function request(
     cache: "no-cache",
     body: formData,
     mode: "cors",
-    headers: headers
+    headers: headers,
+    signal: AbortSignal.timeout(FETCH_TIMEOUT)
   }).then((response) => {
     params = params || {};
     if (params["output"] === "json") return response.json();
