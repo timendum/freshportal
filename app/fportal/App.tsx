@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 
 import Loading from "./components/loading";
 import Main from "./components/main";
@@ -10,8 +10,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 export default function App() {
-  const [isLoggedIn, setLoggedIn] = React.useState<boolean | undefined>(undefined);
-  React.useEffect(() => {
+  const [isLoggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
     if (darkPreference()) {
       document.body.classList.add("dark");
     }
@@ -23,7 +23,7 @@ export default function App() {
     }
     freshRss.isLoggedIn().then(setLoggedIn).catch(console.log);
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     if (isLoggedIn && freshRss.session && freshRss.base) {
       try {
         localStorage.setItem("FRSession", freshRss.session);
