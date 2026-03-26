@@ -78,34 +78,30 @@ const freshRss: FreshRss = {
       .catch(() => false);
   },
   login: function (user, pass) {
-    return new Promise((resolve) => {
-      if (!freshRss.base) {
-        throw new Error("Set freshRss.base");
-      }
-      freshRss.session = null;
-      const url = new URL("accounts/ClientLogin", freshRss.base);
-      url.searchParams.append("Email", user);
-      url.searchParams.append("Passwd", pass);
-      resolve(
-        fetch(url, {
-          method: "POST",
-          cache: "no-cache",
-          mode: "cors"
-        })
-          .then((response) => response.text())
-          .then((resp) => {
-            const rows = resp.split("\n").map((r) => r.split("="));
-            for (const row of rows) {
-              if (row[0] == "Auth") {
-                freshRss.session = row[1];
-                return true;
-              }
-            }
-            return false;
-          })
-          .catch(() => false)
-      );
-    });
+    if (!freshRss.base) {
+      return Promise.reject(new Error("Set freshRss.base"));
+    }
+    freshRss.session = null;
+    const url = new URL("accounts/ClientLogin", freshRss.base);
+    url.searchParams.append("Email", user);
+    url.searchParams.append("Passwd", pass);
+    return fetch(url, {
+      method: "POST",
+      cache: "no-cache",
+      mode: "cors"
+    })
+      .then((response) => response.text())
+      .then((resp) => {
+        const rows = resp.split("\n").map((r) => r.split("="));
+        for (const row of rows) {
+          if (row[0] === "Auth") {
+            freshRss.session = row[1];
+            return true;
+          }
+        }
+        return false;
+      })
+      .catch(() => false);
   },
   logout: function () {
     freshRss.session = null;
@@ -139,13 +135,13 @@ const freshRss: FreshRss = {
         const subs: Feed[] = values[0]["subscriptions"];
         const only_feeds = values[0]["subscriptions"];
         for (const tag of values[1]["tags"]) {
-          if (Object.keys(tag).indexOf("type") > -1) {
+          if ("type" in tag) {
             const splitted = tag.id.split("/");
             subs.push({
               id: tag.id,
               title: splitted[splitted.length - 1],
               feeds: only_feeds.filter((feed: { categories: { id: string }[] }) =>
-                feed["categories"]?.find((cat: { id: string }) => cat.id == tag.id)
+                feed["categories"]?.find((cat: { id: string }) => cat.id === tag.id)
               )
             });
           }
@@ -192,17 +188,14 @@ const freshRss: FreshRss = {
   getFeedsFull: function () {
     return Promise.all([freshRss.getFeeds(), freshRss.getUnreads()]).then((values) => {
       const feeds = values[0] as FullFeed[];
-      const unreads = values[1];
+      const unreadMap = new Map(values[1].map((u) => [u.id, u]));
       for (const feed of feeds) {
-        for (const unread of unreads) {
-          if (unread.id == feed.id) {
-            feed.unread = unread.count;
-            feed.newestItemTimestampUsec = unread.newestItemTimestampUsec;
-            break;
-          }
-        }
-        if (Object.keys(feed).indexOf("unread") === -1) {
-          console.error("Unread not found for ", feed);
+        const unread = unreadMap.get(feed.id);
+        if (unread) {
+          feed.unread = unread.count;
+          feed.newestItemTimestampUsec = unread.newestItemTimestampUsec;
+        } else {
+          console.error("Unread not found for ", feed.id);
         }
       }
       return feeds;
@@ -285,7 +278,7 @@ function request(
     headers: headers
   }).then((response) => {
     params = params || {};
-    if (params["output"] == "json") return response.json();
+    if (params["output"] === "json") return response.json();
     else return response.text();
   });
 }
