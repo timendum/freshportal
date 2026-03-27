@@ -8,7 +8,6 @@ import type { ConnectDragSource } from "react-dnd";
 
 interface WidgetHeaderProp {
   feed: FullFeed;
-  unread: FullFeed["unread"];
   isCollapsed: boolean;
   handleCommand: HandleCommandType;
   drag: ConnectDragSource;
@@ -16,7 +15,6 @@ interface WidgetHeaderProp {
 
 export default function WidgetHeader({
   feed,
-  unread,
   isCollapsed,
   handleCommand,
   drag
@@ -59,31 +57,31 @@ export default function WidgetHeader({
           handleCommand("toggleCollapse");
         }}
       >
-        {isCollapsed ? faCaretUp : faCaretDown}
+        {isCollapsed ? faCaretDown : faCaretUp}
       </button>
       <button
         type="button"
-        disabled={unread < 1}
+        disabled={feed.unread < 1}
         onClick={(e) => {
           handleCommand("readAll", e.ctrlKey ? "current" : undefined);
         }}
         className="btn-primary text-[1.1rem] md:px-1 lg:px-1"
-        title={unread > 0 ? "Mark all as read" : ""}
+        title={feed.unread > 0 ? "Mark all as read" : undefined}
       >
-        {unread}
+        {feed.unread}
       </button>
       <h4 className="grow text-lg md:px-1">
         {(() => {
           if (feed.htmlUrl) {
             return (
-              <a href={feed.htmlUrl} target="feed_{feed.id}">
+              <a href={feed.htmlUrl} target={`feed_${feed.id}`}>
                 {feed.title}
               </a>
             );
           }
-          if (feed.feeds?.length == 1) {
+          if (feed.feeds?.length === 1) {
             return (
-              <a href={feed.feeds[0].htmlUrl} target="feed_{feed.id}">
+              <a href={feed.feeds[0].htmlUrl} target={`feed_{feed.id}`}>
                 {feed.title}
               </a>
             );
@@ -92,16 +90,6 @@ export default function WidgetHeader({
           return feed.title;
         })()}
       </h4>
-      {/* <button
-        type="button"
-        className="btn-primary md:px-1"
-        title="Fetch new articles"
-        onClick={() => {
-          handleCommand("refresh");
-        }}
-      >
-        <FontAwesomeIcon icon={faArrowsRotate} size="xs" />
-      </button> */}
       <button
         type="button"
         ref={(el) => {

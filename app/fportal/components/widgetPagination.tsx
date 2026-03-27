@@ -12,7 +12,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
   function makeButton(newPage: number | "-" | "+" | "…" | "-…") {
     let disabled = newPage === pag.length - 1;
     let text = "";
-    let tooltip: string | undefined = "Go to page " + text;
+    let tooltip: string | undefined = undefined;
     let target = pag[pag.length - 1];
     if (newPage === "-") {
       text = "<";
@@ -57,7 +57,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
           title={tooltip}
           className={classes}
           disabled={disabled}
-          about={String(newPage)}
+          data-page={String(newPage)}
           onClick={() => setContinuation(target)}
         >
           {text}
@@ -66,7 +66,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
     );
   }
   return (
-    <nav className="dark:boder-zinc-400 border-t border-slate-500 dark:text-zinc-400">
+    <nav className="dark:border-zinc-400 border-t border-slate-500 dark:text-zinc-400">
       <ul className="mx-auto flex flex-row md:px-1 md:py-1 lg:px-2">
         {makeButton("-")}
         {pag.length > 4 && makeButton(0)}

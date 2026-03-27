@@ -103,8 +103,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       case "toggleConfiguring":
         setConfiguring(!isConfiguring);
         setSizeLimit(config.sizeLimit || 10);
-        setWType(config.wType || "excerpt");
-        setSizeLimit(config.sizeLimit || 10);
+        setWType(config.wType || "excerpt");;
         setColor(config.color || "gray");
         break;
       case "size":
@@ -152,7 +151,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
               console.error("markReadFeed error", error);
               return false;
             });
-          if (unreadRows.length === feed.unread || data == "current") {
+          if (unreadRows.length === feed.unread || data === "current") {
             markAction = () =>
               freshRss.markReadItems(unreadRows.map((e) => e.id)).catch((error) => {
                 console.error("markReadItems error", error);
@@ -164,19 +163,18 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
               if (!ret) {
                 return;
               }
-              const newRows = [...rows];
               let marked = 0;
-              newRows.forEach((row) => {
+              const newRows = rows.map((row) => {
                 if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
                   marked += 1;
-                  row.categories.push("user/-/state/com.google/read");
+                  return { ...row, categories: [...row.categories, "user/-/state/com.google/read"] };
                 }
+                return row;
               });
-              if (data != "current") {
+              if (data !== "current") {
                 marked = feed.unread;
               }
-              feed.unread = Math.max(0, feed.unread - marked);
-              updateFeed(feed);
+              updateFeed({ ...feed, unread: Math.max(0, feed.unread - marked) });
               setRows(newRows);
             })
             .catch((error) => {
@@ -189,47 +187,40 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const setContinuation = (c: string) => {
     const idx = pag.indexOf(c);
     if (idx > -1) {
-      setPag(pag.splice(0, idx + 1));
+      setPag(pag.slice(0, idx + 1));
       return;
     }
-    const newPag = [...pag];
-    newPag.push(c);
-    setPag(newPag);
+    setPag([...pag, c]);
   };
   const toggleReadLink = (id: string) => {
-    for (const row of rows) {
-      if (row.id === id) {
-        const idx = row.categories.indexOf("user/-/state/com.google/read");
-        if (idx === -1) {
-          freshRss
-            .markReadItems([row.id])
-            .then(() => {
-              row.categories.push("user/-/state/com.google/read");
-              feed.unread = feed.unread - 1;
-              updateFeed(feed);
-              setRows(rows);
-            })
-            .catch((error) => {
-              console.error("markRead error", error);
-            });
-        } else {
-          freshRss
-            .markUnreadItems([row.id])
-            .then((ret) => {
-              if (!ret) {
-                return;
-              }
-              row.categories.splice(idx, 1);
-              feed.unread = feed.unread + 1;
-              updateFeed(feed);
-              setRows(rows);
-            })
-            .catch((error) => {
-              console.error("markRead error", error);
-            });
-        }
-        return;
-      }
+    const row = rows.find((r) => r.id === id);
+    if (!row) return;
+    const idx = row.categories.indexOf("user/-/state/com.google/read");
+    if (idx === -1) {
+      freshRss
+        .markReadItems([row.id])
+        .then(() => {
+          setRows(rows.map((r) =>
+            r.id === id ? { ...r, categories: [...r.categories, "user/-/state/com.google/read"] } : r
+          ));
+          updateFeed({ ...feed, unread: feed.unread - 1 });
+        })
+        .catch((error) => {
+          console.error("markRead error", error);
+        });
+    } else {
+      freshRss
+        .markUnreadItems([row.id])
+        .then((ret) => {
+          if (!ret) return;
+          setRows(rows.map((r) =>
+            r.id === id ? { ...r, categories: r.categories.filter((_, i) => i !== idx) } : r
+          ));
+          updateFeed({ ...feed, unread: feed.unread + 1 });
+        })
+        .catch((error) => {
+          console.error("markRead error", error);
+        });
     }
   };
 
@@ -241,7 +232,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     >
       <WidgetHeader
         feed={feed}
-        unread={feed.unread}
         isCollapsed={isCollapsed}
         handleCommand={handleCommand}
         drag={drag}

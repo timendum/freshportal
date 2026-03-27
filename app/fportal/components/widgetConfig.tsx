@@ -13,7 +13,6 @@ interface WidgetConfigProp {
 
 export default function WidgetConfig({ size, wType, color, handleCommand }: WidgetConfigProp) {
   const handleReset = () => {
-    // event.preventDefault();
     handleCommand("reset");
   };
   const handleSave = (event: React.SyntheticEvent<HTMLFormElement>) => {
@@ -22,7 +21,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
   };
   return (
     <form
-      className="dark:boder-zinc-400 border-b border-slate-500 bg-zinc-800 p-3 dark:bg-black"
+      className="dark:border-zinc-400 border-b border-slate-500 bg-zinc-800 p-3 dark:bg-black"
       onReset={handleReset}
       onSubmit={handleSave}
     >
@@ -48,6 +47,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
             handleCommand("size", e.currentTarget.value);
           }}
           type="number"
+          min={0}
           defaultValue={size}
         />
         <label className="text-right text-slate-200">Type: </label>
@@ -64,12 +64,12 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
         <div className="col-span-2">
           <button
             className="btn-primary mx-2 bg-blue-800 px-1 text-slate-200 md:px-2"
-            value="reset"
-          />
+            value="reset" type="reset">
+            Reset
+          </button>
           <button
             className="btn-primary mx-2 bg-blue-800 px-1  text-slate-200 md:px-2"
-            type="submit"
-          >
+            type="submit">
             Save
           </button>
         </div>
