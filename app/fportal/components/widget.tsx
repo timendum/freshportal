@@ -78,37 +78,36 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       move(dragIndex, hoverIndex, top);
     }
   });
-  const { rows, toggleReadLink, markAllRead } = useWidgetRows(feed, sizeLimit, pag, isCollapsed, updateFeed);
-  const handleCommand: HandleCommandType = (
-    name: HandleCommandType["name"],
-    data?: string | number
-  ) => {
-    switch (name) {
+  const { rows, toggleReadLink, markAllRead } = useWidgetRows(
+    feed,
+    sizeLimit,
+    pag,
+    isCollapsed,
+    updateFeed
+  );
+  const handleCommand: HandleCommandType = (cmd) => {
+    switch (cmd.name) {
       case "toggleCollapse":
         setCollapsed(!isCollapsed);
         break;
       case "toggleConfiguring":
         setConfiguring(!isConfiguring);
         setSizeLimit(config.sizeLimit || 10);
-        setWType(config.wType || "excerpt");;
+        setWType(config.wType || "excerpt");
         setColor(config.color || "gray");
         break;
       case "size":
-        if (typeof data === "string") {
-          setSizeLimit(parseInt(data, 10));
-        }
+        setSizeLimit(cmd.data);
         break;
       case "wType": {
-        const awType = wTypes.find((validName) => validName === data);
+        const awType = wTypes.find((validName) => validName === cmd.data);
         if (awType) {
           setWType(awType);
         }
         break;
       }
       case "color":
-        if (typeof data === "string") {
-          setColor(data);
-        }
+        setColor(cmd.data);
         break;
       case "reset":
         setSizeLimit(config.sizeLimit || 10);
@@ -116,12 +115,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         setColor(config.color || "gray");
         break;
       case "save":
-        updateConfig({
-          id: feed.id,
-          sizeLimit,
-          wType,
-          color
-        });
+        updateConfig({ id: feed.id, sizeLimit, wType, color });
         setConfiguring(false);
         break;
       case "remove":
@@ -129,7 +123,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         setConfiguring(false);
         break;
       case "readAll":
-        markAllRead(typeof data === "string" ? data : undefined);
+        markAllRead(cmd.data);
         break;
     }
   };

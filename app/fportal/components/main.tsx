@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { HoverableComponent } from "../HoverContext";
 import { HoverContext } from "../HoverProvider";
@@ -7,56 +7,26 @@ import AddWidget from "./addWidget";
 import DropWidget from "./dropWidget";
 import ExpImp from "./expimp";
 import { refreshUnread } from "./iconHandler";
-import {
-  isWidgetList,
-  type HandleStateChangeType,
-  type WidgetList,
-  type WidgetType
-} from "./interfaces";
+import type {  HandleStateChangeType } from "./interfaces";
 import Loading from "./loading";
 import Topbar from "./topbar";
-import { colors, darkPreference } from "./utils";
+import { darkPreference } from "./utils";
 import Widget from "./widget";
 import ShortcutsHelp from "./shortcutsHelp";
-
-type setWidgetsType = (widgets: WidgetList) => void;
-
-function getWidgetsFromStorage(): WidgetList {
-  const sFRWidgets = localStorage.getItem("FRWidgets");
-  if (!sFRWidgets) {
-    localStorage.removeItem("FRWidgets");
-    return [[], [], []];
-  }
-  const sWidgets = JSON.parse(sFRWidgets) as unknown;
-  if (!isWidgetList(sWidgets)) {
-    console.log("Invalid FRWidgets", sWidgets);
-    localStorage.removeItem("FRWidgets");
-    return [[], [], []];
-  }
-  if (sWidgets.length > 0) {
-    console.debug("from storage", sWidgets);
-    return sWidgets;
-  }
-  return [[], [], []];
-}
+import useWidgetStore from "./useWidgetStore";
 
 interface MainProp {
   handleLogin: HandleStateChangeType;
 }
 
 export default function Main({ handleLogin }: MainProp) {
-  const [isAddWidget, setAddWidget] = useState(false); // is Add widget modal open?
-  const [isExpImp, setExpImp] = useState(false); // is Export import modal open?
-  const [isShortcutsHelpOpen, setShortcutsHelpOpen] = useState(false); // is ShortcutsHelpOpen modal open?
-  const [widgets, setWidgets] = useState<WidgetList>(getWidgetsFromStorage); // list of widgets
-  const [feeds, setFeeds] = useState<FullFeed[] | undefined>(undefined); // list of feeds from FreshRSS
+  const [isAddWidget, setAddWidget] = useState(false);
+  const [isExpImp, setExpImp] = useState(false);
+  const [isShortcutsHelpOpen, setShortcutsHelpOpen] = useState(false);
+  const { widgets, addWidget: storeAddWidget, moveWidget, updateConfig } = useWidgetStore();
+  const [feeds, setFeeds] = useState<FullFeed[] | undefined>(undefined);
   const [darkMode, setDarkMode] = useState(darkPreference());
-  const [hoveredComponent, setHoveredComponent] = useState<HoverableComponent | null>(null); // handler from element under the mouse
-  const saveWidgets: setWidgetsType = (widgets) => {
-    const deep: WidgetList = widgets.map((col) => [...col]) as WidgetList;
-    localStorage.setItem("FRWidgets", JSON.stringify(deep));
-    setWidgets(deep);
-  };
+  const [hoveredComponent, setHoveredComponent] = useState<HoverableComponent | null>(null);
   /* Refresh unread count on widget/feed changes */
   useEffect(() => {
     if (feeds && widgets.length > 0) {
@@ -90,7 +60,7 @@ export default function Main({ handleLogin }: MainProp) {
         return;
       }
       if (e.key === "?") {
-        setShortcutsHelpOpen(prev => !prev);
+        setShortcutsHelpOpen((prev) => !prev);
         return;
       }
       hoveredComponent?.handleKeyboardEvent(e);
@@ -98,17 +68,6 @@ export default function Main({ handleLogin }: MainProp) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hoveredComponent, isShortcutsHelpOpen, isAddWidget, isExpImp]);
-  /** Utility function to find a widget index by id in widgets. */
-  type findWidgetType = (id: string) => [number, number];
-  const findWidget: findWidgetType = (id) => {
-    for (let i = 0; i < widgets.length; i++) {
-      const idx = widgets[i].findIndex((w) => w.id === id);
-      if (idx > -1) {
-        return [i, idx];
-      }
-    }
-    return [-1, -1];
-  };
   /* Change and persist theme */
   const changeTheme = () => {
     localStorage.setItem("FRTheme", !darkMode ? "dark" : "light");
@@ -119,66 +78,11 @@ export default function Main({ handleLogin }: MainProp) {
     }
     setDarkMode(!darkMode);
   };
-  /* Add widget and persist widgets config */
   const addWidget = (id: string | null) => {
     setAddWidget(false);
     if (id) {
-      const currentColors = widgets.flatMap((w) => w).map((w) => w.color);
-      const missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
-      const newColor = missingColors.shift() || colors[widgets.length % colors.length];
-      const newW: WidgetType = { id, color: newColor };
-      const [c, idx] = findWidget(id);
-      const newWidgets: WidgetList = [...widgets];
-      if (c > -1) {
-        // widget update
-        newWidgets[c] = [...newWidgets[c]];
-        newWidgets[c][idx] = newW;
-      } else {
-        // new widget
-        let toC = 0;
-        // check if other columns have less widgets
-        if (widgets[2].length < widgets[1].length && widgets[2].length < widgets[0].length) {
-          toC = 2;
-        } else if (widgets[1].length < widgets[0].length) {
-          toC = 1;
-        }
-        newWidgets[toC] = [...newWidgets[toC], newW];
-      }
-      saveWidgets(newWidgets);
+      storeAddWidget(id);
     }
-  };
-  const moveWidget = (
-    id: WidgetType["id"],
-    to: WidgetType["id"],
-    top: Parameters<Parameters<typeof Widget>[0]["move"]>[2]
-  ) => {
-    const [ic, idx] = findWidget(id);
-    if (idx < 0) {
-      console.log("moveWidget: widget not found", id);
-      return;
-    }
-    const w = widgets[ic][idx];
-    if (to.startsWith("empty-")) {
-      const newWidgets: WidgetList = [...widgets];
-      newWidgets[ic] = newWidgets[ic].filter((_, i) => i !== idx);
-      const tc = parseInt(to.replace("empty-", ""), 10);
-      newWidgets[tc] = [...newWidgets[tc], w];
-      saveWidgets(newWidgets);
-      return;
-    }
-    const [tc, tdx] = findWidget(to);
-    if (tdx < 0) {
-      console.log("moveWidget: widget not found", to);
-      return;
-    }
-    const newWidgets: WidgetList = [...widgets];
-    newWidgets[ic] = newWidgets[ic].filter((_, i) => i !== idx);
-    const adjustedTdx = (ic === tc && idx < tdx) ? tdx - 1 : tdx;
-    const position = top ? adjustedTdx : adjustedTdx + 1;
-    newWidgets[tc] = [... newWidgets[tc]];
-    newWidgets[tc].splice(position, 0, w);
-    // console.log(id, "to", to, top);
-    saveWidgets(newWidgets);
   };
   const handleExpImp = (refresh: boolean) => {
     if (refresh) {
@@ -186,22 +90,6 @@ export default function Main({ handleLogin }: MainProp) {
     } else {
       setExpImp(false);
     }
-  };
-  /* Update and persist widgets config on change */
-  const updateConfig = (widget: WidgetType, remove?: boolean) => {
-    const [c, idx] = findWidget(widget.id);
-    if (idx < 0) {
-      console.log("updateConfig: widget not found", widget);
-      return;
-    }
-    const newWidgets: WidgetList = [...widgets];
-    if (remove === true) {
-      newWidgets[c] = newWidgets[c].filter((_, i) => i != idx);
-    } else {
-      newWidgets[c] = [...newWidgets[c]];
-      newWidgets[c][idx] = widget;
-    }
-    saveWidgets(newWidgets);
   };
   const updateFeed = (feed: FullFeed) => {
     if (feeds === undefined) {

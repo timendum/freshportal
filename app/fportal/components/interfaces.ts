@@ -17,17 +17,18 @@ interface DragItem {
   type: string;
 }
 
-type HandleCommandType = {
-  (name: "toggleCollapse"): void;
-  (name: "toggleConfiguring"): void;
-  (name: "size", data: string): void;
-  (name: "wType", data: string): void;
-  (name: "color", data: WidgetType["color"]): void;
-  (name: "reset"): void;
-  (name: "save"): void;
-  (name: "remove"): void;
-  (name: "readAll", data?: string): void;
-};
+type Command =
+  | { name: "toggleCollapse" }
+  | { name: "toggleConfiguring" }
+  | { name: "size"; data: number }
+  | { name: "wType"; data: string }
+  | { name: "color"; data: WidgetType["color"] }
+  | { name: "reset" }
+  | { name: "save" }
+  | { name: "remove" }
+  | { name: "readAll"; data?: string };
+
+type HandleCommandType = (cmd: Command) => void;
 
 type WidgetList = [WidgetType[], WidgetType[], WidgetType[]];
 
@@ -59,6 +60,7 @@ export {
   wTypes,
   type HandleStateChangeType,
   type WidgetType,
+  type Command,
   type HandleCommandType,
   type DragItem,
   type MoveWidgetType,
