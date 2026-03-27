@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prettier": "npx prettier -w app"
+    "prettier": "prettier -w app"
   },
   "dependencies": {
     "react": "^19",
