@@ -45,7 +45,7 @@ export default function MainLogin({ handleLogin }: MainLoginProps) {
         toggleDark={changeTheme}
       />
       <LoginForm handleLogin={handleLogin} />
-      <ExpImp open={isExpImp} doReset={handleExpImp} />
+      <ExpImp isOpen={isExpImp} doReset={handleExpImp} />
     </div>
   );
 }

@@ -333,12 +333,12 @@ export default function Main({ handleLogin }: MainProp) {
         {feeds !== undefined && (
           <AddWidget
             feeds={feeds}
-            open={isAddWidget}
+            isOpen={isAddWidget}
             addWidget={addWidget}
             skip={widgets.flatMap((w) => w).map((w) => w.id)}
           />
         )}
-        <ExpImp open={isExpImp} doReset={handleExpImp} />
+        <ExpImp isOpen={isExpImp} doReset={handleExpImp} />
         <ShortcutsHelp
           isOpen={isShortcutsHelpOpen}
           doClose={() => {

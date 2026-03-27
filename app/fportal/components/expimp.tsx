@@ -8,11 +8,11 @@ interface LocalStoragePerf {
   theme?: string;
 }
 interface ExpImpProps {
-  open: boolean;
+  isOpen: boolean;
   doReset: (arg0: boolean) => void;
 }
 
-export default function ExpImp({ open, doReset }: ExpImpProps) {
+export default function ExpImp({ isOpen, doReset }: ExpImpProps) {
   const ref = React.useRef<HTMLDialogElement>(null);
 
   React.useEffect(() => {
@@ -20,12 +20,12 @@ export default function ExpImp({ open, doReset }: ExpImpProps) {
     if (!dialog) {
       return;
     }
-    if (open && !dialog.open) {
+    if (isOpen && !dialog.open) {
       dialog.showModal();
-    } else if (!open && dialog.open) {
+    } else if (!isOpen && dialog.open) {
       dialog.close();
     }
-  }, [open]);
+  }, [isOpen]);
   const localData: LocalStoragePerf = {};
   let ld = localStorage.getItem("FRWidgets");
   if (ld) {

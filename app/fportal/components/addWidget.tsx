@@ -3,12 +3,12 @@ import { type FullFeed } from "../freshrss";
 
 interface AddWidgetProp {
   feeds: FullFeed[];
-  open: boolean;
+  isOpen: boolean;
   addWidget: (id: string | null) => void;
   skip: string[];
 }
 
-export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetProp) {
+export default function AddWidget({ feeds, isOpen, addWidget, skip }: AddWidgetProp) {
   const ref = React.useRef<HTMLDialogElement>(null);
 
   React.useEffect(() => {
@@ -16,12 +16,12 @@ export default function AddWidget({ feeds, open, addWidget, skip }: AddWidgetPro
     if (!dialog) {
       return;
     }
-    if (open && !dialog.open) {
+    if (isOpen && !dialog.open) {
       dialog.showModal();
-    } else if (!open && dialog.open) {
+    } else if (!isOpen && dialog.open) {
       dialog.close();
     }
-  }, [open]);
+  }, [isOpen]);
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();

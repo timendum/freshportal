@@ -7,7 +7,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ handleLogin }: LoginFormProps) {
-  const [loginError, setloginError] = React.useState<string | undefined>(undefined);
+  const [loginError, setLoginError] = React.useState<string | undefined>(undefined);
   const [loading, setLoading] = React.useState(false);
   const [defaultHost, setDefaultHost] = React.useState("");
 
@@ -28,12 +28,13 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
     const user = data.get("user");
     const password = data.get("password");
     if (!user || !apiLocation || !password) {
-      setloginError("Fill all fields");
+      setLoginError("Fill all fields");
+      setLoading(false);
       return;
     }
-    apiLocation = (apiLocation as string).replace(/\/+$/, "");
+    apiLocation = (apiLocation as string).replace(/\/+$/, "").trim();
     freshRss.base = `${apiLocation}/api/greader.php/`;
-    setloginError(undefined);
+    setLoginError(undefined);
     freshRss
       .login((user as string).trim(), (password as string).trim())
       .then((result) => {
@@ -41,12 +42,12 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
         if (result) {
           handleLogin(true);
         } else {
-          setloginError("Error during login, check console.");
+          setLoginError("Error during login, check console.");
           setLoading(false);
         }
       })
       .catch((error) => {
-        setloginError("Error during login, check console.");
+        setLoginError("Error during login, check console.");
         console.log(error);
         setLoading(false);
       });
@@ -55,11 +56,11 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
     <div className="min-h-screen p-6 dark:bg-black">
       <div className="mx-auto w-1/2">
         <form onSubmit={handleSubmit}>
-          <div className="block rounded-lg bg-white p-4 p-4 shadow-lg shadow-lg dark:bg-gray-600 dark:shadow-slate-700">
+          <div className="block rounded-lg bg-white p-4 shadow-lg dark:bg-gray-600 dark:shadow-slate-700">
             <h2 className="mb-5 ml-1 text-lg dark:text-gray-200">Login</h2>
             <div className="mb-6">
               <input
-                type="text"
+                type="url"
                 className="input-primary block w-full bg-clip-padding px-4 py-2 text-xl"
                 placeholder="Username"
                 name="user"
@@ -85,7 +86,7 @@ export default function LoginForm({ handleLogin }: LoginFormProps) {
             </div>{" "}
             {!!loginError && (
               <div role="alert">
-                <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">
+                <div className="rounded bg-red-500 px-4 py-2 font-bold text-white">
                   {loginError}
                 </div>
               </div>
