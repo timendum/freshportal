@@ -181,7 +181,12 @@ const freshRss: FreshRss = {
   },
   markReadFeed: async function (id) {
     try {
-      const data = await request("reader/api/0/mark-all-as-read", { output: "text" }, { s: id }, true);
+      const data = await request(
+        "reader/api/0/mark-all-as-read",
+        { output: "text" },
+        { s: id },
+        true
+      );
       return data === "OK";
     } catch {
       return false;

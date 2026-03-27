@@ -13,7 +13,7 @@ export default function useWidgetRows(
   const [rows, setRows] = useState<FeedContent[]>([]);
 
   useEffect(() => {
-    if (isCollapsed){
+    if (isCollapsed) {
       return;
     }
     const c = pag.length > 0 ? pag[pag.length - 1] : "";
@@ -72,7 +72,9 @@ export default function useWidgetRows(
           }
           return row;
         });
-        if (scope !== "current") marked = feed.unread;
+        if (scope !== "current") {
+          marked = feed.unread;
+        }
         updateFeed({ ...feed, unread: Math.max(0, feed.unread - marked) });
         setRows(newRows);
       })

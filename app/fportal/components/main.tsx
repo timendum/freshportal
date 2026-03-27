@@ -7,7 +7,7 @@ import AddWidget from "./addWidget";
 import DropWidget from "./dropWidget";
 import ExpImp from "./expimp";
 import { refreshUnread } from "./iconHandler";
-import type {  HandleStateChangeType } from "./interfaces";
+import type { HandleStateChangeType } from "./interfaces";
 import Loading from "./loading";
 import Topbar from "./topbar";
 import { darkPreference } from "./utils";
@@ -33,13 +33,13 @@ export default function Main({ handleLogin }: MainProp) {
       refreshUnread(
         feeds,
         widgets.flatMap((w) => w)
-      );
+      ).catch((error) => console.error("refreshUnread error", error));
     }
   }, [widgets, feeds]);
   /* On unmount, reset unread count */
   useEffect(() => {
     return () => {
-      refreshUnread([], []);
+      refreshUnread([], []).catch((error) => console.error("refreshUnread error", error));
     };
   }, []);
 

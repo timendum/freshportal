@@ -44,31 +44,26 @@ export default function ExpImp({ isOpen, doReset }: ExpImpProps) {
     localData.theme = ld;
   }
 
-  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const jsontxt = data.get("jsontxt");
+    if (typeof jsontxt !== "string") return;
     try {
-      /* eslint-disable
-        @typescript-eslint/no-unsafe-member-access,
-        @typescript-eslint/no-unsafe-assignment,
-        @typescript-eslint/no-unsafe-argument */
-      // @ts-expect-error For invalid JSON in the form
-      const jsonv = JSON.parse(jsontxt);
-      if (Object.prototype.hasOwnProperty.call(jsonv, "widgets") && jsonv.widgets) {
+      const jsonv = JSON.parse(jsontxt) as Partial<LocalStoragePerf>;
+      if (jsonv.widgets) {
         localStorage.setItem("FRWidgets", JSON.stringify(jsonv.widgets));
       }
-      if (Object.prototype.hasOwnProperty.call(jsonv, "session") && jsonv.session) {
+      if (jsonv.session) {
         localStorage.setItem("FRSession", jsonv.session);
       }
-      if (Object.prototype.hasOwnProperty.call(jsonv, "base") && jsonv.base) {
+      if (jsonv.base) {
         localStorage.setItem("FRHost", jsonv.base);
       }
-      if (Object.prototype.hasOwnProperty.call(jsonv, "theme") && jsonv.theme) {
+      if (jsonv.theme) {
         localStorage.setItem("FRTheme", jsonv.theme);
       }
       doReset(true);
-      /* eslint-enable */
     } catch (e) {
       if (e instanceof SyntaxError) {
         alert("Invalid JSON");

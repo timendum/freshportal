@@ -32,7 +32,9 @@ export default function AddWidget({ feeds, isOpen, addWidget, skip }: AddWidgetP
     }
     addWidget(id);
   };
-  const filteredFeeds = feeds.filter((f) => !skip.includes(f.id)).sort((a, b) => a.title.localeCompare(b.title));
+  const filteredFeeds = feeds
+    .filter((f) => !skip.includes(f.id))
+    .sort((a, b) => a.title.localeCompare(b.title));
   return (
     <dialog
       ref={ref}

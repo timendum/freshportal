@@ -12,7 +12,7 @@ const refreshUnread = async (feeds: FullFeed[], widgets: WidgetType[]) => {
   if (!link.dataset.originalUrl) {
     link.dataset.originalUrl = link.href;
   }
-  if (!(await ensureBlankIcon(link))) { 
+  if (!(await ensureBlankIcon(link))) {
     return;
   }
 
@@ -78,7 +78,6 @@ const drawBadge = async (link: HTMLLinkElement, label: string) => {
   link.href = canvas.toDataURL("image/x-icon");
 };
 
-
 let blankImg: HTMLImageElement | null = null;
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -87,7 +86,10 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   }
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => { blankImg = img; resolve(img); };
+    img.onload = () => {
+      blankImg = img;
+      resolve(img);
+    };
     img.onerror = reject;
     img.src = src;
   });

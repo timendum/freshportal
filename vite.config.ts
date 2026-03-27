@@ -17,7 +17,6 @@ export default defineConfig({
   base: "/freshportal/",
   build: {
     outDir: "build",
-    sourcemap: true,
-    target: ["es2020"]
+    sourcemap: true
   }
 });

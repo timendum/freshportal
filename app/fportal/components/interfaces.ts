@@ -32,29 +32,25 @@ type HandleCommandType = (cmd: Command) => void;
 
 type WidgetList = [WidgetType[], WidgetType[], WidgetType[]];
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-function isWidgetList(obj: any): obj is WidgetList {
-  /* eslint-disable
-    @typescript-eslint/no-unsafe-member-access */
+function isWidgetType(val: unknown): val is WidgetType {
+  if (typeof val !== "object" || val === null) return false;
+  const obj = val as Record<string, unknown>;
+  return (
+    obj.length == 3 &&
+    typeof obj.id === "string" &&
+    typeof obj.color === "string" &&
+    (obj.sizeLimit === undefined || (typeof obj.sizeLimit === "number" && obj.sizeLimit > 0)) &&
+    (obj.wType === undefined || wTypes.includes(obj.wType as (typeof wTypes)[number]))
+  );
+}
+
+function isWidgetList(obj: unknown): obj is WidgetList {
   return (
     Array.isArray(obj) &&
     obj.length === 3 &&
-    obj.every(
-      (col) =>
-        Array.isArray(col) &&
-        col.every(
-          (widget) =>
-            typeof widget === "object" &&
-            typeof widget.id === "string" &&
-            typeof widget.color === "string" &&
-            (widget.sizeLimit === undefined ||
-              (typeof widget.sizeLimit === "number" && widget.sizeLimit > 0)) &&
-            (widget.wType === undefined || widget.wType == "simple" || widget.wType == "excerpt")
-        )
-    )
+    obj.every((col: unknown) => Array.isArray(col) && col.every(isWidgetType))
   );
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export {
   wTypes,

@@ -13,20 +13,15 @@ interface WidgetHeaderProp {
   drag: ConnectDragSource;
 }
 
-export default function WidgetHeader({
-  feed,
-  isCollapsed,
-  handleCommand,
-  drag
-}: WidgetHeaderProp) {
+export default function WidgetHeader({ feed, isCollapsed, handleCommand, drag }: WidgetHeaderProp) {
   const { setHoveredComponent } = React.useContext<HoverContextType>(HoverContext);
   const ref = React.useRef<HTMLDivElement>(null);
   const hoverableComponent = {
     handleKeyboardEvent: (event: KeyboardEvent) => {
       if (event.key.toLowerCase() == "r") {
-        handleCommand("readAll", event.shiftKey ? undefined : "current");
+        handleCommand({ name: "readAll", data: event.shiftKey ? undefined : "current" });
       } else if (event.key.toLowerCase() == "c") {
-        handleCommand("toggleCollapse");
+        handleCommand({ name: "toggleCollapse" });
       }
     }
   };
@@ -54,7 +49,7 @@ export default function WidgetHeader({
         className="btn-primary md:px-1 lg:px-1"
         title={isCollapsed ? "Expand" : "Collapse"}
         onClick={() => {
-          handleCommand("toggleCollapse");
+          handleCommand({ name: "toggleCollapse" });
         }}
       >
         {isCollapsed ? faCaretDown : faCaretUp}
@@ -63,7 +58,7 @@ export default function WidgetHeader({
         type="button"
         disabled={feed.unread < 1}
         onClick={(e) => {
-          handleCommand("readAll", e.ctrlKey ? "current" : undefined);
+          handleCommand({ name: "readAll", data: e.ctrlKey ? "current" : undefined });
         }}
         className="btn-primary text-[1.1rem] md:px-1 lg:px-1"
         title={feed.unread > 0 ? "Mark all as read" : undefined}
@@ -105,7 +100,7 @@ export default function WidgetHeader({
         className="btn-primary md:px-1 lg:px-1.5 text-xs"
         title="Configure this widget"
         onClick={() => {
-          handleCommand("toggleConfiguring");
+          handleCommand({ name: "toggleConfiguring" });
         }}
       >
         {faGear}
@@ -115,7 +110,7 @@ export default function WidgetHeader({
         title="Remove this widget"
         className="btn-primary md:px-1 lg:px-1.5 text-xs"
         onClick={() => {
-          handleCommand("remove");
+          handleCommand({ name: "remove" });
         }}
       >
         {faCircleXmark}

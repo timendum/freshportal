@@ -25,15 +25,18 @@ export default function WidgetLink({ row, wType, toggleReadLink: toggleReadLink 
     toggleReadLink(row.id);
   };
 
-  const hoverableComponent = React.useMemo(() => ({
-    handleKeyboardEvent: (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === "r") {
-        toggleReadLink(row.id);
-      } else if (event.key.toLowerCase() === "o") {
-        window.open(row.canonical[0].href, "_blank");
+  const hoverableComponent = React.useMemo(
+    () => ({
+      handleKeyboardEvent: (event: KeyboardEvent) => {
+        if (event.key.toLowerCase() === "r") {
+          toggleReadLink(row.id);
+        } else if (event.key.toLowerCase() === "o") {
+          window.open(row.canonical[0].href, "_blank");
+        }
       }
-    }
-  }), [row.id, row.canonical, toggleReadLink]);
+    }),
+    [row.id, row.canonical, toggleReadLink]
+  );
 
   return (
     <li

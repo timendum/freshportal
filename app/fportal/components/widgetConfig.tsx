@@ -13,11 +13,11 @@ interface WidgetConfigProp {
 
 export default function WidgetConfig({ size, wType, color, handleCommand }: WidgetConfigProp) {
   const handleReset = () => {
-    handleCommand("reset");
+    handleCommand({ name: "reset" });
   };
   const handleSave = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    handleCommand("save");
+    handleCommand({ name: "save" });
   };
   return (
     <form
@@ -31,7 +31,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
           defaultValue={color}
           className="input-primary"
           onChange={(e) => {
-            handleCommand("color", e.currentTarget.value);
+            handleCommand({ name: "color", data: e.currentTarget.value });
           }}
         >
           {colors.map((e) => (
@@ -44,7 +44,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
         <input
           className="input-primary pl-1"
           onChange={(e) => {
-            handleCommand("size", e.currentTarget.value);
+            handleCommand({ name: "size", data: parseInt(e.currentTarget.value, 10) });
           }}
           type="number"
           min={0}
@@ -55,7 +55,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
           className="input-primary px-1"
           defaultValue={wType}
           onChange={(e) => {
-            handleCommand("wType", e.currentTarget.value);
+            handleCommand({ name: "wType", data: e.currentTarget.value });
           }}
         >
           <option value="simple">Simple</option>
@@ -64,12 +64,15 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
         <div className="col-span-2">
           <button
             className="btn-primary mx-2 bg-blue-800 px-1 text-slate-200 md:px-2"
-            value="reset" type="reset">
+            value="reset"
+            type="reset"
+          >
             Reset
           </button>
           <button
             className="btn-primary mx-2 bg-blue-800 px-1  text-slate-200 md:px-2"
-            type="submit">
+            type="submit"
+          >
             Save
           </button>
         </div>
