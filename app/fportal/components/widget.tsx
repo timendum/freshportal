@@ -1,7 +1,7 @@
 import React from "react";
 import { useDrag, useDrop, type XYCoord } from "react-dnd";
 
-import { freshRss, type FeedContent, type FullFeed } from "../freshrss";
+import { type FullFeed } from "../freshrss";
 import {
   wTypes,
   type DragItem,
@@ -15,6 +15,7 @@ import WidgetConfig from "./widgetConfig";
 import WidgetHeader from "./widgetHeader";
 import WidgetLink from "./widgetLink";
 import WidgetPagination from "./widgetPagination";
+import useWidgetRows from "./useWidgetRows";
 
 interface WidgetProp {
   feed: FullFeed;
@@ -32,7 +33,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const [wType, setWType] = React.useState(config.wType || "excerpt");
   const [color, setColor] = React.useState(config.color || "gray");
   const [pag, setPag] = React.useState([""]);
-  const [rows, setRows] = React.useState<FeedContent[]>([]);
   const [{ isDragging }, drag, preview] = useDrag<DragItem, string, { isDragging: boolean }>(
     () => ({
       type: DnDWidgetType,
@@ -78,20 +78,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       move(dragIndex, hoverIndex, top);
     }
   });
-  React.useEffect(() => {
-    if (!isCollapsed) {
-      let c = "";
-      if (pag.length > 0) {
-        c = pag[pag.length - 1];
-      }
-      freshRss
-        .getContent(feed.id, sizeLimit, c)
-        .then(setRows)
-        .catch((error) => {
-          console.error("getContent error", error);
-        });
-    }
-  }, [feed, pag, sizeLimit, isCollapsed]);
+  const { rows, toggleReadLink, markAllRead } = useWidgetRows(feed, sizeLimit, pag, isCollapsed, updateFeed);
   const handleCommand: HandleCommandType = (
     name: HandleCommandType["name"],
     data?: string | number
@@ -142,45 +129,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         setConfiguring(false);
         break;
       case "readAll":
-        {
-          const unreadRows = rows
-            .slice(0, sizeLimit)
-            .filter((e) => e.categories.indexOf("user/-/state/com.google/read") === -1);
-          let markAction = () =>
-            freshRss.markReadFeed(feed.id).catch((error) => {
-              console.error("markReadFeed error", error);
-              return false;
-            });
-          if (unreadRows.length === feed.unread || data === "current") {
-            markAction = () =>
-              freshRss.markReadItems(unreadRows.map((e) => e.id)).catch((error) => {
-                console.error("markReadItems error", error);
-                return false;
-              });
-          }
-          markAction()
-            .then((ret) => {
-              if (!ret) {
-                return;
-              }
-              let marked = 0;
-              const newRows = rows.map((row) => {
-                if (row.categories.indexOf("user/-/state/com.google/read") === -1) {
-                  marked += 1;
-                  return { ...row, categories: [...row.categories, "user/-/state/com.google/read"] };
-                }
-                return row;
-              });
-              if (data !== "current") {
-                marked = feed.unread;
-              }
-              updateFeed({ ...feed, unread: Math.max(0, feed.unread - marked) });
-              setRows(newRows);
-            })
-            .catch((error) => {
-              console.error("markAction error", error);
-            });
-        }
+        markAllRead(typeof data === "string" ? data : undefined);
         break;
     }
   };
@@ -192,38 +141,6 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     }
     setPag([...pag, c]);
   };
-  const toggleReadLink = (id: string) => {
-    const row = rows.find((r) => r.id === id);
-    if (!row) return;
-    const idx = row.categories.indexOf("user/-/state/com.google/read");
-    if (idx === -1) {
-      freshRss
-        .markReadItems([row.id])
-        .then(() => {
-          setRows(rows.map((r) =>
-            r.id === id ? { ...r, categories: [...r.categories, "user/-/state/com.google/read"] } : r
-          ));
-          updateFeed({ ...feed, unread: feed.unread - 1 });
-        })
-        .catch((error) => {
-          console.error("markRead error", error);
-        });
-    } else {
-      freshRss
-        .markUnreadItems([row.id])
-        .then((ret) => {
-          if (!ret) return;
-          setRows(rows.map((r) =>
-            r.id === id ? { ...r, categories: r.categories.filter((_, i) => i !== idx) } : r
-          ));
-          updateFeed({ ...feed, unread: feed.unread + 1 });
-        })
-        .catch((error) => {
-          console.error("markRead error", error);
-        });
-    }
-  };
-
   preview(drop(ref)); // eslint-disable-line react-hooks/refs
   return (
     <div
