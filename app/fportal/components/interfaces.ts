@@ -36,7 +36,7 @@ function isWidgetType(val: unknown): val is WidgetType {
   if (typeof val !== "object" || val === null) return false;
   const obj = val as Record<string, unknown>;
   return (
-    obj.length == 3 &&
+    typeof obj.length === 'number' &&
     typeof obj.id === "string" &&
     typeof obj.color === "string" &&
     (obj.sizeLimit === undefined || (typeof obj.sizeLimit === "number" && obj.sizeLimit > 0)) &&
