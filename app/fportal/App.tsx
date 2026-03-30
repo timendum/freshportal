@@ -4,7 +4,7 @@ import Loading from "./components/loading";
 import Main from "./components/main";
 import MainLogin from "./components/mainLogin";
 
-import { darkPreference } from "./components/utils";
+import { darkPreference } from "./components/interfaces";
 import { freshRss } from "./freshrss";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";

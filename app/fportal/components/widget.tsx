@@ -3,6 +3,8 @@ import { useDrag, useDrop, type XYCoord } from "react-dnd";
 
 import { type FullFeed } from "../freshrss";
 import {
+  DnDWidgetType,
+  wColors,
   wTypes,
   type DragItem,
   type HandleCommandType,
@@ -10,7 +12,6 @@ import {
   type WidgetType
 } from "./interfaces";
 import Loading from "./loading";
-import { DnDWidgetType } from "./utils";
 import WidgetConfig from "./widgetConfig";
 import WidgetHeader from "./widgetHeader";
 import WidgetLink from "./widgetLink";
@@ -30,8 +31,8 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
   const [isCollapsed, setCollapsed] = React.useState(false);
   const [isConfiguring, setConfiguring] = React.useState(false);
   const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
-  const [wType, setWType] = React.useState(config.wType || "excerpt");
-  const [color, setColor] = React.useState(config.color || "gray");
+  const [wType, setWType] = React.useState(config.wType || wTypes[0]);
+  const [color, setColor] = React.useState(config.color || wColors[0]);
   const [pag, setPag] = React.useState([""]);
   const [{ isDragging }, drag, preview] = useDrag<DragItem, string, { isDragging: boolean }>(
     () => ({
@@ -93,8 +94,8 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
       case "toggleConfiguring":
         setConfiguring(!isConfiguring);
         setSizeLimit(config.sizeLimit || 10);
-        setWType(config.wType || "excerpt");
-        setColor(config.color || "gray");
+        setWType(config.wType || wTypes[0]);
+        setColor(config.color || wColors[0]);
         break;
       case "size":
         setSizeLimit(cmd.data);
@@ -103,15 +104,22 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         const awType = wTypes.find((validName) => validName === cmd.data);
         if (awType) {
           setWType(awType);
+        } else {
+          console.error("Invalid type:", cmd.data);
         }
         break;
       }
       case "color":
-        setColor(cmd.data);
+        const aColor = wColors.find((validColor) => validColor === cmd.data);
+        if (aColor) {
+          setColor(aColor);
+        } else {
+          console.error("Invalid color:", cmd.data);
+        }
         break;
       case "reset":
         setSizeLimit(config.sizeLimit || 10);
-        setWType(config.wType || "excerpt");
+        setWType(config.wType || wTypes[0]);
         setColor(config.color || "gray");
         break;
       case "save":

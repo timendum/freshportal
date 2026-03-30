@@ -1,10 +1,9 @@
 import React from "react";
 
 import ExpImp from "./expimp";
-import type { HandleStateChangeType } from "./interfaces";
+import { darkPreference, type HandleStateChangeType } from "./interfaces";
 import LoginForm from "./login";
 import Topbar from "./topbar";
-import { darkPreference } from "./utils";
 
 interface MainLoginProps {
   handleLogin: HandleStateChangeType;

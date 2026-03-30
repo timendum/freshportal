@@ -1,8 +1,7 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 
-import type { DragItem, MoveWidgetType } from "./interfaces";
-import { DnDWidgetType } from "./utils";
+import { DnDWidgetType, type DragItem, type MoveWidgetType } from "./interfaces";
 
 interface DropWidgetProp {
   id: string;

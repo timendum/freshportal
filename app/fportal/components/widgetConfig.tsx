@@ -1,8 +1,6 @@
 import React from "react";
 
-import type { WidgetType, HandleCommandType } from "./interfaces";
-
-import { colors } from "./utils";
+import {wColors, type WidgetType, type HandleCommandType } from "./interfaces";
 
 interface WidgetConfigProp {
   size: WidgetType["sizeLimit"];
@@ -34,7 +32,7 @@ export default function WidgetConfig({ size, wType, color, handleCommand }: Widg
             handleCommand({ name: "color", data: e.currentTarget.value });
           }}
         >
-          {colors.map((e) => (
+          {wColors.map((e) => (
             <option key={e} value={e} className={`widget-${e} dark:text-zinc-300`}>
               {e[0].toUpperCase() + e.substring(1)}
             </option>

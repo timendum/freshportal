@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { isWidgetList, type WidgetList, type WidgetType } from "./interfaces";
-import { colors } from "./utils";
+import { wColors, isWidgetList, type WidgetList, type WidgetType } from "./interfaces";
+
 
 function getWidgetsFromStorage(): WidgetList {
   const sFRWidgets = localStorage.getItem("FRWidgets");
@@ -42,8 +42,8 @@ export default function useWidgetStore() {
 
   const addWidget = (id: string) => {
     const currentColors = widgets.flatMap((w) => w).map((w) => w.color);
-    const missingColors = colors.filter((e) => currentColors.indexOf(e) === -1);
-    const newColor = missingColors.shift() || colors[widgets.length % colors.length];
+    const missingColors = wColors.filter((e) => currentColors.indexOf(e) === -1);
+    const newColor = missingColors.shift() || wColors[widgets.length % wColors.length];
     const newW: WidgetType = { id, color: newColor };
     const [c, idx] = findWidget(id);
     const newWidgets: WidgetList = [...widgets];
