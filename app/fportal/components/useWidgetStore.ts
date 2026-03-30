@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { wColors, isWidgetList, type WidgetList, type WidgetType } from "./interfaces";
 
-
 function getWidgetsFromStorage(): WidgetList {
   const sFRWidgets = localStorage.getItem("FRWidgets");
   if (!sFRWidgets) {

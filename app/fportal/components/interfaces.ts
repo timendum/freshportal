@@ -41,7 +41,7 @@ function isWidgetType(val: unknown): val is WidgetType {
   return (
     typeof obj.id === "string" &&
     typeof obj.color === "string" &&
-    wColors.includes(obj.color as (typeof wColors)[number]) && 
+    wColors.includes(obj.color as (typeof wColors)[number]) &&
     (obj.sizeLimit === undefined || (typeof obj.sizeLimit === "number" && obj.sizeLimit > 0)) &&
     (obj.wType === undefined || wTypes.includes(obj.wType as (typeof wTypes)[number]))
   );

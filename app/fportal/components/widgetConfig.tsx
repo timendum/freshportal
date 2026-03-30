@@ -1,6 +1,6 @@
 import React from "react";
 
-import {wColors, type WidgetType, type HandleCommandType } from "./interfaces";
+import { wColors, type WidgetType, type HandleCommandType } from "./interfaces";
 
 interface WidgetConfigProp {
   size: WidgetType["sizeLimit"];

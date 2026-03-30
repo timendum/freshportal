@@ -109,7 +109,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         }
         break;
       }
-      case "color":
+      case "color": {
         const aColor = wColors.find((validColor) => validColor === cmd.data);
         if (aColor) {
           setColor(aColor);
@@ -117,6 +117,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
           console.error("Invalid color:", cmd.data);
         }
         break;
+      }
       case "reset":
         setSizeLimit(config.sizeLimit || 10);
         setWType(config.wType || wTypes[0]);
