@@ -51,7 +51,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
         " disabled:bg-teal-500 dark:disabled:text-gray-600 dark:disabled:border-teal-400 dark:disabled:bg-teal-400 disabled:hover:bg-teal-500";
     }
     return (
-      <li key={text + String(newPage)} className="flex-1">
+      <li key={text + String(newPage)} className="w-full">
         <button
           type="button"
           title={tooltip}
@@ -67,7 +67,7 @@ export default function WidgetPagination({ pag, oldest, setContinuation }: Widge
   }
   return (
     <nav className="dark:border-zinc-400 border-t border-slate-500 dark:text-zinc-400">
-      <ul className="mx-auto flex flex-row md:px-1 md:py-1 lg:px-2">
+      <ul className="mx-auto grid grid-cols-9 md:px-1 md:py-1 lg:px-2">
         {makeButton("-")}
         {pag.length > 4 && makeButton(0)}
         {pag.length > 4 && makeButton("-…")}
