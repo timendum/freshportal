@@ -3,7 +3,7 @@ import type { HoverContextType } from "../HoverContext";
 import { HoverContext } from "../HoverProvider";
 import type { FullFeed } from "../freshrss";
 import type { HandleCommandType } from "./interfaces";
-import { faCaretDown, faCaretUp, faCircleXmark, faGear, faUpDownLeftRight } from "./icons";
+import { faCaretUp, faCircleXmark, faGear, faUpDownLeftRight } from "./icons";
 import type { ConnectDragSource } from "react-dnd";
 
 interface WidgetHeaderProp {
@@ -52,7 +52,12 @@ export default function WidgetHeader({ feed, isCollapsed, handleCommand, drag }:
           handleCommand({ name: "toggleCollapse" });
         }}
       >
-        {isCollapsed ? faCaretDown : faCaretUp}
+        <span
+          className="inline-block transition-transform duration-200"
+          style={{ transform: isCollapsed ? "rotate(180deg)" : undefined }}
+        >
+          {faCaretUp}
+        </span>
       </button>
       <button
         type="button"
