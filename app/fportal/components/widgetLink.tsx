@@ -13,7 +13,7 @@ interface WidgetLinkProp {
   toggleReadLink: (id: string) => void;
 }
 
-export default function WidgetLink({ row, wType, toggleReadLink: toggleReadLink }: WidgetLinkProp) {
+export default function WidgetLink({ row, wType, toggleReadLink }: WidgetLinkProp) {
   const { setHoveredComponent } = React.useContext<HoverContextType>(HoverContext);
   const isRead = row.categories.indexOf("user/-/state/com.google/read") > -1;
   const doc = DOM_PARSER.parseFromString(row.summary.content, "text/html");
@@ -25,17 +25,28 @@ export default function WidgetLink({ row, wType, toggleReadLink: toggleReadLink 
     toggleReadLink(row.id);
   };
 
+  // This workaround to ensure that the latest toggleReadLink is called,
+  // even after a re-render (caused by a previous toggleReadLink for example),
+  // because a stale hoverableComponent is used if the mouse is not moved after a render.
+  const handlerRef = React.useRef<(event: KeyboardEvent) => void>(() => {});
+  React.useEffect(() => {
+    handlerRef.current = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() === "r") {
+        toggleReadLink(row.id);
+      } else if (event.key.toLowerCase() === "o") {
+        window.open(row.canonical[0].href, "_blank");
+      }
+    };
+  }, [row.id, row.canonical, toggleReadLink]);
+
   const hoverableComponent = React.useMemo(
     () => ({
       handleKeyboardEvent: (event: KeyboardEvent) => {
-        if (event.key.toLowerCase() === "r") {
-          toggleReadLink(row.id);
-        } else if (event.key.toLowerCase() === "o") {
-          window.open(row.canonical[0].href, "_blank");
-        }
+        // handlerRef is always the latest instance, because it's a ref
+        handlerRef.current(event);
       }
     }),
-    [row.id, row.canonical, toggleReadLink]
+    []
   );
 
   return (
