@@ -11,8 +11,8 @@ interface WidgetPaginationProp {
 export default function WidgetPagination({ pag, oldest, setContinuation }: WidgetPaginationProp) {
   function makeButton(newPage: number | "-" | "+" | "…" | "-…") {
     let disabled = newPage === pag.length - 1;
-    let text = "";
-    let tooltip: string | undefined = undefined;
+    let text: string;
+    let tooltip: string | undefined;
     let target = pag[pag.length - 1];
     if (newPage === "-") {
       text = "<";

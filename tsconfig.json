@@ -4,11 +4,12 @@
     "build/types/**/*.ts"
   ],
   "compilerOptions": {
+    "types": ["vite/client"],
     "strict": true,
     "esModuleInterop": true,
     "lib": [
       "dom",
-      "es2017"
+      "es2019"
     ],
     "jsx": "preserve",
     "allowJs": true,
@@ -16,7 +17,7 @@
     "noEmit": true,
     "incremental": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "plugins": [
