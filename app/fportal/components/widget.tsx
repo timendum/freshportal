@@ -1,16 +1,8 @@
 import React from "react";
-import { useDrag, useDrop, type XYCoord } from "react-dnd";
+import { useSortable } from "@dnd-kit/react/sortable";
 
 import { type FullFeed } from "../freshrss";
-import {
-  DnDWidgetType,
-  wColors,
-  wTypes,
-  type DragItem,
-  type HandleCommandType,
-  type MoveWidgetType,
-  type WidgetType
-} from "./interfaces";
+import { wColors, wTypes, type HandleCommandType, type WidgetType } from "./interfaces";
 import Loading from "./loading";
 import WidgetConfig from "./widgetConfig";
 import WidgetHeader from "./widgetHeader";
@@ -23,62 +15,33 @@ interface WidgetProp {
   config: WidgetType;
   updateConfig: (widget: WidgetType, remove?: boolean) => void;
   updateFeed: (feed: FullFeed) => void;
-  move: MoveWidgetType;
+  index: number;
+  group: string;
 }
 
-export default function Widget({ feed, config, updateConfig, updateFeed, move }: WidgetProp) {
-  const ref = React.useRef<HTMLDivElement>(null);
+export default function Widget({
+  feed,
+  config,
+  updateConfig,
+  updateFeed,
+  index,
+  group
+}: WidgetProp) {
   const [isCollapsed, setCollapsed] = React.useState(false);
   const [isConfiguring, setConfiguring] = React.useState(false);
   const [sizeLimit, setSizeLimit] = React.useState(config.sizeLimit || 10);
   const [wType, setWType] = React.useState(config.wType || wTypes[0]);
   const [color, setColor] = React.useState(config.color || wColors[0]);
   const [pag, setPag] = React.useState([""]);
-  const [{ isDragging }, drag, preview] = useDrag<DragItem, string, { isDragging: boolean }>(
-    () => ({
-      type: DnDWidgetType,
-      item: () => {
-        return { id: feed.id, type: DnDWidgetType };
-      },
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging()
-      })
-    })
-  );
-  const [, drop] = useDrop<DragItem, void, void>({
-    accept: DnDWidgetType,
-    hover(item: DragItem, monitor) {
-      if (!ref.current) {
-        return;
-      }
-      const dragIndex = item.id;
-      const hoverIndex = feed.id;
 
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-      // Get vertical middle
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-
-      // Get pixels to the top
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      let top = true;
-      // Dragging second half
-      if (hoverClientY > hoverMiddleY) {
-        top = false;
-      }
-      move(dragIndex, hoverIndex, top);
-    }
+  const { ref, handleRef, isDragging } = useSortable({
+    id: feed.id,
+    index,
+    group,
+    type: "widget",
+    accept: "widget"
   });
+
   const { rows, toggleReadLink, markAllRead } = useWidgetRows(
     feed,
     sizeLimit,
@@ -144,7 +107,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
     }
     setPag([...pag, c]);
   };
-  preview(drop(ref)); // eslint-disable-line react-hooks/refs
+
   return (
     <div
       ref={ref}
@@ -154,7 +117,7 @@ export default function Widget({ feed, config, updateConfig, updateFeed, move }:
         feed={feed}
         isCollapsed={isCollapsed}
         handleCommand={handleCommand}
-        drag={drag}
+        handleRef={handleRef}
       />
       {isConfiguring && (
         <WidgetConfig size={sizeLimit} wType={wType} color={color} handleCommand={handleCommand} />

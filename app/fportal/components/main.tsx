@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { isSortable } from "@dnd-kit/react/sortable";
+import { useDroppable, useDragDropMonitor } from "@dnd-kit/react";
 
 import { HoverableComponent } from "../HoverContext";
 import { HoverContext } from "../HoverProvider";
 import { freshRss, type FullFeed } from "../freshrss";
 import AddWidget from "./addWidget";
-import DropWidget from "./dropWidget";
 import ExpImp from "./expimp";
 import { refreshUnread } from "./iconHandler";
 import { darkPreference, type HandleStateChangeType } from "./interfaces";
@@ -18,6 +19,16 @@ interface MainProp {
   handleLogin: HandleStateChangeType;
 }
 
+/** Droppable column */
+function EmptyColumn({ group }: { group: string }) {
+  const { ref } = useDroppable({
+    id: `empty-${group}`,
+    accept: "widget",
+    data: { group }
+  });
+  return <div ref={ref} className="block min-h-full" />;
+}
+
 export default function Main({ handleLogin }: MainProp) {
   const [isAddWidget, setAddWidget] = useState(false);
   const [isExpImp, setExpImp] = useState(false);
@@ -26,6 +37,24 @@ export default function Main({ handleLogin }: MainProp) {
   const [feeds, setFeeds] = useState<FullFeed[] | undefined>(undefined);
   const [darkMode, setDarkMode] = useState(darkPreference());
   const [hoveredComponent, setHoveredComponent] = useState<HoverableComponent | null>(null);
+
+  /** Handle drag events */
+  useDragDropMonitor({
+    onDragEnd(event) {
+      const { source, target } = event.operation;
+      if (!source || !target) return;
+      if (!isSortable(source) || !isSortable(target)) return;
+
+      const toGroup = target.sortable.group;
+      const toIndex = target.sortable.index;
+      const colIndex = toGroup !== undefined ? Number(toGroup) : -1;
+      if (colIndex < 0 || colIndex > 2) return;
+
+      const sourceId = String(source.id);
+      moveWidget(sourceId, colIndex, toIndex);
+    }
+  });
+
   /* Refresh unread count on widget/feed changes */
   useEffect(() => {
     if (feeds && widgets.length > 0) {
@@ -94,7 +123,6 @@ export default function Main({ handleLogin }: MainProp) {
     if (feeds === undefined) {
       return;
     }
-    // Update a single feed, usually triggered from within the Widget with the feed
     const newFeeds = [...feeds];
     const idx = newFeeds.findIndex((e) => e.id === feed.id);
     if (idx < 0) {
@@ -106,10 +134,11 @@ export default function Main({ handleLogin }: MainProp) {
   };
   /* Util function to generate widgets, no useMemo, because of react-compiler */
   const makeWidget = (col: number) => {
+    const group = String(col);
     if (widgets[col].length < 1) {
-      return <DropWidget id={`empty-${col}`} move={moveWidget} />;
+      return <EmptyColumn group={group} />;
     }
-    return widgets[col].map((widget) => {
+    return widgets[col].map((widget, index) => {
       let widgetFeed = null;
       for (const feed of feeds || []) {
         if (feed.id === widget.id) {
@@ -126,15 +155,15 @@ export default function Main({ handleLogin }: MainProp) {
         );
       }
       return (
-        <div key={widget.id}>
-          <Widget
-            feed={widgetFeed}
-            config={widget}
-            updateConfig={updateConfig}
-            updateFeed={updateFeed}
-            move={moveWidget}
-          />
-        </div>
+        <Widget
+          key={widget.id}
+          feed={widgetFeed}
+          config={widget}
+          updateConfig={updateConfig}
+          updateFeed={updateFeed}
+          index={index}
+          group={group}
+        />
       );
     });
   };
@@ -153,15 +182,10 @@ export default function Main({ handleLogin }: MainProp) {
             freshRss
               .getFeedsFull()
               .then((updatedFeeds) => {
-                /* This function changes the feed objects in `feeds` ONLY
-            if the object is in a different state (ie: unread count or update timestamp).
-            If the object is the same, React will not trigger the update and so the API call.
-          */
-                const newFeeds = [...lastFeeds]; // Create a new array, so it will perform Main refresh/redraw.
+                const newFeeds = [...lastFeeds];
                 for (const feed of updatedFeeds) {
                   const idx = newFeeds.findIndex((e) => e.id === feed.id);
                   if (idx < 0) {
-                    // new feed!
                     newFeeds.push(feed);
                     continue;
                   }
@@ -170,11 +194,9 @@ export default function Main({ handleLogin }: MainProp) {
                     feed.unread != oldFeed.unread ||
                     feed.newestItemTimestampUsec != oldFeed.newestItemTimestampUsec
                   ) {
-                    // need refresh, so create use the new object
                     newFeeds[idx] = feed;
                     console.debug("Changed:", feed, oldFeed);
                   }
-                  // else, keep the old one
                 }
                 lastFeeds = newFeeds;
                 setFeeds(newFeeds);

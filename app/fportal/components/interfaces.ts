@@ -1,7 +1,4 @@
-import type { FullFeed } from "../freshrss";
-
 type HandleStateChangeType = (state: boolean) => void;
-type MoveWidgetType = (id: FullFeed["id"], to: FullFeed["id"], top: boolean) => void;
 
 const wTypes = ["excerpt", "simple"] as const;
 
@@ -13,11 +10,6 @@ interface WidgetType {
   color: (typeof wColors)[number];
   sizeLimit?: number;
   wType?: (typeof wTypes)[number];
-}
-
-interface DragItem {
-  id: FullFeed["id"];
-  type: string;
 }
 
 type Command =
@@ -55,8 +47,6 @@ function isWidgetList(obj: unknown): obj is WidgetList {
   );
 }
 
-const DnDWidgetType = "WIDGET";
-
 const darkPreference = () => {
   if (
     localStorage.FRTheme === "dark" ||
@@ -70,14 +60,11 @@ const darkPreference = () => {
 export {
   wTypes,
   wColors,
-  DnDWidgetType,
   darkPreference,
   type HandleStateChangeType,
   type WidgetType,
   type Command,
   type HandleCommandType,
-  type DragItem,
-  type MoveWidgetType,
   type WidgetList,
   isWidgetList
 };

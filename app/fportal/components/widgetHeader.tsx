@@ -4,16 +4,20 @@ import { HoverContext } from "../HoverProvider";
 import type { FullFeed } from "../freshrss";
 import type { HandleCommandType } from "./interfaces";
 import { faCaretUp, faCircleXmark, faGear, faUpDownLeftRight } from "./icons";
-import type { ConnectDragSource } from "react-dnd";
 
 interface WidgetHeaderProp {
   feed: FullFeed;
   isCollapsed: boolean;
   handleCommand: HandleCommandType;
-  drag: ConnectDragSource;
+  handleRef: (element: Element | null) => void;
 }
 
-export default function WidgetHeader({ feed, isCollapsed, handleCommand, drag }: WidgetHeaderProp) {
+export default function WidgetHeader({
+  feed,
+  isCollapsed,
+  handleCommand,
+  handleRef
+}: WidgetHeaderProp) {
   const { setHoveredComponent } = React.useContext<HoverContextType>(HoverContext);
   const ref = React.useRef<HTMLDivElement>(null);
   const hoverableComponent = {
@@ -92,9 +96,7 @@ export default function WidgetHeader({ feed, isCollapsed, handleCommand, drag }:
       </h4>
       <button
         type="button"
-        ref={(el) => {
-          drag(el);
-        }}
+        ref={handleRef}
         className="btn-primary md:px-1 lg:px-1.5 text-xs cursor-move"
         title="Drag to move this widget"
       >

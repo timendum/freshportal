@@ -6,8 +6,7 @@ import MainLogin from "./components/mainLogin";
 
 import { darkPreference } from "./components/interfaces";
 import { freshRss } from "./freshrss";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DragDropProvider } from "@dnd-kit/react";
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
@@ -38,9 +37,9 @@ export default function App() {
   }
   if (isLoggedIn === true) {
     return (
-      <DndProvider backend={HTML5Backend}>
+      <DragDropProvider>
         <Main handleLogin={setLoggedIn} />
-      </DndProvider>
+      </DragDropProvider>
     );
   }
   // loading screen

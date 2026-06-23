@@ -11,9 +11,8 @@
     "prettier": "prettier -w app"
   },
   "dependencies": {
+    "@dnd-kit/react": "^0.5.0",
     "react": "^19",
-    "react-dnd": "^16.0",
-    "react-dnd-html5-backend": "^16.0",
     "react-dom": "^19"
   },
   "devDependencies": {

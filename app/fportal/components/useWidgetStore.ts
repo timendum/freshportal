@@ -23,8 +23,8 @@ function getWidgetsFromStorage(): WidgetList {
 export default function useWidgetStore() {
   const [widgets, setWidgets] = useState<WidgetList>(getWidgetsFromStorage);
 
-  const saveWidgets = (widgets: WidgetList) => {
-    const deep: WidgetList = widgets.map((col) => [...col]) as WidgetList;
+  const saveWidgets = (newWidgets: WidgetList) => {
+    const deep: WidgetList = newWidgets.map((col) => [...col]) as WidgetList;
     localStorage.setItem("FRWidgets", JSON.stringify(deep));
     setWidgets(deep);
   };
@@ -61,32 +61,20 @@ export default function useWidgetStore() {
     saveWidgets(newWidgets);
   };
 
-  const moveWidget = (id: string, to: string, top: boolean) => {
-    const [ic, idx] = findWidget(id);
-    if (idx < 0) {
+  /** Move a widget from its current position to a target column and index. */
+  const moveWidget = (id: string, toCol: number, toIndex: number) => {
+    const [fromCol, fromIdx] = findWidget(id);
+    if (fromIdx < 0) {
       console.log("moveWidget: widget not found", id);
       return;
     }
-    const w = widgets[ic][idx];
-    if (to.startsWith("empty-")) {
-      const newWidgets: WidgetList = [...widgets];
-      newWidgets[ic] = newWidgets[ic].filter((_, i) => i !== idx);
-      const tc = parseInt(to.replace("empty-", ""), 10);
-      newWidgets[tc] = [...newWidgets[tc], w];
-      saveWidgets(newWidgets);
-      return;
+    if (fromCol === toCol && fromIdx === toIndex) {
+      return; // no-op
     }
-    const [tc, tdx] = findWidget(to);
-    if (tdx < 0) {
-      console.log("moveWidget: widget not found", to);
-      return;
-    }
-    const newWidgets: WidgetList = [...widgets];
-    newWidgets[ic] = newWidgets[ic].filter((_, i) => i !== idx);
-    const adjustedTdx = ic === tc && idx < tdx ? tdx - 1 : tdx;
-    const position = top ? adjustedTdx : adjustedTdx + 1;
-    newWidgets[tc] = [...newWidgets[tc]];
-    newWidgets[tc].splice(position, 0, w);
+    const w = widgets[fromCol][fromIdx];
+    const newWidgets: WidgetList = widgets.map((col) => [...col]) as WidgetList;
+    newWidgets[fromCol].splice(fromIdx, 1);
+    newWidgets[toCol].splice(toIndex, 0, w);
     saveWidgets(newWidgets);
   };
 
