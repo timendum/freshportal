@@ -9,9 +9,10 @@
     "esModuleInterop": true,
     "lib": [
       "dom",
-      "es2019"
+      "ESNext"
     ],
-    "jsx": "preserve",
+    "target": "ESNext",
+    "jsx": "react-jsx",
     "allowJs": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -30,5 +31,5 @@
   "sourceMap": true /* Create source map files for emitted JavaScript files. */,
   "exclude": [
     "node_modules"
-  ]
+  ],
 }
