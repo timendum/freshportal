@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: 'release'
+  cancel-in-progress: true
+
+jobs:
+  uploadrelease:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Create archives
+        run: |
+          tar -cvzf release.tar.gz --exclude='*.map' -C build .
+          tar -cvzf release-with-maps.tar.gz -C build .
+      - name: GH Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            release.tar.gz
+            release-with-maps.tar.gz
