@@ -34,7 +34,9 @@ export default function WidgetLink({ row, wType, toggleReadLink }: WidgetLinkPro
       if (event.key.toLowerCase() === "r") {
         toggleReadLink(row.id);
       } else if (event.key.toLowerCase() === "o") {
-        window.open(row.canonical[0].href, "_blank");
+        if (row.canonical.length > 0) {
+          window.open(row.canonical[0].href, "_blank");
+        }
       }
     };
   }, [row.id, row.canonical, toggleReadLink]);
@@ -58,12 +60,12 @@ export default function WidgetLink({ row, wType, toggleReadLink }: WidgetLinkPro
       className={`overflow-hidden whitespace-nowrap text-ellipsis ${!isRead ? "dark:text-zinc-200" : "text-slate-400 dark:text-zinc-400"}`}
     >
       <a
-        href={row.canonical[0].href}
+        href={row.canonical.length > 0 ? row.canonical[0].href : undefined}
         target="_blank"
-        className="underline"
+        className={row.canonical.length > 0 ? "underline" : undefined}
         title={wType === "excerpt" ? row.title : excerpt}
         rel="noreferrer"
-        onMouseDown={!isRead ? markRead : undefined}
+        onMouseDown={row.canonical.length > 0 ? (!isRead ? markRead : undefined) : undefined}
       >
         {row.title}
       </a>

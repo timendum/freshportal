@@ -19,7 +19,21 @@ export default function useWidgetRows(
     const c = pag.length > 0 ? pag[pag.length - 1] : "";
     freshRss
       .getContent(feed.id, sizeLimit, c)
-      .then(setRows)
+      .then(function (rows) {
+        if (rows.length < 1) {
+          rows = [
+            {
+              id: `empty-rows-${feed.id}`,
+              title: "No content found",
+              categories: [],
+              timestampUsec: "",
+              canonical: [],
+              summary: { content: `FreshRSS found no entries for feed ${feed.id}` }
+            }
+          ];
+        }
+        return setRows(rows);
+      })
       .catch((error) => console.error("getContent error", error));
   }, [feed, pag, sizeLimit, isCollapsed]);
 

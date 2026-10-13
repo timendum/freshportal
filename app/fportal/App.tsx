@@ -24,7 +24,6 @@ interface RemountBoundaryProps {
   children: ReactNode;
 }
 
-
 class RemountBoundary extends Component<RemountBoundaryProps> {
   componentDidCatch(error: Error) {
     if (isDndCommitError(error.message)) {

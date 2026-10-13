@@ -148,10 +148,20 @@ export default function Main({ handleLogin }: MainProp) {
       }
       if (!widgetFeed) {
         return (
-          <div key={widget.id} className="rounded-md border-2 border-red-500 md:px-0.5 lg:px-1">
-            {" "}
-            <div className="dark:text-zinc-300">Feed {widget.id} not found</div>
-          </div>
+          <Widget
+            key={widget.id}
+            feed={{
+              id: widget.id,
+              newestItemTimestampUsec: "",
+              title: `Feed ${widget.id} not found`,
+              unread: 0
+            }}
+            config={widget}
+            updateConfig={updateConfig}
+            updateFeed={updateFeed}
+            index={index}
+            group={group}
+          />
         );
       }
       return (
